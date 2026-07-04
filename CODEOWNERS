@@ -1,0 +1,15 @@
+# Default owner for anything not matched below.
+*                                   @AgenticPawan
+
+# Marketplace catalog and CI safety net — any schema or validator change needs
+# maintainer eyes since it can silently break every plugin's install.
+/.claude-plugin/                   @AgenticPawan
+/scripts/validate.mjs              @AgenticPawan
+/.github/workflows/                @AgenticPawan
+
+/plugins/pilot-core/               @AgenticPawan
+/plugins/pilot-angular/            @AgenticPawan
+/plugins/pilot-dotnet/              @AgenticPawan
+
+/plugins/pilot-sql/                @AgenticPawan
+/plugins/pilot-azure/              @AgenticPawan

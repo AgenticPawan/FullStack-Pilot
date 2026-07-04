@@ -13,8 +13,7 @@
     {
       "name": "pilot-core",
       "source": "./plugins/pilot-core",
-      "description": "Shared governance: commit conventions, PR templates, and code-health checks for all full-stack Microsoft projects",
-      "version": "0.1.0",
+      "description": "Shared governance: stack detection, audit/fix pipelines, MCP discovery, and commands used by every other pilot plugin",
       "author": { "name": "FullStack Pilot Contributors" },
       "license": "MIT",
       "keywords": ["governance", "commits", "code-health", "microsoft"]
@@ -22,8 +21,7 @@
     {
       "name": "pilot-angular",
       "source": "./plugins/pilot-angular",
-      "description": "Angular / TypeScript governance: component patterns, signal migration, and standalone best practices",
-      "version": "0.1.0",
+      "description": "Angular / TypeScript governance: signals, performance, accessibility, security, HTTP resilience, and the v15-to-v20 upgrade path",
       "author": { "name": "FullStack Pilot Contributors" },
       "license": "MIT",
       "keywords": ["angular", "typescript", "signals", "standalone"]
@@ -31,8 +29,7 @@
     {
       "name": "pilot-dotnet",
       "source": "./plugins/pilot-dotnet",
-      "description": "C# / ASP.NET Core governance: minimal-API patterns, EF Core best practices, and NuGet security audits",
-      "version": "0.1.0",
+      "description": "C# / ASP.NET Core governance placeholder — manifest only today; house conventions layer on top of dotnet/skills, not yet implemented",
       "author": { "name": "FullStack Pilot Contributors" },
       "license": "MIT",
       "keywords": ["dotnet", "csharp", "aspnetcore", "efcore", "nuget"]
@@ -40,8 +37,7 @@
     {
       "name": "pilot-sql",
       "source": "./plugins/pilot-sql",
-      "description": "SQL Server / EF Core governance: migration safety checks, query review, and index analysis",
-      "version": "0.1.0",
+      "description": "SQL Server / EF Core governance: injection defense, migration safety, multitenancy isolation, and performance review",
       "author": { "name": "FullStack Pilot Contributors" },
       "license": "MIT",
       "keywords": ["sql-server", "efcore", "migrations", "query-review"]
@@ -49,8 +45,7 @@
     {
       "name": "pilot-azure",
       "source": "./plugins/pilot-azure",
-      "description": "Azure / Bicep / ACA governance: resource-naming rules, cost guardrails, and deployment safety hooks",
-      "version": "0.1.0",
+      "description": "Azure / Bicep governance: CAF naming, security baseline, Well-Architected Framework review, and Bicep patterns",
       "author": { "name": "FullStack Pilot Contributors" },
       "license": "MIT",
       "keywords": ["azure", "bicep", "aca", "cost", "deployment"]
