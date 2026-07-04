@@ -3,6 +3,34 @@
 All notable changes to FullStack Pilot are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.16.0] — 2026-07-05 (pilot-angular), pilot-azure/pilot-core 0.10.0 → 0.11.0
+
+### Added
+- Completes the round-2 gap audit's Tier 2 backlog (Tier 1 shipped in `[0.15.0]`).
+- `pilot-azure`: two new skills — `azure-aks-governance` (Pod Security Standards,
+  container resource requests/limits, `NetworkPolicy`, Azure Workload Identity — scoped
+  to shops running AKS instead of Container Apps) and `azure-api-management` (gateway
+  rate-limit/quota policy, JWT validation consistency with the backend, backend
+  health/circuit-breaker, thin pass-through policy discipline — a distinct layer from
+  `dotnet-rate-limiting`'s app-layer checks).
+- `pilot-core`: `incident-response-runbook` — the response layer over
+  `azure-observability`'s alert rules: runbook-per-alert convention, severity-to-
+  response-time SLA, blameless-postmortem template, tracked action-item follow-through.
+- `pilot-angular`: `angular-monorepo-governance` — Nx/module-federation boundary
+  enforcement, shared-library ownership and cross-team versioning, independently
+  deployable remote apps, no duplicated cross-cutting concerns (auth, theming) across
+  apps. Only relevant once a workspace spans multiple apps/teams — a single-app
+  codebase remains fully covered by the existing `angular-shared-libraries` skill.
+- `infra-reviewer`/`angular-reviewer` agents: inventory rows and review-checklist
+  categories for all four additions.
+
+### Changed
+- `plugin.json`: `pilot-angular` `0.15.0` → `0.16.0`; `pilot-azure` and `pilot-core`
+  `0.10.0` → `0.11.0`.
+- `docs/pilot-azure.md`, `docs/pilot-core.md`, `docs/pilot-angular.md`, `README.md`:
+  skill tables and counts updated (pilot-core 7→8, pilot-azure 8→10, pilot-angular
+  16→17).
+
 ## [0.15.0] — 2026-07-05 (pilot-dotnet, pilot-angular), pilot-core 0.9.0 → 0.10.0
 
 ### Added

@@ -7,7 +7,7 @@ and Bicep production-readiness.
 
 - **infra-reviewer** — reviews Bicep templates and GitHub Actions deployment workflows
   against all skills below, emitting findings with standard IDs (`ASB-*`, `WAF-*`,
-  `CAF-*`, `BIC-*`, `AOBS-*`, `CICD-*`, `ADR-*`, `FIN-*`).
+  `CAF-*`, `BIC-*`, `AOBS-*`, `CICD-*`, `ADR-*`, `FIN-*`, `AKS-*`, `APIM-*`).
 
 ## Skills
 
@@ -21,3 +21,5 @@ and Bicep production-readiness.
 | `azure-cicd-security` | OIDC federated credentials vs long-lived service-principal secrets, environment approval gates, least-privilege deployment identity, no secrets hardcoded in workflow YAML. |
 | `azure-dr-multiregion` | Paired-region secondary deployment, Traffic Manager/Front Door failover routing, documented RPO/RTO, cross-region database replication/auto-failover groups. |
 | `azure-cost-finops` | Azure Budget resources with action-group alerting, autoscale right-sizing review cadence, cost-anomaly detection, orphaned-resource cleanup policy. |
+| `azure-aks-governance` | Pod Security Standards, container resource requests/limits, `NetworkPolicy`, Azure Workload Identity — only applies when AKS is the compute target (Container Apps deployments are covered by the skills above instead). |
+| `azure-api-management` | Gateway-layer rate-limit/quota policy, JWT validation consistency with the backend, backend pool health/circuit-breaker, thin pass-through policy discipline. |

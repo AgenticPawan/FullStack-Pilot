@@ -2,8 +2,8 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "pilot-core",
   "displayName": "Pilot Core",
-  "version": "0.10.0",
-  "description": "Shared governance utilities for full-stack Microsoft projects: commit conventions, PR templates, code-health checks, and the dependency-supply-chain policy layer over dotnet/npm vulnerability scanning (patch-cadence SLAs, version-pinning, private-feed policy, SBOM)",
+  "version": "0.11.0",
+  "description": "Shared governance utilities for full-stack Microsoft projects: commit conventions, PR templates, code-health checks, the dependency-supply-chain policy layer over dotnet/npm vulnerability scanning (patch-cadence SLAs, version-pinning, private-feed policy, SBOM), and incident-response runbook/postmortem governance",
   "author": {
     "name": "AgenticPawan",
     "url": "https://github.com/AgenticPawan"
@@ -11,5 +11,5 @@
   "homepage": "https://github.com/AgenticPawan/FullStack-Pilot#pilot-core",
   "repository": "https://github.com/AgenticPawan/FullStack-Pilot",
   "license": "MIT",
-  "keywords": ["governance", "commits", "code-health", "microsoft", "fullstack", "supply-chain", "sbom"]
+  "keywords": ["governance", "commits", "code-health", "microsoft", "fullstack", "supply-chain", "sbom", "incident-response", "postmortem"]
 }

@@ -1,6 +1,6 @@
 ---
 name: infra-reviewer
-description: Reviews Azure Bicep templates and GitHub Actions deployment workflows against pilot-azure rules and skills. Outputs structured findings with standard IDs (ASB-*, WAF-*, CAF-*, BIC-*, AOBS-*, CICD-*, ADR-*, FIN-*), severity, and fix guidance. Invoked automatically on infra diff review requests or manually via @infra-reviewer.
+description: Reviews Azure Bicep templates and GitHub Actions deployment workflows against pilot-azure rules and skills. Outputs structured findings with standard IDs (ASB-*, WAF-*, CAF-*, BIC-*, AOBS-*, CICD-*, ADR-*, FIN-*, AKS-*, APIM-*), severity, and fix guidance. Invoked automatically on infra diff review requests or manually via @infra-reviewer.
 model: sonnet
 effort: high
 maxTurns: 15
@@ -32,6 +32,8 @@ the rules and skills defined in pilot-azure. Produce structured, actionable find
 | azure-cicd-security | OIDC federated credentials vs long-lived secrets, environment approval gates, least-privilege deploy identity |
 | azure-dr-multiregion | Paired-region secondary deployment, Traffic Manager/Front Door failover, RPO/RTO, cross-region DB replication |
 | azure-cost-finops | Azure Budget alerting, autoscale right-sizing review cadence, cost-anomaly detection, orphaned-resource cleanup |
+| azure-aks-governance | Pod Security Standards, container resource requests/limits, NetworkPolicy, Workload Identity (AKS deployments only) |
+| azure-api-management | Gateway rate-limit/quota policy, JWT validation consistency with the backend, backend health/circuit-breaker, thin pass-through policy discipline |
 
 ## Review process
 
@@ -100,6 +102,17 @@ Work through all categories. State "no findings" explicitly if a category is cle
 - [ ] No `Microsoft.Consumption/budgets` resource with action-group alerting (FIN-001)?
 - [ ] No cost-anomaly detection configured (FIN-003)?
 
+**Category I — AKS governance (only if AKS is the compute target)**
+- [ ] Namespace/pod with no Pod Security Standards enforcement (AKS-001)?
+- [ ] Container with no resource requests/limits configured (AKS-002)?
+- [ ] No `NetworkPolicy` restricting pod-to-pod traffic (AKS-003)?
+- [ ] Pod uses a client-secret instead of Azure Workload Identity (AKS-004)?
+
+**Category J — API Management**
+- [ ] No rate-limit/quota policy configured at the gateway (APIM-001)?
+- [ ] JWT validation missing at the gateway or inconsistent with the backend (APIM-002)?
+- [ ] No backend health monitoring/circuit-breaker for the backend pool (APIM-003)?
+
 ### Step 3 — Format findings
 
 ```
@@ -117,16 +130,16 @@ Work through all categories. State "no findings" explicitly if a category is cle
 ---
 Finding format:
 
-[SEVERITY] Rule/Skill: <rule-id or skill-id> | Standard: <ASB-XX / WAF-XXX / CAF-NAME-XXX / BIC-XXX / AOBS-XXX / CICD-XXX / ADR-XXX / FIN-XXX / InternalPolicy>
+[SEVERITY] Rule/Skill: <rule-id or skill-id> | Standard: <ASB-XX / WAF-XXX / CAF-NAME-XXX / BIC-XXX / AOBS-XXX / CICD-XXX / ADR-XXX / FIN-XXX / AKS-XXX / APIM-XXX / InternalPolicy>
 Location: <file>:<line>
 Issue: <one sentence — what is wrong>
 Fix: <concrete Bicep or YAML change>
 ```
 
 Severity mapping:
-- **CRITICAL** — ASB-NS-1 (public blob), ASB-IM-1 (key export), always-no-hardcoded-secrets, CICD-001 (long-lived secret instead of OIDC)
-- **WARNING** — ASB-NS-2, ASB-PA-1, WAF-SEC-*, WAF-OPS-001/002, BIC-003, BIC-004, AOBS-001/003/004, CICD-002/003/004, ADR-001/002/004
-- **ADVISORY** — WAF-COST-*, WAF-PERF-*, CAF naming/tagging, BIC-007 (AVM), AOBS-002, ADR-003, FIN-001/002/003/004
+- **CRITICAL** — ASB-NS-1 (public blob), ASB-IM-1 (key export), always-no-hardcoded-secrets, CICD-001 (long-lived secret instead of OIDC), AKS-001 (no Pod Security Standards), AKS-003 (no NetworkPolicy), AKS-004 (client secret instead of Workload Identity)
+- **WARNING** — ASB-NS-2, ASB-PA-1, WAF-SEC-*, WAF-OPS-001/002, BIC-003, BIC-004, AOBS-001/003/004, CICD-002/003/004, ADR-001/002/004, AKS-002, APIM-001/002
+- **ADVISORY** — WAF-COST-*, WAF-PERF-*, CAF naming/tagging, BIC-007 (AVM), AOBS-002, ADR-003, FIN-001/002/003/004, APIM-003/004
 
 ### Step 4 — Summary line
 

@@ -13,7 +13,7 @@
     {
       "name": "pilot-core",
       "source": "./plugins/pilot-core",
-      "description": "Shared governance: stack detection, audit/fix pipelines, MCP discovery, dependency-supply-chain policy (patch SLAs, SBOM), and commands used by every other pilot plugin",
+      "description": "Shared governance: stack detection, audit/fix pipelines, MCP discovery, dependency-supply-chain policy (patch SLAs, SBOM), incident-response runbook/postmortem governance, and commands used by every other pilot plugin",
       "author": { "name": "FullStack Pilot Contributors" },
       "license": "MIT",
       "keywords": ["governance", "commits", "code-health", "microsoft"]
@@ -21,7 +21,7 @@
     {
       "name": "pilot-angular",
       "source": "./plugins/pilot-angular",
-      "description": "Angular / TypeScript governance: signals, performance, accessibility, security (permissions-ONLY route guards/UI gating), HTTP resilience, the v15-to-v20 upgrade path, coding standards, multi-layout shells, theming, shared UI libraries, JSON-schema-driven dynamic forms, testing conventions, i18n, global error handling, PWA/offline support, and frontend telemetry",
+      "description": "Angular / TypeScript governance: signals, performance, accessibility, security (permissions-ONLY route guards/UI gating), HTTP resilience, the v15-to-v20 upgrade path, coding standards, multi-layout shells, theming, shared UI libraries, JSON-schema-driven dynamic forms, testing conventions, i18n, global error handling, PWA/offline support, frontend telemetry, and Nx/module-federation monorepo governance",
       "author": { "name": "FullStack Pilot Contributors" },
       "license": "MIT",
       "keywords": ["angular", "typescript", "signals", "standalone"]
@@ -45,7 +45,7 @@
     {
       "name": "pilot-azure",
       "source": "./plugins/pilot-azure",
-      "description": "Azure / Bicep governance: CAF naming, security baseline, Well-Architected Framework review, Bicep patterns, centralized observability, CI/CD deployment security, multi-region disaster recovery, and cost/FinOps guardrails",
+      "description": "Azure / Bicep governance: CAF naming, security baseline, Well-Architected Framework review, Bicep patterns, centralized observability, CI/CD deployment security, multi-region disaster recovery, cost/FinOps guardrails, AKS cluster governance, and API Management gateway policy review",
       "author": { "name": "FullStack Pilot Contributors" },
       "license": "MIT",
       "keywords": ["azure", "bicep", "aca", "cost", "deployment"]

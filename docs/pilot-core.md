@@ -25,6 +25,9 @@ Shared governance utilities every other pilot plugin depends on. Install this fi
 - **dependency-supply-chain** — the policy layer over `audit-orchestration`'s raw dotnet/npm
   vulnerability scan output: severity-to-patch-cadence SLA, version-pinning discipline,
   private-feed/allow-list policy, SBOM generation for release artifacts.
+- **incident-response-runbook** — the response layer over `azure-observability`'s alerts:
+  runbook-per-alert convention, severity-to-response-time SLA, blameless-postmortem
+  template, tracked action-item follow-through.
 
 ## Hooks
 
