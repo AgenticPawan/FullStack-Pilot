@@ -162,6 +162,13 @@ Full catalog: \`plugins/pilot-core/rules-catalog/\`
 > Install: `/plugin marketplace add dotnet/skills` then `/plugin install <skill>@dotnet-agent-skills`
 > pilot-dotnet covers house conventions, Serilog policy, and resilience policy only.
 
+## Knowledge
+
+- House conventions: `.claude/pilot/knowledge/conventions.md` — load on demand for naming/layout questions
+- Session lessons: `.claude/pilot/knowledge/lessons.md` — load on demand for project-specific gotchas
+
+> Run `/pilot-learn` to populate these files. They load on demand — not included in every session.
+
 ## Open Questions
 <List only items from unknowns[] that the user did NOT resolve in Step 3. Omit if empty.>
 ```
@@ -205,7 +212,25 @@ Skipped (version gate):
 
 ---
 
-## Step 7 — Final summary
+## Step 7 — Emit drift detection workflow
+
+Write two files into the user's project:
+
+1. `PROJECT_ROOT/.github/workflows/pilot-drift.yml`
+   — copy from `plugins/pilot-core/templates/pilot-drift.yml`
+   — replace `{{DEFAULT_BRANCH}}` with the project's default branch
+     (run `git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@'`
+      or default to `main` if the command fails)
+
+2. `PROJECT_ROOT/.github/scripts/pilot-drift-check.mjs`
+   — copy from `plugins/pilot-core/templates/pilot-drift-check.mjs`
+   — create `.github/scripts/` directory if absent
+
+If either file already exists, skip writing and note "(already present)".
+
+---
+
+## Step 8 — Final summary
 
 Print:
 
@@ -215,9 +240,15 @@ Print:
   CLAUDE.md written          → PROJECT_ROOT/CLAUDE.md  (<N> lines)
   Governance rules written   → PROJECT_ROOT/.claude/rules/  (<N> rules)
   Stack profile              → PROJECT_ROOT/.claude/pilot/stack-profile.json
+  Drift workflow written     → PROJECT_ROOT/.github/workflows/pilot-drift.yml
+
+Knowledge files (populated by /pilot-learn):
+  → PROJECT_ROOT/.claude/pilot/knowledge/conventions.md  (not yet created)
+  → PROJECT_ROOT/.claude/pilot/knowledge/lessons.md      (not yet created)
 
 Next steps:
-  • Review and commit CLAUDE.md and .claude/rules/ to version control.
+  • Review and commit CLAUDE.md, .claude/rules/, and .github/workflows/pilot-drift.yml.
+  • Run /pilot-learn to populate conventions.md and lessons.md.
   • Run /pilot-init again in any other repo to detect and scaffold that project.
   • When ready to address EOL stacks, run /pilot-upgrade.
 ```

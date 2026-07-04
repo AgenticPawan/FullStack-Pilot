@@ -1,0 +1,40 @@
+{
+  "detectedAt": "2026-07-04T00:00:00.000Z",
+  "angular": {
+    "majorVersion": 18,
+    "bootstrapMode": "standalone",
+    "zoneless": false,
+    "signalsUsed": true,
+    "ssr": true,
+    "eslint": true,
+    "prettier": true,
+    "testRunner": "karma"
+  },
+  "dotnet": {
+    "solutions": ["FullStack.sln"],
+    "projects": [
+      {
+        "name": "FullStack.Api.csproj",
+        "path": "src/FullStack.Api/FullStack.Api.csproj",
+        "targetFramework": "net8.0",
+        "hostingModel": "minimal",
+        "nullable": true,
+        "implicitUsings": true,
+        "packages": {
+          "efCore": "8.0.4",
+          "mediatR": "12.2.0",
+          "resilience": "8.4.0",
+          "serilog": "8.0.0",
+          "fluentValidation": "11.3.0",
+          "openApi": "6.5.0"
+        },
+        "testFramework": null,
+        "referencedProjects": ["../FullStack.Domain/FullStack.Domain.csproj"]
+      }
+    ]
+  },
+  "sql": null,
+  "azure": null,
+  "evidence": {},
+  "unknowns": []
+}
