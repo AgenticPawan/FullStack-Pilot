@@ -1,0 +1,67 @@
+{
+  "detectedAt": "2026-07-04T00:00:00.000Z",
+  "angular": null,
+  "dotnet": {
+    "solutions": ["NetEight.sln"],
+    "projects": [
+      {
+        "name": "NetEight.Api.csproj",
+        "path": "src/NetEight.Api/NetEight.Api.csproj",
+        "targetFramework": "net8.0",
+        "hostingModel": "minimal",
+        "nullable": true,
+        "implicitUsings": true,
+        "packages": {
+          "efCore": "8.0.4",
+          "mediatR": null,
+          "resilience": null,
+          "serilog": "8.0.0",
+          "fluentValidation": null,
+          "openApi": "6.5.0"
+        },
+        "testFramework": null,
+        "referencedProjects": []
+      },
+      {
+        "name": "NetEight.Api.Tests.csproj",
+        "path": "tests/NetEight.Api.Tests/NetEight.Api.Tests.csproj",
+        "targetFramework": "net8.0",
+        "hostingModel": "unknown",
+        "nullable": true,
+        "implicitUsings": true,
+        "packages": {
+          "efCore": null,
+          "mediatR": null,
+          "resilience": null,
+          "serilog": null,
+          "fluentValidation": null,
+          "openApi": null
+        },
+        "testFramework": "xunit",
+        "referencedProjects": ["../../src/NetEight.Api/NetEight.Api.csproj"]
+      }
+    ]
+  },
+  "sql": {
+    "efCoreMigrations": true,
+    "migrationsPath": "src/NetEight.Api/Migrations",
+    "rawSqlFiles": false,
+    "dacpac": false,
+    "connectionStringLocations": ["src/NetEight.Api/appsettings.json"]
+  },
+  "azure": null,
+  "evidence": {
+    "dotnet.solutions": "NetEight.sln",
+    "dotnet.projects[0].targetFramework": "src/NetEight.Api/NetEight.Api.csproj",
+    "dotnet.projects[0].hostingModel": "src/NetEight.Api/Program.cs",
+    "dotnet.projects[0].packages.efCore": "src/NetEight.Api/NetEight.Api.csproj",
+    "dotnet.projects[0].packages.serilog": "src/NetEight.Api/NetEight.Api.csproj",
+    "dotnet.projects[0].packages.openApi": "src/NetEight.Api/NetEight.Api.csproj",
+    "dotnet.projects[1].targetFramework": "tests/NetEight.Api.Tests/NetEight.Api.Tests.csproj",
+    "dotnet.projects[1].testFramework": "tests/NetEight.Api.Tests/NetEight.Api.Tests.csproj",
+    "dotnet.projects[1].referencedProjects[0]": "tests/NetEight.Api.Tests/NetEight.Api.Tests.csproj",
+    "sql.efCoreMigrations": "src/NetEight.Api/Migrations/20240101_InitialCreate.cs",
+    "sql.connectionStringLocations[0]": "src/NetEight.Api/appsettings.json"
+  },
+  "unknowns": []
+}

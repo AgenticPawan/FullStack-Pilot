@@ -1,0 +1,121 @@
+{
+  "detectedAt": "2026-07-04T00:00:00.000Z",
+  "angular": {
+    "majorVersion": 18,
+    "bootstrapMode": "standalone",
+    "zoneless": false,
+    "signalsUsed": true,
+    "ssr": true,
+    "eslint": true,
+    "prettier": true,
+    "testRunner": "karma"
+  },
+  "dotnet": {
+    "solutions": ["FullStack.sln"],
+    "projects": [
+      {
+        "name": "FullStack.Api.csproj",
+        "path": "src/FullStack.Api/FullStack.Api.csproj",
+        "targetFramework": "net8.0",
+        "hostingModel": "minimal",
+        "nullable": true,
+        "implicitUsings": true,
+        "packages": {
+          "efCore": "8.0.4",
+          "mediatR": "12.2.0",
+          "resilience": "8.4.0",
+          "serilog": "8.0.0",
+          "fluentValidation": "11.3.0",
+          "openApi": "6.5.0"
+        },
+        "testFramework": null,
+        "referencedProjects": ["../FullStack.Domain/FullStack.Domain.csproj"]
+      },
+      {
+        "name": "FullStack.Domain.csproj",
+        "path": "src/FullStack.Domain/FullStack.Domain.csproj",
+        "targetFramework": "net8.0",
+        "hostingModel": "unknown",
+        "nullable": true,
+        "implicitUsings": true,
+        "packages": {
+          "efCore": null,
+          "mediatR": null,
+          "resilience": null,
+          "serilog": null,
+          "fluentValidation": "11.9.0",
+          "openApi": null
+        },
+        "testFramework": null,
+        "referencedProjects": []
+      },
+      {
+        "name": "FullStack.Api.Tests.csproj",
+        "path": "tests/FullStack.Api.Tests/FullStack.Api.Tests.csproj",
+        "targetFramework": "net8.0",
+        "hostingModel": "unknown",
+        "nullable": true,
+        "implicitUsings": true,
+        "packages": {
+          "efCore": null,
+          "mediatR": null,
+          "resilience": null,
+          "serilog": null,
+          "fluentValidation": null,
+          "openApi": null
+        },
+        "testFramework": "xunit",
+        "referencedProjects": ["../../src/FullStack.Api/FullStack.Api.csproj"]
+      }
+    ]
+  },
+  "sql": {
+    "efCoreMigrations": true,
+    "migrationsPath": "src/FullStack.Api/Migrations",
+    "rawSqlFiles": true,
+    "dacpac": false,
+    "connectionStringLocations": ["src/FullStack.Api/appsettings.json"]
+  },
+  "azure": {
+    "bicep": true,
+    "bicepFiles": ["infra/main.bicep"],
+    "armTemplates": false,
+    "azurePipelines": false,
+    "githubActionsAzure": true,
+    "githubActionsFiles": [".github/workflows/azure-deploy.yml"],
+    "dockerfiles": ["Dockerfile"]
+  },
+  "evidence": {
+    "angular.majorVersion": "package.json",
+    "angular.bootstrapMode": "src/main.ts",
+    "angular.signalsUsed": "src/app/app.component.ts",
+    "angular.ssr": "package.json",
+    "angular.eslint": "package.json",
+    "angular.prettier": "package.json",
+    "angular.testRunner": "package.json",
+    "dotnet.solutions": "FullStack.sln",
+    "dotnet.projects[0].targetFramework": "src/FullStack.Api/FullStack.Api.csproj",
+    "dotnet.projects[0].hostingModel": "src/FullStack.Api/Program.cs",
+    "dotnet.projects[0].packages.efCore": "src/FullStack.Api/FullStack.Api.csproj",
+    "dotnet.projects[0].packages.mediatR": "src/FullStack.Api/FullStack.Api.csproj",
+    "dotnet.projects[0].packages.resilience": "src/FullStack.Api/FullStack.Api.csproj",
+    "dotnet.projects[0].packages.serilog": "src/FullStack.Api/FullStack.Api.csproj",
+    "dotnet.projects[0].packages.fluentValidation": "src/FullStack.Api/FullStack.Api.csproj",
+    "dotnet.projects[0].packages.openApi": "src/FullStack.Api/FullStack.Api.csproj",
+    "dotnet.projects[0].referencedProjects[0]": "src/FullStack.Api/FullStack.Api.csproj",
+    "dotnet.projects[1].targetFramework": "src/FullStack.Domain/FullStack.Domain.csproj",
+    "dotnet.projects[1].packages.fluentValidation": "src/FullStack.Domain/FullStack.Domain.csproj",
+    "dotnet.projects[2].targetFramework": "tests/FullStack.Api.Tests/FullStack.Api.Tests.csproj",
+    "dotnet.projects[2].testFramework": "tests/FullStack.Api.Tests/FullStack.Api.Tests.csproj",
+    "dotnet.projects[2].referencedProjects[0]": "tests/FullStack.Api.Tests/FullStack.Api.Tests.csproj",
+    "sql.efCoreMigrations": "src/FullStack.Api/Migrations/20240601_InitialCreate.cs",
+    "sql.rawSqlFiles": "db/seed.sql",
+    "sql.connectionStringLocations[0]": "src/FullStack.Api/appsettings.json",
+    "azure.bicep": "infra/main.bicep",
+    "azure.githubActionsAzure": ".github/workflows/azure-deploy.yml",
+    "azure.dockerfiles[0]": "Dockerfile"
+  },
+  "unknowns": [
+    "zone.js absent from angular.json polyfills[] but no provideZonelessChangeDetection found in sampled files — zoneless status unclear (zone.js still present in package.json dependencies)"
+  ]
+}

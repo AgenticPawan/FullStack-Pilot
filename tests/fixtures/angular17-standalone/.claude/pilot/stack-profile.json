@@ -1,0 +1,27 @@
+{
+  "detectedAt": "2026-07-04T00:00:00.000Z",
+  "angular": {
+    "majorVersion": 17,
+    "bootstrapMode": "standalone",
+    "zoneless": false,
+    "signalsUsed": true,
+    "ssr": false,
+    "eslint": true,
+    "prettier": false,
+    "testRunner": "jest"
+  },
+  "dotnet": null,
+  "sql": null,
+  "azure": null,
+  "evidence": {
+    "angular.majorVersion": "package.json",
+    "angular.bootstrapMode": "src/main.ts",
+    "angular.signalsUsed": "src/app/app.component.ts",
+    "angular.zoneless": "package.json",
+    "angular.ssr": "package.json",
+    "angular.eslint": "package.json",
+    "angular.prettier": "package.json",
+    "angular.testRunner": "package.json"
+  },
+  "unknowns": []
+}
