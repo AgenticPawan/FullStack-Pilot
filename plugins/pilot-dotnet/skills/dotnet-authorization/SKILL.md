@@ -1,33 +1,45 @@
 ---
 name: dotnet-authorization
-description: Reviews ASP.NET Core authorization for permission-based access control beyond role checks. Flags role-only [Authorize(Roles=...)] where fine-grained permissions are needed, missing IAuthorizationRequirement/AuthorizationHandler policies, magic-string policy names not backed by a generated permission catalog, unprotected minimal API routes, and naive ownership checks that should use resource-based IAuthorizationService.AuthorizeAsync. Outputs findings with pilot-dotnet authorization standard IDs.
-when_to_use: authorization, permission-based access control, IAuthorizationRequirement, AuthorizationHandler, policy-based authorization, RBAC vs permissions, minimal API authorization, RequireAuthorization, resource-based authorization, AuthorizeAsync, ownership check, ClaimsPrincipal permission
+description: Enforces permissions-ONLY access control in ASP.NET Core — no [Authorize(Roles=...)] check is ever acceptable, including coarse/admin-area gating; roles may only exist as a role-to-permission assignment mechanism, never as the thing a request is authorized against. Flags role-based authorization of any kind, missing IAuthorizationRequirement/AuthorizationHandler policies, magic-string policy names not backed by a generated permission catalog, unprotected minimal API routes, naive ownership checks that should use resource-based IAuthorizationService.AuthorizeAsync, and JWTs that embed a permission list or PII instead of resolving permissions per-request server-side. Outputs findings with pilot-dotnet authorization standard IDs.
+when_to_use: authorization, permission-based access control, permissions only, IAuthorizationRequirement, AuthorizationHandler, policy-based authorization, RBAC vs permissions, Authorize Roles, role-based authorization, minimal API authorization, RequireAuthorization, resource-based authorization, AuthorizeAsync, ownership check, ClaimsPrincipal permission, JWT claims, PII in JWT, permissions in token, JwtSecurityToken
 ---
 
 ## Standard IDs
 
 | ID | Severity | What it checks |
 |----|----------|----------------|
-| AZ-001 | P1 | Role-only `[Authorize(Roles = "...")]` used where a fine-grained permission check is needed |
+| AZ-001 | P0 | `[Authorize(Roles = "...")]` / `User.IsInRole(...)` used to gate a request — access control must be permission-based ONLY, with no exception for coarse/admin gating |
 | AZ-002 | P0 | No custom `IAuthorizationRequirement` + `AuthorizationHandler<T>` for a permission-based policy |
 | AZ-003 | P2 | Policy name is a hard-coded magic string not sourced from a generated permission catalog |
 | AZ-004 | P0 | Minimal API route missing `RequireAuthorization()` / endpoint-level `[Authorize]` |
 | AZ-005 | P0 | Ownership check done inline (`if (resource.OwnerId == userId)`) instead of via resource-based `IAuthorizationService.AuthorizeAsync` |
+| AZ-006 | P0 | Permission list embedded as a JWT claim instead of resolved per-request from a live permission store |
+| AZ-007 | P0 | PII (email, full name, phone, etc.) placed in JWT claims beyond a minimal subject identifier |
 
 ---
 
-## Check A — Role checks used as a substitute for permissions
+## Check A — Access control must be permission-based ONLY (no role checks, ever)
 
 ### Detection
 
-1. Grep for `[Authorize(Roles = "...")]` across controllers and minimal API endpoints.
-2. Flag any usage guarding an action that is really a discrete permission (approve, export,
-   refund, delete-other-users-data) rather than a broad identity concept (Admin vs Member).
-3. A role check is acceptable for coarse gating (e.g., admin area entry); it is a finding
-   when the same role string is reused to gate many unrelated fine-grained actions, since
-   adding a new permission then requires either a new role or loosening an existing one.
+1. Grep for `[Authorize(Roles = "...")]`, `User.IsInRole(...)`, and `policy.RequireRole(...)`
+   across controllers, minimal API endpoints, and policy registrations.
+2. Flag **every** match, with no exception. Earlier guidance in this skill allowed a role
+   check for "coarse" gating (e.g., admin-area entry) — that carve-out is retired. Even
+   coarse gating must be modeled as its own permission (e.g., `admin.access`), because:
+   - a role name says nothing about *what* the holder can do, so every new capability either
+     reuses an existing role too broadly or forces a new role to be minted and shipped;
+   - revoking one capability from a user who has several forces splitting or replacing their
+     role instead of removing a single grant;
+   - two independent axes (identity grouping vs. access decisions) collapse into one,
+     so the authorization system can never be audited or tested capability-by-capability.
+3. Roles may still exist purely as an **assignment convenience** — an admin UI can grant a
+   "Manager" role to a user as shorthand for a bundle of permissions — but the bundle must be
+   expanded into discrete permission grants at assignment time. The runtime authorization
+   check (`[Authorize]`, `AuthorizeAsync`, minimal API `RequireAuthorization`) must always
+   evaluate a **permission** policy, never a role name, and never `User.IsInRole(...)`.
 
-### BAD — role check standing in for a permission
+### BAD — role check standing in for a permission, including "coarse" admin gating
 
 ```csharp
 [ApiController]
@@ -44,9 +56,14 @@ public class OrdersController : ControllerBase
     [HttpPost("{id:int}/void")]
     public async Task<IActionResult> Void(int id) => Ok();
 }
+
+[ApiController]
+[Route("api/admin")]
+[Authorize(Roles = "Admin")] // "coarse gating" is still a role check — no longer acceptable
+public class AdminController : ControllerBase { ... }
 ```
 
-### GOOD — permission-based policy per action
+### GOOD — permission-based policy per action, including admin-area entry
 
 ```csharp
 [ApiController]
@@ -61,7 +78,16 @@ public class OrdersController : ControllerBase
     [HttpPost("{id:int}/void")]
     public async Task<IActionResult> Void(int id) => Ok();
 }
+
+[ApiController]
+[Route("api/admin")]
+[Authorize(Policy = Permissions.Admin.Access)] // "admin area entry" is a permission too
+public class AdminController : ControllerBase { ... }
 ```
+
+Role assignment (an admin grants "Manager" to a user) is a separate, upstream concern from
+authorization — it may bulk-grant a set of permissions at assignment time, but the request
+pipeline never re-checks the role name itself.
 
 ---
 
@@ -275,3 +301,56 @@ public async Task<IActionResult> Update(
     return NoContent();
 }
 ```
+
+---
+
+## Check F — Permissions and PII must not live in the JWT
+
+### Detection
+
+1. Grep the token-issuance code (`SecurityTokenDescriptor`, `new JwtSecurityToken(...)`, `ClaimsIdentity` built at login) for a claim that carries a permission list (`"permissions"`, `"scopes"` populated from a per-user permission table) → **AZ-006**.
+2. Grep the same code for claims carrying PII beyond a minimal subject identifier — full name, email, phone number, address, government ID — placed in the token body → **AZ-007**.
+3. JWTs are bearer-readable by anything that logs, proxies, or caches the `Authorization` header, and their claims live until expiry even after a permission is revoked or the DB record is corrected. Neither permissions nor PII belong there.
+
+### BAD — permissions and PII baked into the token
+
+```csharp
+var claims = new List<Claim>
+{
+    new Claim("sub", user.Id.ToString()),
+    new Claim("email", user.Email),                       // PII — AZ-007
+    new Claim("fullName", $"{user.FirstName} {user.LastName}"), // PII — AZ-007
+    new Claim("permissions", JsonSerializer.Serialize(     // AZ-006 — stale until token expiry
+        await _permissionService.GetPermissionsAsync(user.Id)))
+};
+var token = new JwtSecurityToken(issuer, audience, claims, expires: DateTime.UtcNow.AddHours(8));
+```
+
+### GOOD — minimal claims; permissions resolved per-request server-side
+
+```csharp
+var claims = new List<Claim>
+{
+    new Claim("sub", user.Id.ToString()),   // Guid subject identifier only — ties to dotnet-audit-fields AUD-006
+    new Claim("tenant_id", user.TenantId.ToString()),
+    new Claim("auth_scheme", "password")
+};
+var token = new JwtSecurityToken(issuer, audience, claims, expires: DateTime.UtcNow.AddMinutes(15));
+
+// Permission checks happen per-request against a live (cached) store, not stale token claims:
+public class PermissionAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
+{
+    private readonly IPermissionService _permissionService; // reads a cached DB table, invalidated on change
+
+    protected override async Task HandleRequirementAsync(
+        AuthorizationHandlerContext context, PermissionRequirement requirement)
+    {
+        var userId = Guid.Parse(context.User.FindFirst("sub")!.Value);
+        if (await _permissionService.HasPermissionAsync(userId, requirement.Permission))
+            context.Succeed(requirement);
+    }
+}
+```
+
+Revoking a permission takes effect on the next request instead of waiting out the token's
+remaining lifetime, and no PII is exposed to anything that can read the bearer token.

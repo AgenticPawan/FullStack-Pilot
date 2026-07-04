@@ -6,7 +6,7 @@ targets 17–20; 15–16 are EOL and get upgrade guidance only.
 ## Agent
 
 - **angular-reviewer** — reviews a component diff or file against every materialized
-  Angular rule and all seven skills below. Runs automatically on diff-review requests,
+  Angular rule and all skills below. Runs automatically on diff-review requests,
   or invoke manually with `@angular-reviewer`.
 
 ## Skills
@@ -16,10 +16,15 @@ targets 17–20; 15–16 are EOL and get upgrade guidance only.
 | `angular-signals-and-state` | `signal()`/`computed()`/`effect()`, when RxJS still wins, `toSignal()`/`toObservable()`, `linkedSignal()` (v20), `resource()`/`httpResource()` |
 | `angular-performance` | OnPush, zoneless (v18+ experimental, v20 stable), `@for`/`track` (v17+), `@defer` (v17+), lazy routes, bundle budgets, `NgOptimizedImage` |
 | `angular-a11y` | WCAG 2.2 AA: semantic HTML first, ARIA only when needed, focus management via CDK `FocusTrap`/`LiveAnnouncer`, keyboard nav, contrast, skip links |
-| `angular-security` | XSS via template binding, `DomSanitizer` bypass policy, nonce-based CSP, Trusted Types (v17+), CSRF via `HttpClientXsrfModule` |
+| `angular-security` | XSS via template binding, `DomSanitizer` bypass policy, nonce-based CSP, Trusted Types (v17+), CSRF via `HttpClientXsrfModule`, and permissions-ONLY route guards/UI gating (no role checks, ever) |
 | `angular-http-resilience` | Typed `HttpClient` wrappers, interceptor retry/backoff, correlation-ID propagation, typed error models, loading state |
 | `angular-memory-leaks` | Subscription leaks, `takeUntilDestroyed()` (v16+), async pipe preference, `DestroyRef`, detached change-detector trees |
 | `angular-upgrade-path` | Step-by-step v15→v17+ migration: standalone schematics, NgModule removal, control-flow migration, signal input/output adoption, TSLint→ESLint |
+| `angular-coding-standards` | Naming conventions, standalone-first architecture, service extraction, strict TypeScript, barrel-file risk, signal-based input/output |
+| `angular-multi-layout` | Centralized layout component, layout-selection service, persisted layout preference, responsive sidebar/header shells |
+| `angular-theming` | Design-token/CSS-custom-property themes, runtime switching without reload, Material M3 theming (v17+), FOUC prevention, WCAG contrast |
+| `angular-shared-libraries` | Reusable reactive-forms building blocks, generic paged/sortable/filterable `DataTableComponent`, workspace-library extraction |
+| `angular-dynamic-forms` | JSON-schema-driven reactive forms — field descriptors (id, name, validations, enabled, localization key, tooltip), generic renderer, descriptor-driven validation/enablement/localization |
 
 ## Version policy
 

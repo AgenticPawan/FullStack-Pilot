@@ -1,7 +1,7 @@
 ---
 name: angular-security
-description: Angular security hardening: XSS via template binding hygiene, DomSanitizer bypass policy, nonce-based CSP (no unsafe-inline), Trusted Types (v17+ built-in policies), and CSRF token handling with .NET backend via HttpClientXsrfModule. References OWASP A03 and Angular security guide.
-when_to_use: XSS, innerHTML, DomSanitizer, CSP, Content Security Policy, Trusted Types, CSRF, cross-site scripting, sanitization, security audit, nonce, unsafe-inline, XSRF token, bypassSecurityTrust, security review
+description: Angular security hardening: XSS via template binding hygiene, DomSanitizer bypass policy, nonce-based CSP (no unsafe-inline), Trusted Types (v17+ built-in policies), CSRF token handling with .NET backend via HttpClientXsrfModule, and permission-ONLY client-side access control (route guards and UI gating must check permissions, never roles — client-side checks are UX only, real enforcement is the .NET permission-based authorization in dotnet-authorization). References OWASP A01/A03 and Angular security guide.
+when_to_use: XSS, innerHTML, DomSanitizer, CSP, Content Security Policy, Trusted Types, CSRF, cross-site scripting, sanitization, security audit, nonce, unsafe-inline, XSRF token, bypassSecurityTrust, security review, route guard, CanActivate, CanMatch, permission guard, role guard, hasPermission directive, hasRole directive, access control
 applies_to: angular
 ---
 
@@ -23,6 +23,7 @@ applies_to: angular
 | angular-csp-nonce | InternalPolicy | warn |
 | angular-trusted-types | InternalPolicy | warn |
 | angular-csrf-dotnet | InternalPolicy | warn |
+| angular-permission-based-authz | OWASP A01 | block |
 
 ---
 
@@ -206,6 +207,87 @@ builder.Services.AddAntiforgery(opts =>
 
 ---
 
+## Access control — permission-based ONLY (no role checks, ever)
+
+Client-side access control is UX, not enforcement — the .NET API is the real authorization
+boundary (see `dotnet-authorization` AZ-001) and must reject any request a hidden/disabled
+UI element would have blocked. But the client-side gating itself must follow the same
+permissions-only rule as the backend: route guards and UI-element visibility must check a
+discrete **permission**, never a **role** name. A role check on the client has the same
+problems as on the server — it can't be revoked or granted per-capability, and a new
+feature either overloads an existing role or forces shipping a new one.
+
+### BAD — route guard and structural directive keyed on role
+
+```typescript
+// orders.routes.ts
+export const routes: Routes = [
+  {
+    path: 'orders/:id/approve',
+    canActivate: [() => inject(AuthService).hasRole('Manager')], // role, not permission
+    loadComponent: () => import('./approve-order.component'),
+  },
+];
+```
+
+```html
+<!-- order-list.component.html -->
+<button *appHasRole="'Manager'" (click)="approve(order)">Approve</button>
+```
+
+### GOOD — permission-based guard and structural directive
+
+```typescript
+// orders.routes.ts
+export const routes: Routes = [
+  {
+    path: 'orders/:id/approve',
+    canActivate: [() => inject(PermissionService).hasPermission('orders.approve')],
+    loadComponent: () => import('./approve-order.component'),
+  },
+];
+
+// permission.service.ts — permissions resolved from the server per-session/token refresh,
+// never decoded from JWT claims directly (the JWT should not carry them — dotnet-authorization AZ-006)
+@Injectable({ providedIn: 'root' })
+export class PermissionService {
+  private readonly permissions = signal<ReadonlySet<string>>(new Set());
+
+  hasPermission(permission: string): boolean {
+    return this.permissions().has(permission);
+  }
+}
+```
+
+```html
+<!-- order-list.component.html -->
+<button *appHasPermission="'orders.approve'" (click)="approve(order)">Approve</button>
+```
+
+```typescript
+// has-permission.directive.ts
+@Directive({ selector: '[appHasPermission]', standalone: true })
+export class HasPermissionDirective {
+  private readonly permission = inject(PermissionService);
+  private readonly templateRef = inject(TemplateRef);
+  private readonly viewContainer = inject(ViewContainerRef);
+
+  @Input() set appHasPermission(required: string) {
+    this.viewContainer.clear();
+    if (this.permission.hasPermission(required)) {
+      this.viewContainer.createEmbeddedView(this.templateRef);
+    }
+  }
+}
+```
+
+**Detection rule:** flag any `hasRole(...)`, `*appHasRole`, `roles.includes(...)`, or route
+`data: { roles: [...] }` array used to drive a `canActivate`/`canMatch` guard or hide/show a
+template element. The equivalent permission-based guard/directive is always the fix — there
+is no acceptable "coarse" exception, matching the backend rule.
+
+---
+
 ## Angular security checklist
 
 - [ ] No `bypassSecurityTrust*` calls without a preceding source-justification comment
@@ -217,12 +299,16 @@ builder.Services.AddAntiforgery(opts =>
 - [ ] `withNoXsrfProtection()` is not used unless the endpoint is a public read-only API
 - [ ] Dynamic route parameters are never interpolated into `[innerHTML]`
 - [ ] `[src]` and `[href]` bindings with user content go through `bypassSecurityTrustUrl` with justification
+- [ ] No `canActivate`/`canMatch` guard or structural directive checks a role — permission-based only
+- [ ] No route `data: { roles: [...] }` array driving a guard
+- [ ] `PermissionService` sources permissions from the server per-session, not decoded from JWT claims
 
 ---
 
 ## References
 
 - Angular security guide: https://angular.dev/best-practices/security
+- OWASP A01:2021 Broken Access Control: https://owasp.org/Top10/A01_2021-Broken_Access_Control/
 - OWASP A03:2021 Injection: https://owasp.org/Top10/A03_2021-Injection/
 - W3C Trusted Types: https://w3c.github.io/trusted-types/dist/spec/
 - .NET Antiforgery: https://learn.microsoft.com/en-us/aspnet/core/security/anti-request-forgery

@@ -19,6 +19,7 @@ defined in pilot-angular. You produce structured, actionable findings — no waf
 |---------|----------|----------|----------------|
 | angular-gte17-control-flow | warn | InternalPolicy | @if/@for/@switch, OnPush, takeUntilDestroyed |
 | angular-no-innerhtml | block | OWASP A03 | [innerHTML] without sanitizer justification |
+| angular-permission-based-authz | block | OWASP A01 | Route guard / structural directive checks a role instead of a permission |
 | always-no-hardcoded-secrets | block | InternalPolicy | Credentials in source code |
 | always-structured-logging | warn | InternalPolicy | String interpolation in log calls |
 | always-conventional-commits | warn | InternalPolicy | Commit message format |
@@ -29,7 +30,7 @@ defined in pilot-angular. You produce structured, actionable findings — no waf
 |----------|--------|
 | angular-signals-and-state | signal/computed/effect correctness, toSignal usage, resource() |
 | angular-memory-leaks | subscription cleanup, takeUntilDestroyed, DestroyRef, DOM listeners |
-| angular-security | XSS, DomSanitizer bypass, CSP nonce, Trusted Types, CSRF |
+| angular-security | XSS, DomSanitizer bypass, CSP nonce, Trusted Types, CSRF, permission-only route guards/UI gating |
 | angular-a11y | WCAG 2.2 AA — semantic HTML, ARIA, focus management, contrast |
 | angular-performance | OnPush, @for track, @defer, lazy routes, NgOptimizedImage |
 | angular-http-resilience | typed wrappers, interceptors, correlation ID, error normalisation |
@@ -38,6 +39,7 @@ defined in pilot-angular. You produce structured, actionable findings — no waf
 | angular-multi-layout | shared shell component, header-nav vs sidebar-nav, layout persistence |
 | angular-theming | design-token/CSS-custom-property themes, runtime switching, M3 theming |
 | angular-shared-libraries | reusable reactive-forms building blocks, generic paged/sortable data table |
+| angular-dynamic-forms | JSON-schema-driven reactive forms — field descriptors, generic renderer, descriptor-driven validation/enablement/localization |
 
 ## Review process
 
@@ -55,11 +57,13 @@ If the input is a `.html` template file, pair it with its `.ts` component class 
 Work through all categories below. Do not skip a category because the code looks clean
 at a glance — state "no findings" explicitly if a category is clear.
 
-**Category A — Security (OWASP A03)**
+**Category A — Security (OWASP A01/A03)**
 - [ ] Any `[innerHTML]` binding? Check for `bypassSecurityTrustHtml` call and justification comment
 - [ ] Any `bypassSecurityTrust*` call without a preceding source comment?
 - [ ] Dynamic URL/resource binding (`[src]`, `[href]`) with non-literal values?
 - [ ] Template strings interpolated from route params or user input?
+- [ ] Any `canActivate`/`canMatch` guard or structural directive (`*appHasRole`, `hasRole(...)`) checking a role instead of a permission?
+- [ ] Route `data: { roles: [...] }` array driving a guard instead of a permission check?
 
 **Category B — Memory leaks**
 - [ ] Every `subscribe()` call paired with `takeUntilDestroyed()` or `async` pipe?
@@ -101,6 +105,13 @@ at a glance — state "no findings" explicitly if a category is clear.
 - [ ] `ngOnDestroy` + `Subject` takeUntil pattern instead of `takeUntilDestroyed()`?
 - [ ] `@Input()` / `@Output()` on new Angular 17.1+ components?
 
+**Category H — Dynamic/JSON-driven forms**
+- [ ] Reactive form fields hand-coded per component where a shared field-descriptor (id, name, validations, enabled, localizationKey, tooltip) should drive them instead (ADF-001)?
+- [ ] Validation rule duplicated between the JSON descriptor and an ad-hoc `Validators.*` call (ADF-002)?
+- [ ] No generic `DynamicFormField`/renderer component — each feature hand-rolls its own template switch over field type (ADF-003)?
+- [ ] `FormControl.enable()`/`disable()` called directly instead of driven from the descriptor's `enabled` flag (ADF-004)?
+- [ ] Tooltip/label text hardcoded in the template instead of resolved from the descriptor's localization key (ADF-005)?
+
 ### Step 3 — Format findings
 
 Output findings in this structure:
@@ -130,7 +141,7 @@ Fix: <concrete code change or pattern reference>
 Severity mapping:
 - **CRITICAL** — rule severity is `block` (angular-no-innerhtml, always-no-hardcoded-secrets)
 - **WARNING** — rule severity is `warn`, or a skill violation that will cause bugs
-- **ADVISORY** — WCAG AAA items, style preferences, upgrade path items for EOL stacks
+- **ADVISORY** — WCAG AAA items, style preferences, upgrade path items for EOL stacks, ADF-003/ADF-004 renderer/enablement suggestions
 
 ### Step 4 — Summary line
 

@@ -1,7 +1,7 @@
 ---
 name: dotnet-audit-fields
-description: Audits EF Core entities for audit-trail hygiene — verifies CreatedAt/CreatedBy/ModifiedAt/ModifiedBy are populated centrally via a SaveChanges override or ISaveChangesInterceptor rather than duplicated per service method, checks for an IAuditable marker interface, validates CreatedBy/ModifiedBy resolve from an injected current-user abstraction, checks Modified fields only update on actually-changed entities, and flags DateTime.Now instead of DateTime.UtcNow. Outputs findings with pilot-dotnet audit-fields standard IDs.
-when_to_use: audit trail, CreatedAt, CreatedBy, ModifiedAt, ModifiedBy, IAuditable, SaveChangesInterceptor, ChangeTracker, ICurrentUserService, DateTime.Now, DateTime.UtcNow, audit columns, timestamp fields
+description: Audits EF Core entities for audit-trail hygiene — verifies CreatedAt/CreatedBy/ModifiedAt/ModifiedBy are populated centrally via a SaveChanges override or ISaveChangesInterceptor rather than duplicated per service method, checks for an IAuditable marker interface, validates CreatedBy/ModifiedBy resolve from an injected current-user abstraction typed as Guid (not string), checks Modified fields only update on actually-changed entities, and flags DateTime.Now instead of DateTime.UtcNow. Outputs findings with pilot-dotnet audit-fields standard IDs.
+when_to_use: audit trail, CreatedAt, CreatedBy, ModifiedAt, ModifiedBy, IAuditable, SaveChangesInterceptor, ChangeTracker, ICurrentUserService, DateTime.Now, DateTime.UtcNow, audit columns, timestamp fields, Guid CreatedBy, Guid ModifiedBy
 ---
 
 ## Standard IDs
@@ -13,6 +13,7 @@ when_to_use: audit trail, CreatedAt, CreatedBy, ModifiedAt, ModifiedBy, IAuditab
 | AUD-003 | P2 | CreatedBy/ModifiedBy hardcoded instead of resolved from ICurrentUserService |
 | AUD-004 | P1 | ModifiedAt/ModifiedBy updated on unchanged entities, or not updated on EntityState.Modified |
 | AUD-005 | P2 | DateTime.Now used instead of DateTime.UtcNow for audit timestamps |
+| AUD-006 | P1 | CreatedBy/ModifiedBy typed as `string` instead of `Guid` |
 
 ---
 
@@ -319,3 +320,67 @@ entry.Entity.ModifiedAt = DateTime.UtcNow;
 ```
 
 **Detection rule:** flag `DateTime.Now` (or `DateTimeOffset.Now`, unless immediately converted `.ToUniversalTime()`) anywhere it is assigned to a property whose name matches `Created*`, `Modified*`, `*At`, `*Date`, or `*Timestamp`.
+
+---
+
+## Check F — CreatedBy/ModifiedBy typed as Guid, not string
+
+### Detection
+
+1. Grep `IAuditable`/entity classes for `string CreatedBy` / `string ModifiedBy` / `string? ModifiedBy` properties, and `ICurrentUserService.UserId` (or equivalent) returning `string`.
+2. A `string` user identifier invites free-text values (`"system"`, `"unknown"`, display names) instead of a stable, joinable identity key, and can't be foreign-keyed to a `Users` table without an implicit string-to-Guid cast at every join.
+3. Flag any `CreatedBy`/`ModifiedBy` property, or the `ICurrentUserService` member that feeds it, typed as `string` where the underlying identity provider issues a GUID subject/object identifier (Entra ID `oid`/`sub`, ASP.NET Identity `Guid` user key).
+
+### BAD — string-typed audit user fields
+
+```csharp
+public interface IAuditable
+{
+    DateTime CreatedAt { get; set; }
+    string CreatedBy { get; set; }       // free text — not joinable, allows "system"/"unknown"
+    DateTime? ModifiedAt { get; set; }
+    string? ModifiedBy { get; set; }
+}
+
+public interface ICurrentUserService
+{
+    string UserId { get; } // parsed ad-hoc from claims wherever it's consumed
+}
+```
+
+### GOOD — Guid-typed audit user fields resolved once from claims
+
+```csharp
+public interface IAuditable
+{
+    DateTime CreatedAt { get; set; }
+    Guid CreatedBy { get; set; }
+    DateTime? ModifiedAt { get; set; }
+    Guid? ModifiedBy { get; set; }
+}
+
+public interface ICurrentUserService
+{
+    Guid UserId { get; }
+}
+
+public class HttpContextCurrentUserService : ICurrentUserService
+{
+    private readonly IHttpContextAccessor _accessor;
+
+    public HttpContextCurrentUserService(IHttpContextAccessor accessor) => _accessor = accessor;
+
+    public Guid UserId
+    {
+        get
+        {
+            var claim = _accessor.HttpContext?.User?.FindFirst("oid")?.Value
+                ?? _accessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            return Guid.TryParse(claim, out var id) ? id : Guid.Empty; // Guid.Empty = background-job/system
+        }
+    }
+}
+```
+
+Ties to `dotnet-entity-keys` (entity `Id` should also be `Guid`) and `dotnet-authorization`
+AZ-007 — the JWT should carry the subject as a `Guid`-parseable claim, not a display name.

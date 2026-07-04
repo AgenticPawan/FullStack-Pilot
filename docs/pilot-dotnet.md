@@ -1,26 +1,44 @@
 # pilot-dotnet
 
-**Status: manifest only.** This plugin currently ships nothing but a `plugin.json` —
-no skills, no agents, no hooks. Installing it does nothing useful yet; it exists as a
-placeholder in the marketplace catalog.
+C# / ASP.NET Core codebase governance for Clean Architecture solutions targeting the
+supported .NET range (8, 9, 10, 11 — see the [root README](../README.md#supported-versions)).
 
-## Why it's empty
+## Agent
 
-FullStack Pilot deliberately does not reimplement Microsoft's official
-[`dotnet/skills`](https://github.com/dotnet/skills) marketplace. When `/pilot-init`
-detects a .NET project, it prints the exact commands to install `dotnet/skills`
-(`dotnet-data`, `dotnet-test`, `dotnet-upgrade`, `dotnet-aspnetcore`, `dotnet-ai`) instead
-of duplicating that coverage. See the root [README](../README.md#relationship-to-dotnetskills).
+- **dotnet-reviewer** — reviews a controller/endpoint/service/DbContext diff or file
+  against every rule and all twenty skills below. Runs automatically on .NET diff-review
+  requests, or invoke manually with `@dotnet-reviewer`.
 
-## What will land here
+## Skills
 
-Future releases will add house-specific conventions that Microsoft's skills
-intentionally leave to each team:
+| Skill | Covers |
+|---|---|
+| `dotnet-clean-architecture` | Domain/Application/Infrastructure/Api layering, dependency-direction rule, DTO mapping, composition-root DI registration |
+| `dotnet-solid-dry` | SRP/OCP/LSP/ISP/DIP violations, duplicated logic and magic values |
+| `dotnet-coding-standards` | Nullable reference types, sync-over-async, exception handling, structured logging, Options pattern |
+| `dotnet-performance` | Sync-over-async, streaming, minimal API overhead, response compression |
+| `dotnet-caching` | `IMemoryCache` vs `IDistributedCache`, cache-aside/stampede, invalidation, HybridCache |
+| `dotnet-authorization` | Permissions-ONLY access control — no `[Authorize(Roles=...)]` check is ever acceptable, custom `AuthorizationHandler`, resource-based auth, and JWTs kept free of embedded permission lists and PII |
+| `dotnet-multitenancy` | Tenant resolution, shared-DB vs DB-per-tenant connection routing |
+| `dotnet-soft-delete` | `ISoftDelete`, global query filter, `SaveChanges` interceptor, filtered unique indexes |
+| `dotnet-audit-fields` | `CreatedAt`/`CreatedBy`/`ModifiedAt`/`ModifiedBy` via interceptor, `ICurrentUserService`, Guid-typed user fields |
+| `dotnet-cors` | Named CORS policies, `AllowAnyOrigin`+`AllowCredentials`, preflight caching |
+| `dotnet-repository-pattern` | Repository/Specification/Unit-of-Work usage, leaky `IQueryable` |
+| `dotnet-shared-libraries` | String-extension conventions, shared library structure, internal NuGet versioning |
+| `dotnet-document-io` | Excel/PDF import-export, streaming large files, row-level import validation |
+| `dotnet-email-service` | `IEmailSender` abstraction, HTML template layout, queued sending, retry policy |
+| `dotnet-entity-keys` | `Guid` vs `int` primary keys, sequential/v7 GUID generation for clustered-index health, opaque resource identifiers |
+| `dotnet-api-versioning` | `Asp.Versioning` wiring, header/query/URL negotiation, breaking-change discipline, deprecation/sunset signaling |
+| `dotnet-di-modules` | Per-module `IServiceCollection` extensions, clean `Program.cs` sectioning, module boundary discipline |
+| `dotnet-background-jobs` | Hangfire vs hand-rolled `BackgroundService` loops, configurable job schedules (name/cron/enabled), admin-endpoint authorization, job idempotency, dashboard access control |
+| `dotnet-dynamic-configuration` | DB-backed configuration for business-tunable settings, Key Vault for secrets, precedence, caching/invalidation |
+| `dotnet-localization` | XML/resx default translations with a DB-override layer, culture resolution, missing-key fallback |
 
-- Serilog structured-logging policy
-- HTTP resilience policy (retry/circuit-breaker conventions beyond what
-  `dotnet-aspnetcore` covers)
-- Any org-specific EF Core or minimal-API conventions not owned by `dotnet/skills`
+## Relationship to dotnet/skills
 
-Until then, skip installing `pilot-dotnet` — install `pilot-core` and run `/pilot-init`,
-which wires `dotnet/skills` for you.
+`pilot-dotnet` builds on, and does not duplicate, Microsoft's official
+[`dotnet/skills`](https://github.com/dotnet/skills) marketplace. EF Core query
+optimization *implementation*, test running, and framework-version upgrades still route
+to `dotnet-data`/`dotnet-test`/`dotnet-upgrade` — see the
+[root README](../README.md#relationship-to-dotnetskills). `pilot-dotnet` is reserved for
+house conventions those skills intentionally leave to each team.
