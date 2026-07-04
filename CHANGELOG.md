@@ -3,6 +3,39 @@
 All notable changes to FullStack Pilot are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.14.0] — 2026-07-04 (pilot-dotnet, pilot-angular), pilot-sql/pilot-azure 0.9.0 → 0.10.0
+
+### Added
+- Completes the senior-architect gap audit's Tier 2/3 backlog (see `[0.13.0]` below for
+  Tier 1). Ten more skills fill the remaining gaps across all four governed stacks.
+- `pilot-azure`: four new skills — `azure-observability` (centralized Log Analytics
+  workspace, App Insights sampling, alert rules/action groups), `azure-cicd-security`
+  (OIDC federated credentials vs long-lived secrets, environment approval gates,
+  least-privilege deployment identity), `azure-dr-multiregion` (paired-region secondary
+  deployment, Traffic Manager/Front Door failover, RPO/RTO, cross-region DB replication),
+  `azure-cost-finops` (Azure Budget alerting, autoscale right-sizing cadence,
+  cost-anomaly detection, orphaned-resource cleanup).
+- `pilot-sql`: `sql-data-protection` — Always Encrypted, Dynamic Data Masking, TDE
+  verification, backup/restore protection parity (the database-side counterpart to
+  `dotnet-data-protection`).
+- `pilot-angular`: two new skills — `angular-error-handling` (global `ErrorHandler`,
+  `ProblemDetails`-aware HTTP error parsing, recoverable-vs-crash fallback UI) and
+  `angular-pwa-offline` (service worker, offline fallback UI, shell-vs-API caching,
+  offline-edit conflict resolution — for shops shipping field/offline-capable apps).
+- `pilot-dotnet`: `dotnet-outbox-pattern` (transactional outbox for domain events,
+  idempotent consumers, dead-letter monitoring) plus two new checks (DOC-007, DOC-008)
+  added to the existing `dotnet-document-io` skill for magic-byte upload-signature
+  verification and antivirus scanning before durable storage.
+- `infra-reviewer`, `sql-reviewer`, `angular-reviewer`, `dotnet-reviewer` agents:
+  inventory rows and review-checklist categories for all ten additions.
+
+### Changed
+- `plugin.json`: `pilot-dotnet` and `pilot-angular` `0.13.0` → `0.14.0`; `pilot-sql` and
+  `pilot-azure` `0.9.0` → `0.10.0` (their first version bump since the 0.9.0-beta release,
+  since this is their first content change since Phase 9).
+- `docs/pilot-azure.md`, `docs/pilot-sql.md`, `docs/pilot-angular.md`,
+  `docs/pilot-dotnet.md`, `README.md`: skill tables and counts updated.
+
 ## [0.13.0] — 2026-07-04
 
 ### Added

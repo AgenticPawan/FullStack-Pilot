@@ -27,6 +27,8 @@ targets 17–20; 15–16 are EOL and get upgrade guidance only.
 | `angular-dynamic-forms` | JSON-schema-driven reactive forms — field descriptors (id, name, validations, enabled, localization key, tooltip), generic renderer, descriptor-driven validation/enablement/localization |
 | `angular-testing` | Accessible-role component queries (Testing Library), `HttpTestingController`, Component Test Harnesses, documented e2e (Playwright) convention, signal-test flushing |
 | `angular-i18n` | i18n library wiring, shared translation-key space with `dotnet-localization`, locale-aware date/number/currency formatting, RTL layout support |
+| `angular-error-handling` | Global `ErrorHandler`, shared error-notification pattern, `ProblemDetails`-aware HTTP error parsing (the frontend counterpart to `dotnet-error-handling`), recoverable-vs-crash fallback UI |
+| `angular-pwa-offline` | `@angular/service-worker` configuration, offline fallback UI, shell-vs-API caching strategy, offline-edit conflict resolution — only relevant for field/offline-capable apps |
 
 ## Version policy
 

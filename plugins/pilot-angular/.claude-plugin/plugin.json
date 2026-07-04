@@ -2,8 +2,8 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "pilot-angular",
   "displayName": "Pilot Angular",
-  "version": "0.13.0",
-  "description": "Angular / TypeScript codebase governance: component patterns, signal migration, standalone best practices, accessibility audits, version-gated coding standards, multi-layout shells, theming, shared UI libraries, JSON-schema-driven dynamic reactive forms, permissions-ONLY route guards/UI gating (no role checks), testing conventions (Testing Library, harnesses, e2e), and i18n (shared key space with dotnet-localization, locale formatting, RTL)",
+  "version": "0.14.0",
+  "description": "Angular / TypeScript codebase governance: component patterns, signal migration, standalone best practices, accessibility audits, version-gated coding standards, multi-layout shells, theming, shared UI libraries, JSON-schema-driven dynamic reactive forms, permissions-ONLY route guards/UI gating (no role checks), testing conventions (Testing Library, harnesses, e2e), i18n (shared key space with dotnet-localization, locale formatting, RTL), global error handling (ProblemDetails-aware), and PWA/offline support",
   "author": {
     "name": "AgenticPawan",
     "url": "https://github.com/AgenticPawan"

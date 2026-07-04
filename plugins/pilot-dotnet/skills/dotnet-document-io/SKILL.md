@@ -1,7 +1,7 @@
 ---
 name: dotnet-document-io
-description: Reviews Excel and PDF import/export code in ASP.NET Core APIs. Flags commercial-license-triggering libraries (EPPlus v5+, QuestPDF) used without an explicit licensing note, full-file-in-memory loads that should stream, import endpoints that abort on the first bad row instead of collecting per-row errors, in-memory export buffering for large files, missing content-type/extension validation on uploads, and duplicated inline PDF layout logic. Outputs findings with pilot-dotnet document-io standard IDs.
-when_to_use: Excel import, Excel export, PDF generation, EPPlus, ClosedXML, OpenXML, QuestPDF, PdfSharp, IronPDF, file upload validation, streaming export, large file export, row validation, bulk import, document generation, report export, commercial license
+description: Reviews Excel and PDF import/export code in ASP.NET Core APIs. Flags commercial-license-triggering libraries (EPPlus v5+, QuestPDF) used without an explicit licensing note, full-file-in-memory loads that should stream, import endpoints that abort on the first bad row instead of collecting per-row errors, in-memory export buffering for large files, missing content-type/extension validation on uploads, uploads trusted by declared content-type/extension alone instead of magic-byte sniffing, no antivirus scan before a user upload reaches durable storage, and duplicated inline PDF layout logic. Outputs findings with pilot-dotnet document-io standard IDs.
+when_to_use: Excel import, Excel export, PDF generation, EPPlus, ClosedXML, OpenXML, QuestPDF, PdfSharp, IronPDF, file upload validation, streaming export, large file export, row validation, bulk import, document generation, report export, commercial license, antivirus scan upload, magic byte file signature, content sniffing, malware scan, file upload security
 ---
 
 ## Standard IDs
@@ -14,6 +14,8 @@ when_to_use: Excel import, Excel export, PDF generation, EPPlus, ClosedXML, Open
 | DOC-004 | P1 | Export builds full file `byte[]` in memory instead of streaming the HTTP response |
 | DOC-005 | P0 | Uploaded import file has no content-type/extension validation before parsing |
 | DOC-006 | P2 | PDF layout/branding logic duplicated inline per endpoint instead of a shared document component |
+| DOC-007 | P0 | Upload trusted by declared content-type/extension alone instead of magic-byte file-signature sniffing |
+| DOC-008 | P0 | No antivirus/malware scan before a user upload reaches durable storage |
 
 ---
 
@@ -395,5 +397,91 @@ public class ReceiptDocument(Receipt receipt) : IDocument
         container.Page(page => BrandedLayout.Compose(page, "Receipt", c => c.Text($"Paid: {receipt.AmountPaid:C}")));
 
     public DocumentMetadata GetMetadata() => DocumentMetadata.Default;
+}
+```
+
+---
+
+## Check G — Uploads trusted by declared content-type/extension alone (DOC-007)
+
+### Detection
+
+1. Confirm DOC-005's extension/content-type check is not the *only* validation — both
+   `file.ContentType` and the file name extension are client-supplied and trivially
+   spoofed (a caller can rename a malicious executable to `report.xlsx` and set the
+   content-type header to match).
+2. Flag uploads parsed straight after the DOC-005 checks with no verification of the
+   file's actual binary signature ("magic bytes") matching the claimed format.
+
+### BAD — only the spoofable content-type/extension are checked
+
+```csharp
+var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+if (ext != ".xlsx" || file.ContentType != "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    return BadRequest();
+// Both values come from the client and can be set to anything regardless of the actual file bytes.
+using var workbook = new XLWorkbook(file.OpenReadStream());
+```
+
+### GOOD — magic-byte signature verified against the claimed format
+
+```csharp
+private static bool IsValidXlsxSignature(Stream stream)
+{
+    Span<byte> header = stackalloc byte[4];
+    stream.ReadExactly(header);
+    stream.Position = 0;
+    // .xlsx files are zip containers — magic bytes 50 4B 03 04 ("PK\x03\x04")
+    return header[0] == 0x50 && header[1] == 0x4B && header[2] == 0x03 && header[3] == 0x04;
+}
+
+[HttpPost("orders/import")]
+public async Task<IActionResult> ImportOrders(IFormFile file)
+{
+    using var stream = file.OpenReadStream();
+    if (!IsValidXlsxSignature(stream))
+        return BadRequest("File content does not match a valid .xlsx signature.");
+
+    using var workbook = new XLWorkbook(stream);
+    // ... proceed with per-row validation (Check C) ...
+}
+```
+
+---
+
+## Check H — No antivirus scan before durable storage (DOC-008)
+
+### Detection
+
+For uploads that get written to durable storage (Blob Storage, a file share) rather than
+parsed and discarded immediately, check whether the upload path invokes a malware-scanning
+step (Microsoft Defender for Storage's built-in malware scanning, or an explicit AV scan
+service) before the file becomes downloadable by other users. An unscanned upload that
+other users can later retrieve turns the application into a malware distribution vector.
+
+### BAD — upload written straight to Blob Storage, no scan
+
+```csharp
+[HttpPost("attachments")]
+public async Task<IActionResult> UploadAttachment(IFormFile file)
+{
+    var blobClient = _containerClient.GetBlobClient(file.FileName);
+    await blobClient.UploadAsync(file.OpenReadStream()); // immediately downloadable by other users, unscanned
+    return Ok();
+}
+```
+
+### GOOD — quarantine container scanned before promotion to the public-facing container
+
+```csharp
+[HttpPost("attachments")]
+public async Task<IActionResult> UploadAttachment(IFormFile file)
+{
+    var quarantineBlob = _quarantineContainerClient.GetBlobClient(file.FileName);
+    await quarantineBlob.UploadAsync(file.OpenReadStream());
+    // Microsoft Defender for Storage malware scanning fires on blob upload; an Event Grid
+    // subscription (dotnet-outbox-pattern) moves the blob to the public container only
+    // after a clean scan result, and deletes/quarantines it on a malware verdict.
+    return Accepted();
 }
 ```

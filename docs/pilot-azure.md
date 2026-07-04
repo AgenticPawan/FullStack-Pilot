@@ -6,8 +6,8 @@ and Bicep production-readiness.
 ## Agent
 
 - **infra-reviewer** — reviews Bicep templates and GitHub Actions deployment workflows
-  against all four skills below, emitting findings with standard IDs (`ASB-*`, `WAF-*`,
-  `CAF-*`, `BIC-*`).
+  against all skills below, emitting findings with standard IDs (`ASB-*`, `WAF-*`,
+  `CAF-*`, `BIC-*`, `AOBS-*`, `CICD-*`, `ADR-*`, `FIN-*`).
 
 ## Skills
 
@@ -17,3 +17,7 @@ and Bicep production-readiness.
 | `azure-security-baseline` | Blocks public blob storage, flags PaaS without private endpoints, verifies managed identity over connection strings, Key Vault secret references, RBAC least-privilege, Defender enablement. |
 | `azure-waf-review` | Five-pillar Well-Architected Framework checklist (Reliability, Security, Cost, Operational Excellence, Performance Efficiency) against Bicep + workflows. |
 | `azure-bicep-patterns` | Module decomposition, parameterization, `what-if` step in CI, cost tags, secure parameter types, conditional deployment, Azure Verified Modules alignment. |
+| `azure-observability` | Centralized Log Analytics workspace design, Application Insights sampling, alert rules/action groups, diagnostic settings routing. |
+| `azure-cicd-security` | OIDC federated credentials vs long-lived service-principal secrets, environment approval gates, least-privilege deployment identity, no secrets hardcoded in workflow YAML. |
+| `azure-dr-multiregion` | Paired-region secondary deployment, Traffic Manager/Front Door failover routing, documented RPO/RTO, cross-region database replication/auto-failover groups. |
+| `azure-cost-finops` | Azure Budget resources with action-group alerting, autoscale right-sizing review cadence, cost-anomaly detection, orphaned-resource cleanup policy. |

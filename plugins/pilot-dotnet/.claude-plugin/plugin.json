@@ -2,8 +2,8 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "pilot-dotnet",
   "displayName": "Pilot .NET",
-  "version": "0.13.0",
-  "description": "C# / ASP.NET Core codebase governance: Clean Architecture, SOLID/DRY, coding standards, performance, caching, permissions-ONLY authorization (no role checks, ever; JWT PII/permission hardening), multitenancy, soft delete, audit fields (Guid-typed), CORS, repository pattern, shared libraries, Excel/PDF document I/O, templated email service, Guid entity keys, API versioning, modular DI/clean Program.cs, Hangfire background jobs, DB-backed dynamic configuration, XML+DB localization, HTTP resilience (Polly), observability (health checks/OpenTelemetry), centralized error handling (ProblemDetails), request validation, integration testing, PII data protection, optimistic concurrency, and rate limiting",
+  "version": "0.14.0",
+  "description": "C# / ASP.NET Core codebase governance: Clean Architecture, SOLID/DRY, coding standards, performance, caching, permissions-ONLY authorization (no role checks, ever; JWT PII/permission hardening), multitenancy, soft delete, audit fields (Guid-typed), CORS, repository pattern, shared libraries, Excel/PDF document I/O (with malware-scan/signature verification), templated email service, Guid entity keys, API versioning, modular DI/clean Program.cs, Hangfire background jobs, DB-backed dynamic configuration, XML+DB localization, HTTP resilience (Polly), observability (health checks/OpenTelemetry), centralized error handling (ProblemDetails), request validation, integration testing, PII data protection, optimistic concurrency, rate limiting, and the transactional outbox pattern for distributed messaging",
   "author": {
     "name": "AgenticPawan",
     "url": "https://github.com/AgenticPawan"

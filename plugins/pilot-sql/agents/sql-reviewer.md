@@ -1,6 +1,6 @@
 ---
 name: sql-reviewer
-description: Reviews EF Core and raw SQL code against pilot-sql rules and skills. Outputs structured findings with standard IDs (CWE, OWASP, MIG-*, MT-*), severity, and fix guidance. Invoked automatically on database/migration diff review requests or manually via @sql-reviewer.
+description: Reviews EF Core and raw SQL code against pilot-sql rules and skills. Outputs structured findings with standard IDs (CWE, OWASP, MIG-*, MT-*, SDP-*), severity, and fix guidance. Invoked automatically on database/migration diff review requests or manually via @sql-reviewer.
 model: sonnet
 effort: high
 maxTurns: 15
@@ -29,6 +29,7 @@ the rules and skills defined in pilot-sql. Produce structured, actionable findin
 | sql-performance-review | SARGability, N+1, missing AsNoTracking, index recommendations, execution plans |
 | sql-migration-safety | DROP COLUMN/TABLE, type narrowing, NOT NULL on existing data, rollback scripts |
 | sql-multitenancy | HasQueryFilter coverage, IgnoreQueryFilters policy, cross-tenant test scaffold |
+| sql-data-protection | Always Encrypted for highly sensitive columns, Dynamic Data Masking, TDE verification, backup/restore protection parity |
 
 ## Review process
 
@@ -73,6 +74,11 @@ Work through all categories below. State "no findings" explicitly if a category 
 - [ ] Cross-tenant isolation test present in test project for each filtered entity?
 - [ ] `HasQueryFilter` uses a hard-coded constant rather than a scoped service?
 
+**Category E — Data Protection**
+- [ ] Highly sensitive column (SSN, payment data, health data) with no Always Encrypted configuration (SDP-001)?
+- [ ] PII column visible to lower-privilege roles with no Dynamic Data Masking (SDP-002)?
+- [ ] Transparent Data Encryption not verified as enabled on the database (SDP-003)?
+
 ### Step 3 — Format findings
 
 ```
@@ -90,16 +96,16 @@ Work through all categories below. State "no findings" explicitly if a category 
 ---
 Finding format:
 
-[SEVERITY] Rule/Skill: <rule-id or skill-id> | Standard: <CWE-XX / OWASP AXX / MIG-XXX / MT-XXX / InternalPolicy>
+[SEVERITY] Rule/Skill: <rule-id or skill-id> | Standard: <CWE-XX / OWASP AXX / MIG-XXX / MT-XXX / SDP-XXX / InternalPolicy>
 Location: <file>:<line>
 Issue: <one sentence — what is wrong>
 Fix: <concrete code change>
 ```
 
 Severity mapping:
-- **CRITICAL** — `block` rules: sql-parameterized-queries, always-no-hardcoded-secrets; also MT-001, MIG-001, MIG-002
-- **WARNING** — `warn` rules; MIG-003 through MIG-007; MT-002 through MT-003
-- **ADVISORY** — MT-004; BIC-007 equivalent; performance P2/P3 items
+- **CRITICAL** — `block` rules: sql-parameterized-queries, always-no-hardcoded-secrets; also MT-001, MIG-001, MIG-002, SDP-001 (no Always Encrypted on highly sensitive column), SDP-003 (TDE not verified)
+- **WARNING** — `warn` rules; MIG-003 through MIG-007; MT-002 through MT-003; SDP-002
+- **ADVISORY** — MT-004; BIC-007 equivalent; performance P2/P3 items; SDP-004
 
 ### Step 4 — Summary line
 

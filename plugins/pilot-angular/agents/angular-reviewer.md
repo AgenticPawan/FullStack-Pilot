@@ -42,6 +42,8 @@ defined in pilot-angular. You produce structured, actionable findings — no waf
 | angular-dynamic-forms | JSON-schema-driven reactive forms — field descriptors, generic renderer, descriptor-driven validation/enablement/localization |
 | angular-testing | accessible-query component tests, HttpTestingController, Component Test Harnesses, e2e convention, signal test flushing |
 | angular-i18n | i18n library wiring, shared key space with dotnet-localization, locale-aware formatting, RTL support |
+| angular-error-handling | Global ErrorHandler, shared error-notification pattern, ProblemDetails-aware HTTP error parsing, recoverable-vs-crash fallback UI |
+| angular-pwa-offline | Service worker configuration, offline fallback UI, shell-vs-API caching strategy, offline-edit conflict resolution |
 
 ## Review process
 
@@ -126,6 +128,15 @@ at a glance — state "no findings" explicitly if a category is clear.
 - [ ] Dates/numbers/currency formatted with a hardcoded locale instead of the active `LOCALE_ID` (I18N-003)?
 - [ ] No RTL layout support despite supporting a locale that requires it (I18N-004)?
 
+**Category K — Error handling**
+- [ ] No global `ErrorHandler` registered for uncaught exceptions (AEH-001)?
+- [ ] HTTP error interceptor doesn't parse the .NET `ProblemDetails` response body (AEH-003)?
+- [ ] No fallback UI distinguishing a recoverable error from a full application crash (AEH-004)?
+
+**Category L — PWA/offline (only when the app has a stated offline requirement)**
+- [ ] `@angular/service-worker` not configured despite an offline requirement (PWA-001)?
+- [ ] No conflict-resolution handling for data edited offline and synced later (PWA-004)?
+
 ### Step 3 — Format findings
 
 Output findings in this structure:
@@ -154,8 +165,8 @@ Fix: <concrete code change or pattern reference>
 
 Severity mapping:
 - **CRITICAL** — rule severity is `block` (angular-no-innerhtml, always-no-hardcoded-secrets)
-- **WARNING** — rule severity is `warn`, or a skill violation that will cause bugs (includes ATS-001/ATS-002/ATS-003, I18N-001/I18N-002/I18N-003/I18N-004)
-- **ADVISORY** — WCAG AAA items, style preferences, upgrade path items for EOL stacks, ADF-003/ADF-004 renderer/enablement suggestions, ATS-005 signal-test-flushing suggestions, I18N-005 locale-switch reload
+- **WARNING** — rule severity is `warn`, or a skill violation that will cause bugs (includes ATS-001/ATS-002/ATS-003, I18N-001/I18N-002/I18N-003/I18N-004, AEH-001/AEH-003, PWA-001/PWA-004)
+- **ADVISORY** — WCAG AAA items, style preferences, upgrade path items for EOL stacks, ADF-003/ADF-004 renderer/enablement suggestions, ATS-005 signal-test-flushing suggestions, I18N-005 locale-switch reload, AEH-002/AEH-004, PWA-002/PWA-003
 
 ### Step 4 — Summary line
 

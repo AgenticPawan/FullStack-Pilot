@@ -25,7 +25,7 @@ supported .NET range (8, 9, 10, 11 — see the [root README](../README.md#suppor
 | `dotnet-cors` | Named CORS policies, `AllowAnyOrigin`+`AllowCredentials`, preflight caching |
 | `dotnet-repository-pattern` | Repository/Specification/Unit-of-Work usage, leaky `IQueryable` |
 | `dotnet-shared-libraries` | String-extension conventions, shared library structure, internal NuGet versioning |
-| `dotnet-document-io` | Excel/PDF import-export, streaming large files, row-level import validation |
+| `dotnet-document-io` | Excel/PDF import-export, streaming large files, row-level import validation, magic-byte upload signature verification, antivirus scan before durable storage |
 | `dotnet-email-service` | `IEmailSender` abstraction, HTML template layout, queued sending, retry policy |
 | `dotnet-entity-keys` | `Guid` vs `int` primary keys, sequential/v7 GUID generation for clustered-index health, opaque resource identifiers |
 | `dotnet-api-versioning` | `Asp.Versioning` wiring, header/query/URL negotiation, breaking-change discipline, deprecation/sunset signaling |
@@ -41,6 +41,7 @@ supported .NET range (8, 9, 10, 11 — see the [root README](../README.md#suppor
 | `dotnet-data-protection` | PII column-level encryption, PII erasure on soft-delete, log redaction, data-classification tagging |
 | `dotnet-concurrency` | `RowVersion` optimistic concurrency, `DbUpdateConcurrencyException` handling, `ETag`/`If-Match`, read-modify-write guards |
 | `dotnet-rate-limiting` | Auth-endpoint throttling, background-jobs admin rate limits, `AddRateLimiter` baseline, `Retry-After` header |
+| `dotnet-outbox-pattern` | Transactional outbox for domain events published to Service Bus/Event Grid, idempotent consumers, dead-letter monitoring, outbox row cleanup |
 
 ## Relationship to dotnet/skills
 
