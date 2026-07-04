@@ -21,7 +21,7 @@
     {
       "name": "pilot-angular",
       "source": "./plugins/pilot-angular",
-      "description": "Angular / TypeScript governance: signals, performance, accessibility, security (permissions-ONLY route guards/UI gating), HTTP resilience, the v15-to-v20 upgrade path, coding standards, multi-layout shells, theming, shared UI libraries, and JSON-schema-driven dynamic forms",
+      "description": "Angular / TypeScript governance: signals, performance, accessibility, security (permissions-ONLY route guards/UI gating), HTTP resilience, the v15-to-v20 upgrade path, coding standards, multi-layout shells, theming, shared UI libraries, JSON-schema-driven dynamic forms, testing conventions, and i18n",
       "author": { "name": "FullStack Pilot Contributors" },
       "license": "MIT",
       "keywords": ["angular", "typescript", "signals", "standalone"]
@@ -29,7 +29,7 @@
     {
       "name": "pilot-dotnet",
       "source": "./plugins/pilot-dotnet",
-      "description": "C# / ASP.NET Core governance: Clean Architecture, SOLID/DRY, performance, caching, permissions-ONLY auth (no role checks), multitenancy, soft delete, audit fields, CORS, repository pattern, shared libraries, Excel/PDF document I/O, email templating, Guid entity keys, API versioning, modular DI, Hangfire background jobs, DB-backed configuration, and localization",
+      "description": "C# / ASP.NET Core governance: Clean Architecture, SOLID/DRY, performance, caching, permissions-ONLY auth (no role checks), multitenancy, soft delete, audit fields, CORS, repository pattern, shared libraries, Excel/PDF document I/O, email templating, Guid entity keys, API versioning, modular DI, Hangfire background jobs, DB-backed configuration, localization, HTTP resilience, observability, error handling, validation, testing, data protection, concurrency, and rate limiting",
       "author": { "name": "FullStack Pilot Contributors" },
       "license": "MIT",
       "keywords": ["dotnet", "csharp", "aspnetcore", "efcore", "nuget"]

@@ -3,6 +3,35 @@
 All notable changes to FullStack Pilot are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.13.0] — 2026-07-04
+
+### Added
+- Senior-architect gap audit of the full marketplace produced a Tier-1 punch list of
+  production-readiness gaps; this release fills all 10 Tier-1 items.
+- `pilot-dotnet`: eight new skills — `dotnet-resilience` (`IHttpClientFactory`/typed
+  clients, Polly retry/circuit-breaker/timeout, correlation-ID propagation — the backend
+  counterpart to `angular-http-resilience`), `dotnet-observability` (health checks,
+  OpenTelemetry, correlation ID on traces, PII-safe telemetry), `dotnet-error-handling`
+  (centralized `IExceptionHandler`, RFC 7807 `ProblemDetails`, typed domain exceptions),
+  `dotnet-validation` (consistent FluentValidation strategy, single pipeline behavior),
+  `dotnet-testing` (shared `WebApplicationFactory` fixtures, Testcontainers over EF Core
+  in-memory provider, test data builders), `dotnet-data-protection` (PII column
+  encryption, PII erasure on soft-delete, log redaction, data-classification tagging),
+  `dotnet-concurrency` (`RowVersion` optimistic concurrency, `ETag`/`If-Match`), and
+  `dotnet-rate-limiting` (auth/admin-endpoint throttling, `AddRateLimiter` baseline).
+- `pilot-angular`: two new skills — `angular-testing` (accessible-role component
+  queries, `HttpTestingController`, Component Test Harnesses, documented e2e/Playwright
+  convention) and `angular-i18n` (i18n library wiring, shared translation-key space with
+  `dotnet-localization`, locale-aware formatting, RTL support).
+- `dotnet-reviewer`/`angular-reviewer` agents: inventory rows and review-checklist
+  categories (K–N for .NET, I–J for Angular) for all ten new skills.
+
+### Changed
+- `plugin.json` for `pilot-dotnet` (20→28 skills) and `pilot-angular` (11→13 skills):
+  `0.12.0` → `0.13.0`.
+- `docs/pilot-dotnet.md`, `docs/pilot-angular.md`, `README.md`: skill tables and counts
+  updated for the ten new skills.
+
 ## [0.12.0] — 2026-07-04
 
 ### Changed

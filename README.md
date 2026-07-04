@@ -80,10 +80,10 @@ touches more than 10 files without asking.
 | Plugin | Status | Purpose |
 |---|---|---|
 | `pilot-core` | Implemented | Stack detection, scaffold, audit/fix pipelines, MCP discovery, `/pilot-init` `/pilot-audit` `/pilot-fix` `/pilot-learn` |
-| `pilot-angular` | Implemented | 11 skills + reviewer agent: signals & state, performance, a11y (WCAG 2.2 AA), security (XSS/CSP, permissions-ONLY route guards/UI gating), HTTP resilience, memory-leak detection, v15→v20 upgrade path, coding standards, multi-layout shells, theming, JSON-driven dynamic forms |
+| `pilot-angular` | Implemented | 13 skills + reviewer agent: signals & state, performance, a11y (WCAG 2.2 AA), security (XSS/CSP, permissions-ONLY route guards/UI gating), HTTP resilience, memory-leak detection, v15→v20 upgrade path, coding standards, multi-layout shells, theming, JSON-driven dynamic forms, testing conventions, i18n |
 | `pilot-sql` | Implemented | 4 skills + reviewer agent: SQL injection defense, migration safety, multitenancy isolation, performance review |
 | `pilot-azure` | Implemented | 4 skills + reviewer agent: CAF naming, security baseline, Well-Architected Framework review, Bicep patterns |
-| `pilot-dotnet` | Implemented | 20 skills + reviewer agent: Clean Architecture, SOLID/DRY, performance, caching, permissions-ONLY auth (no role checks, ever; JWT PII/permission hardening), multitenancy, soft delete, Guid-typed audit fields, CORS, repository pattern, shared libraries, document I/O, email service, Guid entity keys, API versioning, modular DI, Hangfire background jobs, DB-backed configuration, localization — see [Relationship to dotnet/skills](#relationship-to-dotnetskills) |
+| `pilot-dotnet` | Implemented | 28 skills + reviewer agent: Clean Architecture, SOLID/DRY, performance, caching, permissions-ONLY auth (no role checks, ever; JWT PII/permission hardening), multitenancy, soft delete, Guid-typed audit fields, CORS, repository pattern, shared libraries, document I/O, email service, Guid entity keys, API versioning, modular DI, Hangfire background jobs, DB-backed configuration, localization, HTTP resilience, observability, error handling, validation, testing, data protection, concurrency, rate limiting — see [Relationship to dotnet/skills](#relationship-to-dotnetskills) |
 
 ## Supported versions
 

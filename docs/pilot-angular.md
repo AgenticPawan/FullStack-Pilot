@@ -25,6 +25,8 @@ targets 17–20; 15–16 are EOL and get upgrade guidance only.
 | `angular-theming` | Design-token/CSS-custom-property themes, runtime switching without reload, Material M3 theming (v17+), FOUC prevention, WCAG contrast |
 | `angular-shared-libraries` | Reusable reactive-forms building blocks, generic paged/sortable/filterable `DataTableComponent`, workspace-library extraction |
 | `angular-dynamic-forms` | JSON-schema-driven reactive forms — field descriptors (id, name, validations, enabled, localization key, tooltip), generic renderer, descriptor-driven validation/enablement/localization |
+| `angular-testing` | Accessible-role component queries (Testing Library), `HttpTestingController`, Component Test Harnesses, documented e2e (Playwright) convention, signal-test flushing |
+| `angular-i18n` | i18n library wiring, shared translation-key space with `dotnet-localization`, locale-aware date/number/currency formatting, RTL layout support |
 
 ## Version policy
 

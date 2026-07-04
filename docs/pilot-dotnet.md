@@ -6,7 +6,7 @@ supported .NET range (8, 9, 10, 11 — see the [root README](../README.md#suppor
 ## Agent
 
 - **dotnet-reviewer** — reviews a controller/endpoint/service/DbContext diff or file
-  against every rule and all twenty skills below. Runs automatically on .NET diff-review
+  against every rule and all skills below. Runs automatically on .NET diff-review
   requests, or invoke manually with `@dotnet-reviewer`.
 
 ## Skills
@@ -33,6 +33,14 @@ supported .NET range (8, 9, 10, 11 — see the [root README](../README.md#suppor
 | `dotnet-background-jobs` | Hangfire vs hand-rolled `BackgroundService` loops, configurable job schedules (name/cron/enabled), admin-endpoint authorization, job idempotency, dashboard access control |
 | `dotnet-dynamic-configuration` | DB-backed configuration for business-tunable settings, Key Vault for secrets, precedence, caching/invalidation |
 | `dotnet-localization` | XML/resx default translations with a DB-override layer, culture resolution, missing-key fallback |
+| `dotnet-resilience` | `IHttpClientFactory`/typed clients, Polly retry/circuit-breaker/timeout, correlation-ID propagation to outbound calls and logs |
+| `dotnet-observability` | `/health/live` + `/health/ready` checks, OpenTelemetry tracing/metrics, correlation ID on distributed traces, PII-safe telemetry |
+| `dotnet-error-handling` | Centralized `IExceptionHandler`, RFC 7807 `ProblemDetails`, no leaked exception detail, typed domain exceptions |
+| `dotnet-validation` | Consistent FluentValidation-based strategy, single validation pipeline behavior, `ProblemDetails`-shaped validation failures |
+| `dotnet-testing` | Shared `WebApplicationFactory` fixtures, Testcontainers over EF Core in-memory provider, test data builders, mocking policy |
+| `dotnet-data-protection` | PII column-level encryption, PII erasure on soft-delete, log redaction, data-classification tagging |
+| `dotnet-concurrency` | `RowVersion` optimistic concurrency, `DbUpdateConcurrencyException` handling, `ETag`/`If-Match`, read-modify-write guards |
+| `dotnet-rate-limiting` | Auth-endpoint throttling, background-jobs admin rate limits, `AddRateLimiter` baseline, `Retry-After` header |
 
 ## Relationship to dotnet/skills
 
