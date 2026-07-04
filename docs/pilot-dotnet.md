@@ -46,6 +46,8 @@ supported .NET range (8, 9, 10, 11 — see the [root README](../README.md#suppor
 | `dotnet-realtime` | SignalR hub permissions-only authorization, scale-out backplane, genuine `IAsyncEnumerable`/SSE streaming, client reconnection policy |
 | `dotnet-audit-trail` | Append-only access-audit log for sensitive-data reads (distinct from `dotnet-audit-fields`' change tracking), tamper-evident storage, compliance query surface |
 | `dotnet-financial-precision` | `decimal` vs `double` for currency, consistent rounding-mode convention (banker's rounding), exact decimal comparison, currency-code-paired money values |
+| `dotnet-secrets-rotation` | JWT signing-key rotation with grace-period overlap, DB credential rotation cadence, certificate expiry monitoring, rotation audit logging |
+| `dotnet-api-contract-testing` | Consumer-driven contract tests (Pact) between the Angular frontend and this API, error-response contract coverage, shared TypeScript-schema generation, provider-verification deploy gate |
 
 ## Relationship to dotnet/skills
 

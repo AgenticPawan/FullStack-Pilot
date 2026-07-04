@@ -28,6 +28,10 @@ Shared governance utilities every other pilot plugin depends on. Install this fi
 - **incident-response-runbook** — the response layer over `azure-observability`'s alerts:
   runbook-per-alert convention, severity-to-response-time SLA, blameless-postmortem
   template, tracked action-item follow-through.
+- **dependency-license-compliance** — the legal-compliance sibling to
+  `dependency-supply-chain`'s security-vulnerability scanning: OSS license scanning,
+  copyleft (GPL/AGPL) risk review, a documented license allow-list/deny-list policy,
+  license metadata in the SBOM.
 
 ## Hooks
 

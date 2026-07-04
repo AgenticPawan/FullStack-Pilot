@@ -3,6 +3,42 @@
 All notable changes to FullStack Pilot are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.18.0] — 2026-07-05 (pilot-dotnet), pilot-sql 0.11.0 → 0.12.0, pilot-core 0.11.0 → 0.12.0, pilot-azure 0.12.0 → 0.13.0
+
+### Added
+- A third senior-architect gap audit (round 3, after 76 skills were already shipped
+  across rounds 1–2) identified five more Tier-1 gaps; this release fills all of them.
+- `pilot-dotnet`: two new skills — `dotnet-secrets-rotation` (JWT signing-key rotation
+  with a grace-period overlap, DB credential rotation cadence, certificate expiry
+  monitoring, rotation audit logging — the lifecycle layer above
+  `dotnet-dynamic-configuration`'s storage-location rule) and
+  `dotnet-api-contract-testing` (Pact consumer-driven contracts between the Angular
+  frontend and this API, error-response contract coverage, shared TypeScript-schema
+  generation, provider-verification deploy gate — closing a gap `dotnet-api-versioning`
+  leaves open since it only protects an *existing* version's contract).
+- `pilot-sql`: `sql-backup-recovery` — scheduled restore-drill testing, backup-integrity
+  checks (`CHECKSUM`/`RESTORE VERIFYONLY`), point-in-time-restore test cadence, and
+  retention-vs-RPO alignment. Distinct from `azure-dr-multiregion`'s cross-region
+  replication and `sql-index-maintenance`'s ongoing index health — nothing else verified
+  a backup is actually restorable.
+- `pilot-core`: `dependency-license-compliance` — the legal-compliance sibling to
+  `dependency-supply-chain`'s security-vulnerability scanning: OSS license scanning,
+  copyleft (GPL/AGPL) risk review, a documented license allow-list/deny-list policy,
+  license metadata in the SBOM.
+- `pilot-azure`: `azure-slo-error-budget` — the proactive counterpart to
+  `incident-response-runbook`'s reactive severity SLAs: defined SLO/SLI per
+  customer-facing service, an error-budget policy that gates release velocity once
+  exhausted, user-experience-accurate SLIs, and a live budget-consumption dashboard.
+- `dotnet-reviewer`/`sql-reviewer`/`infra-reviewer` agents: inventory rows and
+  review-checklist categories for all five additions.
+
+### Changed
+- `plugin.json`: `pilot-dotnet` `0.17.0` → `0.18.0`; `pilot-sql` and `pilot-core`
+  `0.11.0` → `0.12.0`; `pilot-azure` `0.12.0` → `0.13.0`.
+- `docs/pilot-dotnet.md`, `docs/pilot-sql.md`, `docs/pilot-core.md`, `docs/pilot-azure.md`,
+  `README.md`: skill tables and counts updated (pilot-dotnet 33→35, pilot-sql 6→7,
+  pilot-core 8→9, pilot-azure 11→12).
+
 ## [0.17.0] — 2026-07-05 (pilot-dotnet), pilot-sql 0.10.0 → 0.11.0, pilot-azure 0.11.0 → 0.12.0
 
 ### Added

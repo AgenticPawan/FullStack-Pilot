@@ -1,6 +1,6 @@
 ---
 name: sql-reviewer
-description: Reviews EF Core and raw SQL code against pilot-sql rules and skills. Outputs structured findings with standard IDs (CWE, OWASP, MIG-*, MT-*, SDP-*, IDX-*), severity, and fix guidance. Invoked automatically on database/migration diff review requests or manually via @sql-reviewer.
+description: Reviews EF Core and raw SQL code against pilot-sql rules and skills. Outputs structured findings with standard IDs (CWE, OWASP, MIG-*, MT-*, SDP-*, IDX-*, BR-*), severity, and fix guidance. Invoked automatically on database/migration diff review requests or manually via @sql-reviewer.
 model: sonnet
 effort: high
 maxTurns: 15
@@ -31,6 +31,7 @@ the rules and skills defined in pilot-sql. Produce structured, actionable findin
 | sql-multitenancy | HasQueryFilter coverage, IgnoreQueryFilters policy, cross-tenant test scaffold |
 | sql-data-protection | Always Encrypted for highly sensitive columns, Dynamic Data Masking, TDE verification, backup/restore protection parity |
 | sql-index-maintenance | Scheduled fragmentation rebuild/reorganize, statistics-update cadence, unused-index monitoring, online-vs-offline maintenance windows |
+| sql-backup-recovery | Scheduled restore-drill testing, backup-integrity checks (CHECKSUM/VERIFYONLY), point-in-time-restore test cadence, retention-vs-RPO alignment |
 
 ## Review process
 
@@ -85,6 +86,11 @@ Work through all categories below. State "no findings" explicitly if a category 
 - [ ] No statistics-update cadence for tables with volatile data (IDX-002)?
 - [ ] Index rebuild run without `WITH (ONLINE = ON)` or a documented maintenance window (IDX-004)?
 
+**Category G — Backup & Recovery**
+- [ ] No scheduled restore drill verifying a backup is actually restorable (BR-001)?
+- [ ] No backup-integrity check (`CHECKSUM`/`RESTORE VERIFYONLY`) (BR-002)?
+- [ ] Backup retention doesn't match the documented RPO (BR-004)?
+
 ### Step 3 — Format findings
 
 ```
@@ -102,15 +108,15 @@ Work through all categories below. State "no findings" explicitly if a category 
 ---
 Finding format:
 
-[SEVERITY] Rule/Skill: <rule-id or skill-id> | Standard: <CWE-XX / OWASP AXX / MIG-XXX / MT-XXX / SDP-XXX / IDX-XXX / InternalPolicy>
+[SEVERITY] Rule/Skill: <rule-id or skill-id> | Standard: <CWE-XX / OWASP AXX / MIG-XXX / MT-XXX / SDP-XXX / IDX-XXX / BR-XXX / InternalPolicy>
 Location: <file>:<line>
 Issue: <one sentence — what is wrong>
 Fix: <concrete code change>
 ```
 
 Severity mapping:
-- **CRITICAL** — `block` rules: sql-parameterized-queries, always-no-hardcoded-secrets; also MT-001, MIG-001, MIG-002, SDP-001 (no Always Encrypted on highly sensitive column), SDP-003 (TDE not verified)
-- **WARNING** — `warn` rules; MIG-003 through MIG-007; MT-002 through MT-003; SDP-002; IDX-001/IDX-002/IDX-004
+- **CRITICAL** — `block` rules: sql-parameterized-queries, always-no-hardcoded-secrets; also MT-001, MIG-001, MIG-002, SDP-001 (no Always Encrypted on highly sensitive column), SDP-003 (TDE not verified), BR-001 (no restore drill)
+- **WARNING** — `warn` rules; MIG-003 through MIG-007; MT-002 through MT-003; SDP-002; IDX-001/IDX-002/IDX-004; BR-002/BR-003/BR-004
 - **ADVISORY** — MT-004; BIC-007 equivalent; performance P2/P3 items; SDP-004; IDX-003
 
 ### Step 4 — Summary line
