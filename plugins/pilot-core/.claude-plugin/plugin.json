@@ -8,8 +8,8 @@
     "name": "AgenticPawan",
     "url": "https://github.com/AgenticPawan"
   },
-  "homepage": "https://github.com/AgenticPawan/FullStack-Plugin#pilot-core",
-  "repository": "https://github.com/AgenticPawan/FullStack-Plugin",
+  "homepage": "https://github.com/AgenticPawan/FullStack-Pilot#pilot-core",
+  "repository": "https://github.com/AgenticPawan/FullStack-Pilot",
   "license": "MIT",
   "keywords": ["governance", "commits", "code-health", "microsoft", "fullstack"]
 }

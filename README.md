@@ -12,15 +12,15 @@ without burdening every developer with configuration.
 Add the marketplace once, then install whichever plugins you need:
 
 ```shell
-/plugin marketplace add AgenticPawan/FullStack-Plugin
+/plugin marketplace add AgenticPawan/FullStack-Pilot
 ```
 
 ```shell
-/plugin install pilot-core@FullStack-Plugin
-/plugin install pilot-angular@FullStack-Plugin
-/plugin install pilot-dotnet@FullStack-Plugin
-/plugin install pilot-sql@FullStack-Plugin
-/plugin install pilot-azure@FullStack-Plugin
+/plugin install pilot-core@FullStack-Pilot
+/plugin install pilot-angular@FullStack-Pilot
+/plugin install pilot-dotnet@FullStack-Pilot
+/plugin install pilot-sql@FullStack-Pilot
+/plugin install pilot-azure@FullStack-Pilot
 ```
 
 ### Local / development install
@@ -28,8 +28,8 @@ Add the marketplace once, then install whichever plugins you need:
 Clone the repo, then load the marketplace from disk:
 
 ```shell
-git clone https://github.com/AgenticPawan/FullStack-Plugin
-cd FullStack-Plugin
+git clone https://github.com/AgenticPawan/FullStack-Pilot
+cd FullStack-Pilot
 ```
 
 Inside a Claude Code session, run:

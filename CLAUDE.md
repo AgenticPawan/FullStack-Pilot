@@ -4,7 +4,7 @@
 
 **FullStack Pilot** is a Claude Code plugin marketplace for full-stack Microsoft shops.
 It ships codebase-governance skills, agents, and hooks for Angular, .NET, SQL Server,
-and Azure projects. Hosted publicly at `AgenticPawan/FullStack-Plugin`; installed via:
+and Azure projects. Hosted publicly at `AgenticPawan/FullStack-Pilot`; installed via:
 
     /plugin marketplace add AgenticPawan/FullStack-Pilot
 

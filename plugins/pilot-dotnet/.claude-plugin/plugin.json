@@ -8,8 +8,8 @@
     "name": "AgenticPawan",
     "url": "https://github.com/AgenticPawan"
   },
-  "homepage": "https://github.com/AgenticPawan/FullStack-Plugin#pilot-dotnet",
-  "repository": "https://github.com/AgenticPawan/FullStack-Plugin",
+  "homepage": "https://github.com/AgenticPawan/FullStack-Pilot#pilot-dotnet",
+  "repository": "https://github.com/AgenticPawan/FullStack-Pilot",
   "license": "MIT",
   "keywords": ["dotnet", "csharp", "aspnetcore", "efcore", "nuget", "minimal-api"]
 }

@@ -8,8 +8,8 @@
     "name": "AgenticPawan",
     "url": "https://github.com/AgenticPawan"
   },
-  "homepage": "https://github.com/AgenticPawan/FullStack-Plugin#pilot-sql",
-  "repository": "https://github.com/AgenticPawan/FullStack-Plugin",
+  "homepage": "https://github.com/AgenticPawan/FullStack-Pilot#pilot-sql",
+  "repository": "https://github.com/AgenticPawan/FullStack-Pilot",
   "license": "MIT",
   "keywords": ["sql-server", "efcore", "migrations", "query-review", "index"]
 }

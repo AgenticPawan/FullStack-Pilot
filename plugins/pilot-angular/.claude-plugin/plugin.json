@@ -8,8 +8,8 @@
     "name": "AgenticPawan",
     "url": "https://github.com/AgenticPawan"
   },
-  "homepage": "https://github.com/AgenticPawan/FullStack-Plugin#pilot-angular",
-  "repository": "https://github.com/AgenticPawan/FullStack-Plugin",
+  "homepage": "https://github.com/AgenticPawan/FullStack-Pilot#pilot-angular",
+  "repository": "https://github.com/AgenticPawan/FullStack-Pilot",
   "license": "MIT",
   "keywords": ["angular", "typescript", "signals", "standalone", "accessibility"]
 }
