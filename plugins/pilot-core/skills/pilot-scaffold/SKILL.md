@@ -146,6 +146,22 @@ Materialized rules → \`.claude/rules/\` (<count> active):
 
 Full catalog: \`plugins/pilot-core/rules-catalog/\`
 
+## .NET Skills Routing
+<Only if dotnet non-null. Copy this section verbatim — do not adjust routing table.>
+
+```markdown
+| Task | dotnet/skills skill |
+|------|---------------------|
+| EF Core performance, query optimization | `dotnet-data` |
+| Test running, xUnit, migration testing | `dotnet-test` |
+| Framework upgrades, nullable enablement | `dotnet-upgrade` |
+| Minimal API endpoints, file upload | `dotnet-aspnetcore` |
+| MCP server development in C# | `dotnet-ai` |
+```
+
+> Install: `/plugin marketplace add dotnet/skills` then `/plugin install <skill>@dotnet-agent-skills`
+> pilot-dotnet covers house conventions, Serilog policy, and resilience policy only.
+
 ## Open Questions
 <List only items from unknowns[] that the user did NOT resolve in Step 3. Omit if empty.>
 ```

@@ -42,3 +42,42 @@ Once confirmed, run the `pilot-scaffold` skill, following every step in order (S
 - CLAUDE.md output destination: `PROJECT_ROOT/CLAUDE.md`.
 - Hard limit on CLAUDE.md: 100 lines. Fail loudly if you exceed this.
 - Print EOL advisories (Step 2 of pilot-scaffold) BEFORE asking interview questions.
+
+### Phase 3 — dotnet/skills wiring (dotnet projects only)
+
+**Run this phase only if `dotnet` is non-null in the confirmed stack profile.**
+
+After Phase 2 completes, print the following block exactly:
+
+```
+## .NET Agent Skills — Required Setup
+
+FullStack Pilot does not reimplement Microsoft's official .NET skills.
+Install them now so Claude has full .NET coverage:
+
+  /plugin marketplace add dotnet/skills
+  /plugin install dotnet-data@dotnet-agent-skills
+  /plugin install dotnet-test@dotnet-agent-skills
+  /plugin install dotnet-upgrade@dotnet-agent-skills
+  /plugin install dotnet-aspnetcore@dotnet-agent-skills
+  /plugin install dotnet-ai@dotnet-agent-skills
+
+Then restart Claude Code to load the new skills.
+
+Skill routing added to CLAUDE.md:
+  EF Core performance / query optimization  →  dotnet-data
+  Test running, xUnit, migration testing    →  dotnet-test
+  Framework upgrades, nullable enablement  →  dotnet-upgrade
+  Minimal API endpoints, file upload        →  dotnet-aspnetcore
+  MCP server development in C#              →  dotnet-ai
+
+pilot-dotnet covers only what Microsoft's skills do not:
+house conventions, Serilog policy, and resilience policy.
+```
+
+### Phase 4 — MCP discovery
+
+After Phase 3 (or Phase 2 if no dotnet), run the `mcp-discovery` skill.
+
+- Run it against `PROJECT_ROOT` using the confirmed `stack-profile.json`.
+- Follow every step in the skill: scan → propose → wait for approval → write.
