@@ -32,6 +32,10 @@ Shared governance utilities every other pilot plugin depends on. Install this fi
   `dependency-supply-chain`'s security-vulnerability scanning: OSS license scanning,
   copyleft (GPL/AGPL) risk review, a documented license allow-list/deny-list policy,
   license metadata in the SBOM.
+- **test-data-management** — closes the gap `dotnet-data-protection`/`sql-data-protection`
+  leave open if a raw prod backup is restored into a less-protected environment:
+  anonymization/masking for prod-to-lower-environment refreshes, synthetic-data seeding
+  as a lighter-weight alternative, and a documented policy for what's safe to copy at all.
 
 ## Hooks
 

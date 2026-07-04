@@ -3,6 +3,36 @@
 All notable changes to FullStack Pilot are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.19.0] — 2026-07-05 (pilot-dotnet), pilot-azure 0.13.0 → 0.14.0, pilot-core 0.12.0 → 0.13.0
+
+### Added
+- Closes the round-3 gap audit's Tier-2 backlog (Tier 1 in `[0.18.0]`).
+- `pilot-azure`: `azure-container-image-security` — the image-build-time layer above
+  `azure-aks-governance`'s pod-spec runtime checks: base-image vulnerability scanning
+  gate in CI, non-root container user, distroless/minimal runtime images, and
+  image-signing/provenance verification before deployment.
+- `pilot-dotnet`: `dotnet-connection-pool-tuning` — a distinct failure mode from
+  `dotnet-resilience`'s retry/circuit-breaker policies (which handle a connection
+  failing, not a pool running out of connections to hand out): explicit `Max`/`Min
+  Pool Size` tuned to expected concurrency, dedicated pool-exhaustion monitoring,
+  connection/`DbContext` scope tightness, and correct `DbContext` lifetime for the
+  hosting model (scoped for web requests, `IDbContextFactory` for background jobs).
+- `pilot-core`: `test-data-management` — closes a gap `dotnet-data-protection`/
+  `sql-data-protection`'s production PII controls leave open if a raw prod backup is
+  restored into a less-protected lower environment: an anonymization/masking step for
+  prod-to-lower-environment refreshes, synthetic-data seeding as a lighter-weight
+  alternative, environment access-control parity once prod-derived data is present,
+  and a documented policy for what's safe to copy at all.
+- `infra-reviewer`/`dotnet-reviewer` agents: inventory rows and review-checklist
+  categories for all three additions.
+
+### Changed
+- `plugin.json`: `pilot-dotnet` `0.18.0` → `0.19.0`; `pilot-azure` `0.13.0` → `0.14.0`;
+  `pilot-core` `0.12.0` → `0.13.0`.
+- `docs/pilot-azure.md`, `docs/pilot-dotnet.md`, `docs/pilot-core.md`, `README.md`:
+  skill tables and counts updated (pilot-azure 12→13, pilot-dotnet 35→36,
+  pilot-core 9→10).
+
 ## [0.18.0] — 2026-07-05 (pilot-dotnet), pilot-sql 0.11.0 → 0.12.0, pilot-core 0.11.0 → 0.12.0, pilot-azure 0.12.0 → 0.13.0
 
 ### Added

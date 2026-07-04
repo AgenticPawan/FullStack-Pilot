@@ -2,8 +2,8 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "pilot-azure",
   "displayName": "Pilot Azure",
-  "version": "0.13.0",
-  "description": "Azure / Bicep / ACA codebase governance: resource-naming conventions, security baseline, Well-Architected Framework review, Bicep patterns, centralized observability (Log Analytics/App Insights/alerting), CI/CD deployment security (OIDC, approval gates), multi-region disaster recovery, cost/FinOps guardrails, AKS cluster governance (Pod Security Standards, Workload Identity), API Management gateway policy review, enterprise-scale landing-zone/subscription topology, and SLO/error-budget policy",
+  "version": "0.14.0",
+  "description": "Azure / Bicep / ACA codebase governance: resource-naming conventions, security baseline, Well-Architected Framework review, Bicep patterns, centralized observability (Log Analytics/App Insights/alerting), CI/CD deployment security (OIDC, approval gates), multi-region disaster recovery, cost/FinOps guardrails, AKS cluster governance (Pod Security Standards, Workload Identity), API Management gateway policy review, enterprise-scale landing-zone/subscription topology, SLO/error-budget policy, and container image security (scanning, non-root, signing)",
   "author": {
     "name": "AgenticPawan",
     "url": "https://github.com/AgenticPawan"
@@ -11,5 +11,5 @@
   "homepage": "https://github.com/AgenticPawan/FullStack-Pilot#pilot-azure",
   "repository": "https://github.com/AgenticPawan/FullStack-Pilot",
   "license": "MIT",
-  "keywords": ["azure", "bicep", "aca", "cost-guardrails", "deployment", "naming", "observability", "disaster-recovery", "cicd-security", "finops", "aks", "kubernetes", "apim", "landing-zone", "enterprise-scale", "slo", "error-budget"]
+  "keywords": ["azure", "bicep", "aca", "cost-guardrails", "deployment", "naming", "observability", "disaster-recovery", "cicd-security", "finops", "aks", "kubernetes", "apim", "landing-zone", "enterprise-scale", "slo", "error-budget", "container-security", "image-scanning"]
 }

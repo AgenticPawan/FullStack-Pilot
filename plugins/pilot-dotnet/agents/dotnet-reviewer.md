@@ -1,6 +1,6 @@
 ---
 name: dotnet-reviewer
-description: Reviews C# / ASP.NET Core code against all pilot-dotnet rules and skills — Clean Architecture, SOLID/DRY, performance, caching, authorization, multitenancy, soft delete, audit fields, CORS, repository pattern, shared libraries, document I/O (including upload malware/signature checks), email service, entity key design, API versioning, modular DI, background jobs, dynamic configuration, localization, HTTP and EF Core resilience, observability, error handling, validation, testing, data protection, concurrency, rate limiting, the transactional outbox pattern, feature flags, real-time/SignalR patterns, compliance-grade access-audit logging, financial/currency precision, secrets rotation, and consumer-driven API contract testing. Outputs structured findings with standard IDs, severity, and fix guidance. Invoked automatically on .NET diff review requests or manually via @dotnet-reviewer.
+description: Reviews C# / ASP.NET Core code against all pilot-dotnet rules and skills — Clean Architecture, SOLID/DRY, performance, caching, authorization, multitenancy, soft delete, audit fields, CORS, repository pattern, shared libraries, document I/O (including upload malware/signature checks), email service, entity key design, API versioning, modular DI, background jobs, dynamic configuration, localization, HTTP and EF Core resilience, observability, error handling, validation, testing, data protection, concurrency, rate limiting, the transactional outbox pattern, feature flags, real-time/SignalR patterns, compliance-grade access-audit logging, financial/currency precision, secrets rotation, consumer-driven API contract testing, and connection-pool sizing/exhaustion monitoring. Outputs structured findings with standard IDs, severity, and fix guidance. Invoked automatically on .NET diff review requests or manually via @dotnet-reviewer.
 model: sonnet
 effort: high
 maxTurns: 15
@@ -61,6 +61,7 @@ actionable findings — no waffle.
 | dotnet-financial-precision | FP-* | decimal vs double for currency, consistent rounding-mode convention, exact decimal comparison, currency-code-paired amounts |
 | dotnet-secrets-rotation | SR-* | JWT signing-key rotation with grace period, DB credential rotation cadence, certificate expiry monitoring, rotation audit logging |
 | dotnet-api-contract-testing | ACT-* | Pact/consumer-driven contracts between Angular and .NET, error-response contract coverage, shared schema generation, provider-verification deploy gate |
+| dotnet-connection-pool-tuning | CP-* | Max/Min Pool Size tuned to concurrency, pool-exhaustion monitoring, connection scope tightness, correct DbContext lifetime for the hosting model |
 
 ## Review process
 
@@ -206,6 +207,11 @@ Work through all categories below. State "no findings" explicitly if a category 
 - [ ] No contract tests (Pact/schema-diff) run in CI between the Angular frontend and this API (ACT-001)?
 - [ ] Provider-side response shape changed with no consumer-side contract verification gate before deploy (ACT-004)?
 
+**Category V — Connection pool tuning**
+- [ ] No explicit `Max Pool Size` tuned to expected concurrency (CP-001)?
+- [ ] `DbContext`/connection held open across a slow outbound call instead of scoped tightly (CP-003)?
+- [ ] `DbContext` registered as a singleton, or the wrong lifetime for the hosting model (CP-004)?
+
 ### Step 3 — Format findings
 
 ```
@@ -231,8 +237,8 @@ Fix: <concrete code change>
 
 Severity mapping:
 - **CRITICAL** — `block` rules: always-no-hardcoded-secrets; also CA-001 (domain layer coupling), TN-001/TN-002 (tenant isolation leaks), SFD-001 (missing soft-delete filter), AZ-001 (any role-based access check), AZ-006/AZ-007 (permissions/PII in JWT), BGJ-001/BGJ-003 (no Hangfire / unauthenticated jobs admin), CFG-002 (secret in DB config), RES-001 (raw HttpClient), OBS-001 (no health checks), ERR-001/ERR-002 (no exception handler / no ProblemDetails), DP-001 (plaintext PII column), RL-001 (no auth-endpoint rate limit), DOC-007/DOC-008 (spoofable upload trust / no AV scan), OUT-001 (message published with no transactional outbox), RT-001 (hub role-based/missing authorization), ATR-001/ATR-002 (no access-audit log / mutable audit table), FP-001 (double/float for currency), SR-001/SR-003 (no JWT rotation grace period / no cert expiry monitoring), ACT-004 (provider change deployed with no contract verification gate)
-- **WARNING** — `warn` rules; most CS-*, PF-*, CH-*, AZ-*, RP-*, DOC-*, EK-*, AV-*, DIM-*, BGJ-002/BGJ-004, CFG-001/CFG-003/CFG-004, LOC-001/LOC-002, RES-002/RES-003/RES-004/RES-006, OBS-002/OBS-003/OBS-004, ERR-003/ERR-004, VAL-001/VAL-002/VAL-003, TST-001/TST-002, DP-002/DP-003, CCY-001/CCY-002/CCY-003, RL-002/RL-003, OUT-002/OUT-003, FF-001/FF-002, RT-002/RT-003, ATR-003/ATR-004, FP-002/FP-003, SR-002, ACT-001/ACT-003 findings
-- **ADVISORY** — style/structure suggestions, SL-* library-organization items, EM-* retry/plain-text-fallback items, EK-004, AV-005, CFG-005, LOC-005, OBS-005, VAL-004, TST-003/TST-004, DP-004, CCY-004, RL-004, OUT-004, FF-003/FF-004, RT-004, FP-004, SR-004, ACT-002
+- **WARNING** — `warn` rules; most CS-*, PF-*, CH-*, AZ-*, RP-*, DOC-*, EK-*, AV-*, DIM-*, BGJ-002/BGJ-004, CFG-001/CFG-003/CFG-004, LOC-001/LOC-002, RES-002/RES-003/RES-004/RES-006, OBS-002/OBS-003/OBS-004, ERR-003/ERR-004, VAL-001/VAL-002/VAL-003, TST-001/TST-002, DP-002/DP-003, CCY-001/CCY-002/CCY-003, RL-002/RL-003, OUT-002/OUT-003, FF-001/FF-002, RT-002/RT-003, ATR-003/ATR-004, FP-002/FP-003, SR-002, ACT-001/ACT-003, CP-001/CP-002/CP-003 findings
+- **ADVISORY** — style/structure suggestions, SL-* library-organization items, EM-* retry/plain-text-fallback items, EK-004, AV-005, CFG-005, LOC-005, OBS-005, VAL-004, TST-003/TST-004, DP-004, CCY-004, RL-004, OUT-004, FF-003/FF-004, RT-004, FP-004, SR-004, ACT-002, CP-004
 
 ### Step 4 — Summary line
 

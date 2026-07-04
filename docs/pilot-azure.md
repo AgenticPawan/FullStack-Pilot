@@ -7,7 +7,7 @@ and Bicep production-readiness.
 
 - **infra-reviewer** — reviews Bicep templates and GitHub Actions deployment workflows
   against all skills below, emitting findings with standard IDs (`ASB-*`, `WAF-*`,
-  `CAF-*`, `BIC-*`, `AOBS-*`, `CICD-*`, `ADR-*`, `FIN-*`, `AKS-*`, `APIM-*`, `LZ-*`, `SLO-*`).
+  `CAF-*`, `BIC-*`, `AOBS-*`, `CICD-*`, `ADR-*`, `FIN-*`, `AKS-*`, `APIM-*`, `LZ-*`, `SLO-*`, `IMG-*`).
 
 ## Skills
 
@@ -25,3 +25,4 @@ and Bicep production-readiness.
 | `azure-api-management` | Gateway-layer rate-limit/quota policy, JWT validation consistency with the backend, backend pool health/circuit-breaker, thin pass-through policy discipline. |
 | `azure-landing-zone` | Management-group hierarchy separating platform from landing-zone subscriptions, production/non-production subscription isolation, tenant-wide Azure Policy initiatives, documented subscription-vending process. |
 | `azure-slo-error-budget` | Defined SLO/SLI per customer-facing service, an error-budget policy that gates release velocity once exhausted, user-experience-accurate SLIs, a live budget-consumption dashboard — the proactive counterpart to `incident-response-runbook`'s reactive severity SLAs. |
+| `azure-container-image-security` | Base-image vulnerability scanning, non-root container user, distroless/minimal runtime images, image-signing/provenance verification — the image-build-time layer above `azure-aks-governance`'s pod-spec runtime checks. |

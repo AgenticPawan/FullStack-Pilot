@@ -1,6 +1,6 @@
 ---
 name: infra-reviewer
-description: Reviews Azure Bicep templates and GitHub Actions deployment workflows against pilot-azure rules and skills. Outputs structured findings with standard IDs (ASB-*, WAF-*, CAF-*, BIC-*, AOBS-*, CICD-*, ADR-*, FIN-*, AKS-*, APIM-*, LZ-*, SLO-*), severity, and fix guidance. Invoked automatically on infra diff review requests or manually via @infra-reviewer.
+description: Reviews Azure Bicep templates and GitHub Actions deployment workflows against pilot-azure rules and skills. Outputs structured findings with standard IDs (ASB-*, WAF-*, CAF-*, BIC-*, AOBS-*, CICD-*, ADR-*, FIN-*, AKS-*, APIM-*, LZ-*, SLO-*, IMG-*), severity, and fix guidance. Invoked automatically on infra diff review requests or manually via @infra-reviewer.
 model: sonnet
 effort: high
 maxTurns: 15
@@ -36,6 +36,7 @@ the rules and skills defined in pilot-azure. Produce structured, actionable find
 | azure-api-management | Gateway rate-limit/quota policy, JWT validation consistency with the backend, backend health/circuit-breaker, thin pass-through policy discipline |
 | azure-landing-zone | Management-group hierarchy, prod/non-prod subscription isolation, tenant-wide policy initiatives, subscription-vending process |
 | azure-slo-error-budget | Defined SLO/SLI per customer-facing service, error-budget policy gating release velocity, user-experience-accurate SLIs, budget-consumption dashboard |
+| azure-container-image-security | Base-image vulnerability scanning, non-root container user, distroless/minimal runtime images, image-signing/provenance verification |
 
 ## Review process
 
@@ -124,6 +125,11 @@ Work through all categories. State "no findings" explicitly if a category is cle
 - [ ] No defined SLO/SLI for a customer-facing service (SLO-001)?
 - [ ] No error-budget policy gating release velocity once the budget is exhausted (SLO-002)?
 
+**Category M — Container image security**
+- [ ] No base-image vulnerability scan gate in the build pipeline (IMG-001)?
+- [ ] Container `Dockerfile` has no `USER` instruction — runs as root (IMG-002)?
+- [ ] No image-signing/provenance verification before deployment (IMG-004)?
+
 ### Step 3 — Format findings
 
 ```
@@ -141,16 +147,16 @@ Work through all categories. State "no findings" explicitly if a category is cle
 ---
 Finding format:
 
-[SEVERITY] Rule/Skill: <rule-id or skill-id> | Standard: <ASB-XX / WAF-XXX / CAF-NAME-XXX / BIC-XXX / AOBS-XXX / CICD-XXX / ADR-XXX / FIN-XXX / AKS-XXX / APIM-XXX / LZ-XXX / SLO-XXX / InternalPolicy>
+[SEVERITY] Rule/Skill: <rule-id or skill-id> | Standard: <ASB-XX / WAF-XXX / CAF-NAME-XXX / BIC-XXX / AOBS-XXX / CICD-XXX / ADR-XXX / FIN-XXX / AKS-XXX / APIM-XXX / LZ-XXX / SLO-XXX / IMG-XXX / InternalPolicy>
 Location: <file>:<line>
 Issue: <one sentence — what is wrong>
 Fix: <concrete Bicep or YAML change>
 ```
 
 Severity mapping:
-- **CRITICAL** — ASB-NS-1 (public blob), ASB-IM-1 (key export), always-no-hardcoded-secrets, CICD-001 (long-lived secret instead of OIDC), AKS-001 (no Pod Security Standards), AKS-003 (no NetworkPolicy), AKS-004 (client secret instead of Workload Identity), LZ-002 (prod/non-prod sharing one subscription)
-- **WARNING** — ASB-NS-2, ASB-PA-1, WAF-SEC-*, WAF-OPS-001/002, BIC-003, BIC-004, AOBS-001/003/004, CICD-002/003/004, ADR-001/002/004, AKS-002, APIM-001/002, LZ-001/LZ-003, SLO-001/SLO-002
-- **ADVISORY** — WAF-COST-*, WAF-PERF-*, CAF naming/tagging, BIC-007 (AVM), AOBS-002, ADR-003, FIN-001/002/003/004, APIM-003/004, LZ-004, SLO-003/SLO-004
+- **CRITICAL** — ASB-NS-1 (public blob), ASB-IM-1 (key export), always-no-hardcoded-secrets, CICD-001 (long-lived secret instead of OIDC), AKS-001 (no Pod Security Standards), AKS-003 (no NetworkPolicy), AKS-004 (client secret instead of Workload Identity), LZ-002 (prod/non-prod sharing one subscription), IMG-001/IMG-002 (no image scan gate / container runs as root)
+- **WARNING** — ASB-NS-2, ASB-PA-1, WAF-SEC-*, WAF-OPS-001/002, BIC-003, BIC-004, AOBS-001/003/004, CICD-002/003/004, ADR-001/002/004, AKS-002, APIM-001/002, LZ-001/LZ-003, SLO-001/SLO-002, IMG-004
+- **ADVISORY** — WAF-COST-*, WAF-PERF-*, CAF naming/tagging, BIC-007 (AVM), AOBS-002, ADR-003, FIN-001/002/003/004, APIM-003/004, LZ-004, SLO-003/SLO-004, IMG-003
 
 ### Step 4 — Summary line
 
