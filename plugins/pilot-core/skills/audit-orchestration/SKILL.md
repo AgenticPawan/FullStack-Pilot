@@ -9,6 +9,7 @@ disable-model-invocation: true
 <!-- EVIDENCE RULE: every semantic finding MUST include file:line and a quoted code snippet. Discard any finding that cannot cite evidence. -->
 <!-- SCOPE: PROJECT_ROOT is the user's project directory (not this plugin repo). -->
 <!-- PLUGIN EXTENSIONS: pilot-sql adds Checks E (migration safety). pilot-azure adds Check F (Bicep security baseline). Both use the same findings.json schema. -->
+<!-- POLICY LAYER: dependency-vulnerability findings from Steps 2a/2c (dotnet/npm) feed into the dependency-supply-chain skill's severity-to-patch-cadence SLA — that skill governs triage response, this one only detects. -->
 
 ## Step 0 — Load stack profile
 

@@ -29,6 +29,7 @@ targets 17–20; 15–16 are EOL and get upgrade guidance only.
 | `angular-i18n` | i18n library wiring, shared translation-key space with `dotnet-localization`, locale-aware date/number/currency formatting, RTL layout support |
 | `angular-error-handling` | Global `ErrorHandler`, shared error-notification pattern, `ProblemDetails`-aware HTTP error parsing (the frontend counterpart to `dotnet-error-handling`), recoverable-vs-crash fallback UI |
 | `angular-pwa-offline` | `@angular/service-worker` configuration, offline fallback UI, shell-vs-API caching strategy, offline-edit conflict resolution — only relevant for field/offline-capable apps |
+| `angular-telemetry` | Application Insights JS SDK wiring, consistent event-tracking naming convention, frontend-to-backend trace-ID correlation, PII-free telemetry properties |
 
 ## Version policy
 

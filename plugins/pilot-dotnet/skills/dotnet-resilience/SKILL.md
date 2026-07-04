@@ -1,7 +1,7 @@
 ---
 name: dotnet-resilience
-description: Reviews ASP.NET Core outbound HTTP call resilience — the backend counterpart to angular-http-resilience. Flags raw HttpClient instantiation instead of IHttpClientFactory/typed clients, missing Polly retry/backoff policies, no circuit breaker on failure-prone downstream dependencies, missing per-request timeouts, and correlation IDs received from the Angular frontend not propagated onto outbound calls or structured logs. Outputs findings with pilot-dotnet resilience standard IDs.
-when_to_use: HttpClientFactory, Polly, retry policy, circuit breaker, timeout policy, outbound HTTP call, transient fault, resilience pipeline, IHttpClientFactory, typed client, correlation id propagation, socket exhaustion, downstream dependency
+description: Reviews ASP.NET Core outbound HTTP call resilience — the backend counterpart to angular-http-resilience. Flags raw HttpClient instantiation instead of IHttpClientFactory/typed clients, missing Polly retry/backoff policies, no circuit breaker on failure-prone downstream dependencies, missing per-request timeouts, correlation IDs received from the Angular frontend not propagated onto outbound calls or structured logs, and EF Core's SQL connection left without EnableRetryOnFailure. Outputs findings with pilot-dotnet resilience standard IDs.
+when_to_use: HttpClientFactory, Polly, retry policy, circuit breaker, timeout policy, outbound HTTP call, transient fault, resilience pipeline, IHttpClientFactory, typed client, correlation id propagation, socket exhaustion, downstream dependency, EnableRetryOnFailure, EF Core connection resiliency, execution strategy, transient SQL error
 ---
 
 ## Standard IDs
@@ -13,6 +13,7 @@ when_to_use: HttpClientFactory, Polly, retry policy, circuit breaker, timeout po
 | RES-003 | P1 | No circuit breaker on a downstream dependency prone to cascading failure |
 | RES-004 | P1 | No per-request timeout configured on an outbound call |
 | RES-005 | P2 | Correlation ID not propagated onto outbound calls or structured logs |
+| RES-006 | P1 | EF Core's SQL connection has no `EnableRetryOnFailure` execution strategy |
 
 ---
 
@@ -221,3 +222,48 @@ builder.Services.AddHttpClient<WeatherClient>(...).AddHttpMessageHandler<Correla
 
 Ties to `dotnet-observability` OBS-003, which covers attaching the same correlation ID to
 distributed traces (`Activity` tags), not just log scopes.
+
+---
+
+## Check F — EF Core connection has no retry-on-failure execution strategy (RES-006)
+
+### Detection
+
+Grep `AddDbContext`/`UseSqlServer` registration for `EnableRetryOnFailure(...)`. Checks A–E
+cover *outbound HTTP* resilience; the database connection itself is a separate transient-
+fault surface (brief network blips, Azure SQL failover events) that EF Core does not retry
+by default — a transient connection drop surfaces as an unhandled exception instead of a
+transparent retry.
+
+### BAD — no execution strategy, a transient SQL blip fails the request
+
+```csharp
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(connectionString)); // no retry strategy — one dropped connection = a failed request
+```
+
+### GOOD — EnableRetryOnFailure with sane bounds
+
+```csharp
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(connectionString, sql =>
+        sql.EnableRetryOnFailure(
+            maxRetryCount: 3,
+            maxRetryDelay: TimeSpan.FromSeconds(5),
+            errorNumbersToAdd: null)));
+```
+
+**Note:** once `EnableRetryOnFailure` is on, any explicit `BeginTransaction()` block must
+be wrapped in `CreateExecutionStrategy().ExecuteAsync(...)` — EF Core throws at startup
+otherwise, since the retry strategy needs to be able to re-run the whole transaction block
+on a transient failure, not just the individual command.
+
+```csharp
+var strategy = _db.Database.CreateExecutionStrategy();
+await strategy.ExecuteAsync(async () =>
+{
+    await using var transaction = await _db.Database.BeginTransactionAsync();
+    // ... transactional work (see dotnet-outbox-pattern OUT-001) ...
+    await transaction.CommitAsync();
+});
+```

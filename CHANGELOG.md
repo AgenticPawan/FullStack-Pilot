@@ -3,6 +3,38 @@
 All notable changes to FullStack Pilot are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.15.0] — 2026-07-05 (pilot-dotnet, pilot-angular), pilot-core 0.9.0 → 0.10.0
+
+### Added
+- A second senior-architect gap audit (round 2, following up on the Tier 1–3 batches in
+  `[0.13.0]`/`[0.14.0]`) identified six more Tier-1 gaps once the marketplace reached 63
+  skills; this release fills all of them.
+- `pilot-core`: `dependency-supply-chain` — the triage/policy layer over
+  `audit-orchestration`'s raw `dotnet list package --vulnerable`/`npm audit` output:
+  severity-to-patch-cadence SLA, version-pinning discipline (no floating ranges on direct
+  dependencies), private-feed/allow-list policy against dependency confusion, and SBOM
+  generation for release artifacts.
+- `pilot-dotnet`: three new skills — `dotnet-feature-flags` (`Microsoft.FeatureManagement`
+  vs ad-hoc config checks, percentage/targeting rollout, stale-flag cleanup — extends
+  `dotnet-dynamic-configuration`), `dotnet-realtime` (SignalR hub permissions-only
+  authorization, scale-out backplane, genuine `IAsyncEnumerable`/SSE streaming, client
+  reconnection), and `dotnet-audit-trail` (append-only access-audit log for sensitive-data
+  *reads* — distinct from `dotnet-audit-fields`' change tracking — tamper-evident storage,
+  compliance query surface). Plus a new check (RES-006) added to the existing
+  `dotnet-resilience` skill for EF Core's `EnableRetryOnFailure` connection resiliency.
+- `pilot-angular`: `angular-telemetry` — Application Insights JS SDK wiring, consistent
+  event-tracking naming, frontend-to-backend trace-ID correlation (joins with
+  `dotnet-observability`'s traces), PII-free telemetry properties.
+- `dotnet-reviewer`/`angular-reviewer` agents: inventory rows and review-checklist
+  categories for all six additions.
+
+### Changed
+- `plugin.json`: `pilot-dotnet` and `pilot-angular` `0.14.0` → `0.15.0`; `pilot-core`
+  `0.9.0` → `0.10.0` (first content change since Phase 5).
+- `docs/pilot-core.md`, `docs/pilot-dotnet.md`, `docs/pilot-angular.md`, `README.md`:
+  skill tables and counts updated (pilot-core 6→7, pilot-dotnet 29→32, pilot-angular
+  15→16).
+
 ## [0.14.0] — 2026-07-04 (pilot-dotnet, pilot-angular), pilot-sql/pilot-azure 0.9.0 → 0.10.0
 
 ### Added

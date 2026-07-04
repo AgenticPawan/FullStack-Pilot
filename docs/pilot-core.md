@@ -22,6 +22,9 @@ Shared governance utilities every other pilot plugin depends on. Install this fi
 - **convention-learner** — used by `/pilot-learn --conventions`.
 - **mcp-discovery** — scans your dependency graph for companion MCP servers and proposes
   them; never auto-registers a server without per-server consent.
+- **dependency-supply-chain** — the policy layer over `audit-orchestration`'s raw dotnet/npm
+  vulnerability scan output: severity-to-patch-cadence SLA, version-pinning discipline,
+  private-feed/allow-list policy, SBOM generation for release artifacts.
 
 ## Hooks
 

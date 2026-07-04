@@ -1,6 +1,6 @@
 ---
 name: dotnet-reviewer
-description: Reviews C# / ASP.NET Core code against all pilot-dotnet rules and skills — Clean Architecture, SOLID/DRY, performance, caching, authorization, multitenancy, soft delete, audit fields, CORS, repository pattern, shared libraries, document I/O (including upload malware/signature checks), email service, entity key design, API versioning, modular DI, background jobs, dynamic configuration, localization, HTTP resilience, observability, error handling, validation, testing, data protection, concurrency, rate limiting, and the transactional outbox pattern for distributed messaging. Outputs structured findings with standard IDs, severity, and fix guidance. Invoked automatically on .NET diff review requests or manually via @dotnet-reviewer.
+description: Reviews C# / ASP.NET Core code against all pilot-dotnet rules and skills — Clean Architecture, SOLID/DRY, performance, caching, authorization, multitenancy, soft delete, audit fields, CORS, repository pattern, shared libraries, document I/O (including upload malware/signature checks), email service, entity key design, API versioning, modular DI, background jobs, dynamic configuration, localization, HTTP and EF Core resilience, observability, error handling, validation, testing, data protection, concurrency, rate limiting, the transactional outbox pattern, feature flags, real-time/SignalR patterns, and compliance-grade access-audit logging. Outputs structured findings with standard IDs, severity, and fix guidance. Invoked automatically on .NET diff review requests or manually via @dotnet-reviewer.
 model: sonnet
 effort: high
 maxTurns: 15
@@ -46,7 +46,7 @@ actionable findings — no waffle.
 | dotnet-background-jobs | BGJ-* | Hangfire vs hand-rolled loops, configurable job schedules, admin-endpoint auth, idempotency |
 | dotnet-dynamic-configuration | CFG-* | DB-backed config vs Key Vault secrets, precedence, caching/invalidation |
 | dotnet-localization | LOC-* | XML default + DB-override translation, culture resolution, missing-key fallback |
-| dotnet-resilience | RES-* | IHttpClientFactory, Polly retry/circuit-breaker/timeout, correlation-ID propagation |
+| dotnet-resilience | RES-* | IHttpClientFactory, Polly retry/circuit-breaker/timeout, correlation-ID propagation, EF Core EnableRetryOnFailure |
 | dotnet-observability | OBS-* | Health checks, OpenTelemetry tracing/metrics, correlation ID on traces, PII-safe telemetry |
 | dotnet-error-handling | ERR-* | Centralized IExceptionHandler, ProblemDetails shape, no leaked exception detail, typed domain exceptions |
 | dotnet-validation | VAL-* | Consistent validation strategy, pipeline behavior, ProblemDetails-shaped failures, testable validators |
@@ -55,6 +55,9 @@ actionable findings — no waffle.
 | dotnet-concurrency | CCY-* | RowVersion optimistic concurrency, DbUpdateConcurrencyException handling, ETag/If-Match, read-modify-write guards |
 | dotnet-rate-limiting | RL-* | Auth-endpoint throttling, admin-endpoint rate limits, AddRateLimiter baseline, Retry-After |
 | dotnet-outbox-pattern | OUT-* | Transactional outbox for domain events, idempotent consumers, dead-letter handling, outbox row cleanup |
+| dotnet-feature-flags | FF-* | IFeatureManager vs ad-hoc config checks, percentage/targeting rollout, stale-flag cleanup, frontend flag exposure |
+| dotnet-realtime | RT-* | SignalR hub permissions-only authorization, scale-out backplane, genuine IAsyncEnumerable/SSE streaming, client reconnection |
+| dotnet-audit-trail | ATR-* | Append-only access-audit log for sensitive-data reads, tamper-evidence, compliance query surface, non-blocking writes |
 
 ## Review process
 
@@ -147,6 +150,7 @@ Work through all categories below. State "no findings" explicitly if a category 
 - [ ] Correlation ID received from the frontend not propagated to outbound calls/logs/traces (RES-005, OBS-003)?
 - [ ] No `/health/live` and `/health/ready` endpoints, or readiness that doesn't check real dependencies (OBS-001, OBS-004)?
 - [ ] No OpenTelemetry tracing/metrics wired (OBS-002)?
+- [ ] EF Core's SQL connection has no `EnableRetryOnFailure` execution strategy (RES-006)?
 
 **Category L — Error handling & Validation**
 - [ ] No centralized `IExceptionHandler`, or per-endpoint try/catch reinventing error shape (ERR-001)?
@@ -170,6 +174,21 @@ Work through all categories below. State "no findings" explicitly if a category 
 - [ ] A domain event published to Service Bus/Event Grid in a separate step from the business-data commit, with no transactional outbox (OUT-001)?
 - [ ] A message consumer not idempotent despite at-least-once delivery (OUT-002)?
 - [ ] No dead-letter queue monitoring for poison messages (OUT-003)?
+
+**Category P — Feature flags**
+- [ ] Feature branching done with ad-hoc `if(config[...])` instead of `IFeatureManager` (FF-001)?
+- [ ] Rollout flag has no targeting/percentage filter, just a global on/off switch (FF-002)?
+- [ ] A flag fully rolled out long ago still has both code branches present (FF-003)?
+
+**Category Q — Real-time (SignalR/streaming)**
+- [ ] SignalR hub uses role-based or missing authorization instead of permissions-only (RT-001)?
+- [ ] Scaled-out deployment with no SignalR backplane configured (RT-002)?
+- [ ] "Streaming" endpoint materializes the full result before yielding (RT-003)?
+
+**Category R — Compliance access-audit logging**
+- [ ] No append-only log of who *viewed* sensitive/PII data, only who changed it (ATR-001)?
+- [ ] Access-log table is mutable by the application (UPDATE/DELETE possible) (ATR-002)?
+- [ ] No permission-gated query surface for compliance/SOC2/HIPAA audit requests (ATR-003)?
 
 ### Step 3 — Format findings
 
@@ -195,9 +214,9 @@ Fix: <concrete code change>
 ```
 
 Severity mapping:
-- **CRITICAL** — `block` rules: always-no-hardcoded-secrets; also CA-001 (domain layer coupling), TN-001/TN-002 (tenant isolation leaks), SFD-001 (missing soft-delete filter), AZ-001 (any role-based access check), AZ-006/AZ-007 (permissions/PII in JWT), BGJ-001/BGJ-003 (no Hangfire / unauthenticated jobs admin), CFG-002 (secret in DB config), RES-001 (raw HttpClient), OBS-001 (no health checks), ERR-001/ERR-002 (no exception handler / no ProblemDetails), DP-001 (plaintext PII column), RL-001 (no auth-endpoint rate limit), DOC-007/DOC-008 (spoofable upload trust / no AV scan), OUT-001 (message published with no transactional outbox)
-- **WARNING** — `warn` rules; most CS-*, PF-*, CH-*, AZ-*, RP-*, DOC-*, EK-*, AV-*, DIM-*, BGJ-002/BGJ-004, CFG-001/CFG-003/CFG-004, LOC-001/LOC-002, RES-002/RES-003/RES-004, OBS-002/OBS-003/OBS-004, ERR-003/ERR-004, VAL-001/VAL-002/VAL-003, TST-001/TST-002, DP-002/DP-003, CCY-001/CCY-002/CCY-003, RL-002/RL-003, OUT-002/OUT-003 findings
-- **ADVISORY** — style/structure suggestions, SL-* library-organization items, EM-* retry/plain-text-fallback items, EK-004, AV-005, CFG-005, LOC-005, OBS-005, VAL-004, TST-003/TST-004, DP-004, CCY-004, RL-004, OUT-004
+- **CRITICAL** — `block` rules: always-no-hardcoded-secrets; also CA-001 (domain layer coupling), TN-001/TN-002 (tenant isolation leaks), SFD-001 (missing soft-delete filter), AZ-001 (any role-based access check), AZ-006/AZ-007 (permissions/PII in JWT), BGJ-001/BGJ-003 (no Hangfire / unauthenticated jobs admin), CFG-002 (secret in DB config), RES-001 (raw HttpClient), OBS-001 (no health checks), ERR-001/ERR-002 (no exception handler / no ProblemDetails), DP-001 (plaintext PII column), RL-001 (no auth-endpoint rate limit), DOC-007/DOC-008 (spoofable upload trust / no AV scan), OUT-001 (message published with no transactional outbox), RT-001 (hub role-based/missing authorization), ATR-001/ATR-002 (no access-audit log / mutable audit table)
+- **WARNING** — `warn` rules; most CS-*, PF-*, CH-*, AZ-*, RP-*, DOC-*, EK-*, AV-*, DIM-*, BGJ-002/BGJ-004, CFG-001/CFG-003/CFG-004, LOC-001/LOC-002, RES-002/RES-003/RES-004/RES-006, OBS-002/OBS-003/OBS-004, ERR-003/ERR-004, VAL-001/VAL-002/VAL-003, TST-001/TST-002, DP-002/DP-003, CCY-001/CCY-002/CCY-003, RL-002/RL-003, OUT-002/OUT-003, FF-001/FF-002, RT-002/RT-003, ATR-003/ATR-004 findings
+- **ADVISORY** — style/structure suggestions, SL-* library-organization items, EM-* retry/plain-text-fallback items, EK-004, AV-005, CFG-005, LOC-005, OBS-005, VAL-004, TST-003/TST-004, DP-004, CCY-004, RL-004, OUT-004, FF-003/FF-004, RT-004
 
 ### Step 4 — Summary line
 

@@ -33,7 +33,7 @@ supported .NET range (8, 9, 10, 11 — see the [root README](../README.md#suppor
 | `dotnet-background-jobs` | Hangfire vs hand-rolled `BackgroundService` loops, configurable job schedules (name/cron/enabled), admin-endpoint authorization, job idempotency, dashboard access control |
 | `dotnet-dynamic-configuration` | DB-backed configuration for business-tunable settings, Key Vault for secrets, precedence, caching/invalidation |
 | `dotnet-localization` | XML/resx default translations with a DB-override layer, culture resolution, missing-key fallback |
-| `dotnet-resilience` | `IHttpClientFactory`/typed clients, Polly retry/circuit-breaker/timeout, correlation-ID propagation to outbound calls and logs |
+| `dotnet-resilience` | `IHttpClientFactory`/typed clients, Polly retry/circuit-breaker/timeout, correlation-ID propagation to outbound calls and logs, EF Core `EnableRetryOnFailure` |
 | `dotnet-observability` | `/health/live` + `/health/ready` checks, OpenTelemetry tracing/metrics, correlation ID on distributed traces, PII-safe telemetry |
 | `dotnet-error-handling` | Centralized `IExceptionHandler`, RFC 7807 `ProblemDetails`, no leaked exception detail, typed domain exceptions |
 | `dotnet-validation` | Consistent FluentValidation-based strategy, single validation pipeline behavior, `ProblemDetails`-shaped validation failures |
@@ -42,6 +42,9 @@ supported .NET range (8, 9, 10, 11 — see the [root README](../README.md#suppor
 | `dotnet-concurrency` | `RowVersion` optimistic concurrency, `DbUpdateConcurrencyException` handling, `ETag`/`If-Match`, read-modify-write guards |
 | `dotnet-rate-limiting` | Auth-endpoint throttling, background-jobs admin rate limits, `AddRateLimiter` baseline, `Retry-After` header |
 | `dotnet-outbox-pattern` | Transactional outbox for domain events published to Service Bus/Event Grid, idempotent consumers, dead-letter monitoring, outbox row cleanup |
+| `dotnet-feature-flags` | `IFeatureManager` vs ad-hoc config checks, percentage/targeting-filter rollout, stale-flag cleanup, consistent frontend flag exposure |
+| `dotnet-realtime` | SignalR hub permissions-only authorization, scale-out backplane, genuine `IAsyncEnumerable`/SSE streaming, client reconnection policy |
+| `dotnet-audit-trail` | Append-only access-audit log for sensitive-data reads (distinct from `dotnet-audit-fields`' change tracking), tamper-evident storage, compliance query surface |
 
 ## Relationship to dotnet/skills
 
