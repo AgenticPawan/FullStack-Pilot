@@ -8,6 +8,7 @@ disable-model-invocation: true
 <!-- ARCHITECTURE RULE: scanners detect; Claude triages. Claude alone misses and hallucinates; scanners alone drown in noise. Never present a Claude-only scan as complete. -->
 <!-- EVIDENCE RULE: every semantic finding MUST include file:line and a quoted code snippet. Discard any finding that cannot cite evidence. -->
 <!-- SCOPE: PROJECT_ROOT is the user's project directory (not this plugin repo). -->
+<!-- PLUGIN EXTENSIONS: pilot-sql adds Checks E (migration safety). pilot-azure adds Check F (Bicep security baseline). Both use the same findings.json schema. -->
 
 ## Step 0 — Load stack profile
 
@@ -133,6 +134,33 @@ For each `DbContext.OnModelCreating`:
 3. Skip placeholders: `<value>`, `#{...}#`, `${...}`, `__REPLACE__`, `your-*-here`.
 
 **Discard finding if you cannot quote the exact string from the file.**
+
+### Check E — EF Core migration safety (pilot-sql)
+
+Run this check only if `dotnet` is non-null in the stack profile and migration files exist.
+
+Glob `**/Migrations/*.cs` (exclude `*Designer.cs`, `*Snapshot.cs`). For each migration:
+
+1. **MIG-001/002 (P1):** does `Up()` call `DropColumn(` or `DropTable(`? → finding
+2. **MIG-003 (P1):** does `AlterColumn` narrow a type (smaller `maxLength`, or wider→narrower CLR type)?
+3. **MIG-004 (P1):** does `AddColumn` set `nullable: false` with no `defaultValue`?
+4. **MIG-006 (P2):** is `Down()` empty or absent when `Up()` contains any destructive call?
+
+Evidence must quote the specific `migrationBuilder.` call and its line number.
+All migration findings use `batchable: false`.
+
+### Check F — Azure/Bicep security baseline (pilot-azure)
+
+Run this check only if `azure.bicepFiles` is non-empty in the stack profile.
+
+For each `.bicep` file listed in `azure.bicepFiles`:
+
+1. **ASB-NS-1 (P0):** any `allowBlobPublicAccess: true` or `publicAccess: 'Blob'`/`'Container'`? → finding
+2. **ASB-IM-1 (P0):** any `listKeys()` call in outputs or app-settings values? → finding
+3. **WAF-OPS-001 (P2):** scan `azure.githubActionsFiles` — does the workflow lack a `what-if` step before the deployment step?
+4. **WAF-COST-001 (P2):** does any resource declaration lack a `tags:` property?
+
+Evidence must quote the exact Bicep line. OWASP mapping: ASB-NS-1 → A05:2021, ASB-IM-1 → A02:2021.
 
 ---
 

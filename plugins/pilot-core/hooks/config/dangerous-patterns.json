@@ -24,6 +24,30 @@
       "requireStackProfile": { "dotnet": ">=8" },
       "pattern": "\\bDateTime\\.Now\\b",
       "message": "Inject TimeProvider (Microsoft.Extensions.Time.Testing) instead of DateTime.Now for testability"
+    },
+    {
+      "id": "no-public-blob-access",
+      "name": "AZURE_PUBLIC_BLOB_ACCESS",
+      "description": "Public blob access exposes storage data without authentication — ASB-NS-1 P0",
+      "fileExtensions": [".bicep"],
+      "pattern": "allowBlobPublicAccess\\s*:\\s*true",
+      "message": "Set allowBlobPublicAccess: false. Use managed identity or SAS tokens for client access. (azure-security-baseline ASB-NS-1)"
+    },
+    {
+      "id": "no-public-container-access",
+      "name": "AZURE_PUBLIC_CONTAINER_ACCESS",
+      "description": "Container-level public access allows anonymous blob read — ASB-NS-1 P0",
+      "fileExtensions": [".bicep"],
+      "pattern": "publicAccess\\s*:\\s*'(?:Blob|Container)'",
+      "message": "Set publicAccess: 'None'. Use RBAC or SAS tokens instead of anonymous access. (azure-security-baseline ASB-NS-1)"
+    },
+    {
+      "id": "no-storage-key-output",
+      "name": "AZURE_STORAGE_KEY_IN_OUTPUT",
+      "description": "Exporting storage account key in outputs leaks credentials — ASB-IM-1 P0",
+      "fileExtensions": [".bicep"],
+      "pattern": "\\.listKeys\\(\\)",
+      "message": "Use managed identity instead of account keys. Remove listKeys() from outputs. (azure-security-baseline ASB-IM-1)"
     }
   ]
 }

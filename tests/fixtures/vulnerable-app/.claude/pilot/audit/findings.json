@@ -126,5 +126,53 @@
     "batchable": true,
     "confidence": "high",
     "status": "open"
+  },
+  {
+    "id": "VULN-009",
+    "source": "semantic",
+    "severity": "P0",
+    "cwe": null,
+    "owasp": "A05:2021",
+    "wcag": null,
+    "file": "infra/main.bicep",
+    "line": 15,
+    "title": "ASB-NS-1: Public blob access enabled on storage account — unauthenticated read",
+    "evidence": "allowBlobPublicAccess: true",
+    "proposedFix": "Set allowBlobPublicAccess: false. Use managed identity or SAS tokens for client access.",
+    "batchable": true,
+    "confidence": "high",
+    "status": "open"
+  },
+  {
+    "id": "VULN-010",
+    "source": "semantic",
+    "severity": "P1",
+    "cwe": null,
+    "owasp": null,
+    "wcag": null,
+    "file": "src/VulnerableApp.Api/Migrations/20240101_AddOrders.cs",
+    "line": 15,
+    "title": "MIG-001: DropColumn — irreversible data loss on Orders.LegacyNotes",
+    "evidence": "migrationBuilder.DropColumn(name: \"LegacyNotes\", table: \"Orders\");",
+    "proposedFix": "Verify column is unused; stop all writes in a prior release; deploy DropColumn in a separate migration after confirming no data at risk.",
+    "batchable": false,
+    "confidence": "high",
+    "status": "open"
+  },
+  {
+    "id": "VULN-011",
+    "source": "semantic",
+    "severity": "P2",
+    "cwe": null,
+    "owasp": "A01:2021",
+    "wcag": null,
+    "file": "tests/VulnerableApp.Tests/TenantFilterTests.cs",
+    "line": 25,
+    "title": "MT-003: No cross-tenant isolation assertion in OrderRepositoryTests",
+    "evidence": "Assert.Single(result); // no Assert.All(result, o => Assert.Equal(tenantId, o.TenantId))",
+    "proposedFix": "Add cross-tenant test: seed orders for tenant 2, query as tenant 1, assert tenant 2 orders are invisible. Use sql-multitenancy skill scaffold.",
+    "batchable": true,
+    "confidence": "high",
+    "status": "open"
   }
 ]

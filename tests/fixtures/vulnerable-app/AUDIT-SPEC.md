@@ -29,6 +29,22 @@ at least 7 of 8 with correct severity and file:line. Zero fabricated findings al
 | VULN-007 | Claude semantic (Check B — tenant isolation) |
 | VULN-008 | Semgrep `p/csharp` OR Claude semantic (Check A / D) |
 
+## Phase 8 additions — infra/sql issues
+
+| # | ID | Severity | Standard | File | Approx. line | Description |
+|---|----|----------|----------|------|-------------|-------------|
+| 9 | VULN-009 | P0 | ASB-NS-1 / OWASP A05:2021 | `infra/main.bicep` | 15 | `allowBlobPublicAccess: true` — public blob read without auth |
+| 10 | VULN-010 | P1 | MIG-001 (sql-migration-safety) | `src/VulnerableApp.Api/Migrations/20240101_AddOrders.cs` | 15 | `DropColumn(LegacyNotes)` — irreversible data loss |
+| 11 | VULN-011 | P2 | MT-003 (sql-multitenancy) | `tests/VulnerableApp.Tests/TenantFilterTests.cs` | 25 | No cross-tenant isolation assertion |
+
+## Detection method for Phase 8 findings
+
+| Finding | Primary detector |
+|---------|-----------------|
+| VULN-009 | dangerous-patterns hook (no-public-blob-access) OR audit Check F (ASB-NS-1) |
+| VULN-010 | audit Check E (MIG-001) — sql-migration-safety semantic pass |
+| VULN-011 | audit Check B (MT-003) — sql-multitenancy semantic pass |
+
 ## Pass/fail criteria
 
 - ≥ 7 of 8 findings detected with correct severity (±1 level is acceptable for P1/P2 boundary)

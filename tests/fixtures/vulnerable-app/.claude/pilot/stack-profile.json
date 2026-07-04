@@ -40,7 +40,15 @@
     "dacpac": false,
     "connectionStringLocations": ["src/VulnerableApp.Api/Data/AppDbContext.cs"]
   },
-  "azure": null,
+  "azure": {
+    "bicep": true,
+    "bicepFiles": ["infra/main.bicep"],
+    "armTemplates": false,
+    "azurePipelines": false,
+    "githubActionsAzure": false,
+    "githubActionsFiles": [],
+    "dockerfiles": []
+  },
   "evidence": {
     "angular.majorVersion": "ClientApp/package.json",
     "angular.bootstrapMode": "ClientApp/src/main.ts",
