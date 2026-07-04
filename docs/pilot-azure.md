@@ -7,7 +7,7 @@ and Bicep production-readiness.
 
 - **infra-reviewer** — reviews Bicep templates and GitHub Actions deployment workflows
   against all skills below, emitting findings with standard IDs (`ASB-*`, `WAF-*`,
-  `CAF-*`, `BIC-*`, `AOBS-*`, `CICD-*`, `ADR-*`, `FIN-*`, `AKS-*`, `APIM-*`).
+  `CAF-*`, `BIC-*`, `AOBS-*`, `CICD-*`, `ADR-*`, `FIN-*`, `AKS-*`, `APIM-*`, `LZ-*`).
 
 ## Skills
 
@@ -23,3 +23,4 @@ and Bicep production-readiness.
 | `azure-cost-finops` | Azure Budget resources with action-group alerting, autoscale right-sizing review cadence, cost-anomaly detection, orphaned-resource cleanup policy. |
 | `azure-aks-governance` | Pod Security Standards, container resource requests/limits, `NetworkPolicy`, Azure Workload Identity — only applies when AKS is the compute target (Container Apps deployments are covered by the skills above instead). |
 | `azure-api-management` | Gateway-layer rate-limit/quota policy, JWT validation consistency with the backend, backend pool health/circuit-breaker, thin pass-through policy discipline. |
+| `azure-landing-zone` | Management-group hierarchy separating platform from landing-zone subscriptions, production/non-production subscription isolation, tenant-wide Azure Policy initiatives, documented subscription-vending process. |

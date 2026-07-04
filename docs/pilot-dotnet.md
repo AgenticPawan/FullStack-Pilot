@@ -45,6 +45,7 @@ supported .NET range (8, 9, 10, 11 — see the [root README](../README.md#suppor
 | `dotnet-feature-flags` | `IFeatureManager` vs ad-hoc config checks, percentage/targeting-filter rollout, stale-flag cleanup, consistent frontend flag exposure |
 | `dotnet-realtime` | SignalR hub permissions-only authorization, scale-out backplane, genuine `IAsyncEnumerable`/SSE streaming, client reconnection policy |
 | `dotnet-audit-trail` | Append-only access-audit log for sensitive-data reads (distinct from `dotnet-audit-fields`' change tracking), tamper-evident storage, compliance query surface |
+| `dotnet-financial-precision` | `decimal` vs `double` for currency, consistent rounding-mode convention (banker's rounding), exact decimal comparison, currency-code-paired money values |
 
 ## Relationship to dotnet/skills
 

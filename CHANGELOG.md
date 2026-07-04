@@ -3,6 +3,35 @@
 All notable changes to FullStack Pilot are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.17.0] — 2026-07-05 (pilot-dotnet), pilot-sql 0.10.0 → 0.11.0, pilot-azure 0.11.0 → 0.12.0
+
+### Added
+- Closes the round-2 gap audit's Tier-3 backlog (Tier 1 in `[0.15.0]`, Tier 2 in
+  `[0.16.0]`) — the full round-2 audit is now fully shipped.
+- `pilot-dotnet`: `dotnet-financial-precision` — `decimal` vs `double`/`float` for
+  currency amounts, a single documented rounding-mode convention (banker's rounding)
+  applied consistently, exact `decimal` equality instead of floating-point tolerance
+  comparisons, and currency-code-paired `Money` value objects for multi-currency systems.
+- `pilot-sql`: `sql-index-maintenance` — the ongoing operational counterpart to
+  `sql-performance-review`'s per-query analysis: scheduled fragmentation
+  rebuild/reorganize, a proactive statistics-update cadence beyond
+  `AUTO_UPDATE_STATISTICS`'s default threshold, unused-index monitoring, and
+  online-vs-offline maintenance-window discipline.
+- `pilot-azure`: `azure-landing-zone` — enterprise-scale subscription/management-group
+  topology, one level above `azure-caf-naming`'s resource-name-string scope: a
+  management-group hierarchy separating platform from landing-zone subscriptions,
+  production/non-production subscription isolation, tenant-wide Azure Policy
+  initiatives, and a documented subscription-vending process.
+- `dotnet-reviewer`/`sql-reviewer`/`infra-reviewer` agents: inventory rows and
+  review-checklist categories for all three additions.
+
+### Changed
+- `plugin.json`: `pilot-dotnet` `0.16.0` → `0.17.0`; `pilot-sql` `0.10.0` → `0.11.0`;
+  `pilot-azure` `0.11.0` → `0.12.0`.
+- `docs/pilot-dotnet.md`, `docs/pilot-sql.md`, `docs/pilot-azure.md`, `README.md`:
+  skill tables and counts updated (pilot-dotnet 32→33, pilot-sql 5→6, pilot-azure
+  10→11).
+
 ## [0.16.0] — 2026-07-05 (pilot-angular), pilot-azure/pilot-core 0.10.0 → 0.11.0
 
 ### Added
