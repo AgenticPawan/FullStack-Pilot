@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "pilot-angular",
+  "displayName": "Pilot Angular",
+  "version": "0.1.0",
+  "description": "Angular / TypeScript codebase governance: component patterns, signal migration, standalone best practices, and accessibility audits",
+  "author": {
+    "name": "AgenticPawan",
+    "url": "https://github.com/AgenticPawan"
+  },
+  "homepage": "https://github.com/AgenticPawan/FullStack-Plugin#pilot-angular",
+  "repository": "https://github.com/AgenticPawan/FullStack-Plugin",
+  "license": "MIT",
+  "keywords": ["angular", "typescript", "signals", "standalone", "accessibility"]
+}

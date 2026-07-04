@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "pilot-azure",
+  "displayName": "Pilot Azure",
+  "version": "0.1.0",
+  "description": "Azure / Bicep / ACA codebase governance: resource-naming conventions, cost guardrails, and deployment safety checks",
+  "author": {
+    "name": "AgenticPawan",
+    "url": "https://github.com/AgenticPawan"
+  },
+  "homepage": "https://github.com/AgenticPawan/FullStack-Plugin#pilot-azure",
+  "repository": "https://github.com/AgenticPawan/FullStack-Plugin",
+  "license": "MIT",
+  "keywords": ["azure", "bicep", "aca", "cost-guardrails", "deployment", "naming"]
+}

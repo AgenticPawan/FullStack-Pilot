@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "pilot-core",
+  "displayName": "Pilot Core",
+  "version": "0.1.0",
+  "description": "Shared governance utilities for full-stack Microsoft projects: commit conventions, PR templates, and code-health checks",
+  "author": {
+    "name": "AgenticPawan",
+    "url": "https://github.com/AgenticPawan"
+  },
+  "homepage": "https://github.com/AgenticPawan/FullStack-Plugin#pilot-core",
+  "repository": "https://github.com/AgenticPawan/FullStack-Plugin",
+  "license": "MIT",
+  "keywords": ["governance", "commits", "code-health", "microsoft", "fullstack"]
+}

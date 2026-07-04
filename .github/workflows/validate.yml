@@ -1,0 +1,26 @@
+name: Validate
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    name: Validate manifests and skills
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run validator
+        run: node scripts/validate.mjs
+        # Fails the build if:
+        #   - marketplace.json or any plugin.json is invalid JSON or missing required fields
+        #   - any SKILL.md is missing YAML frontmatter or has description > 1024 chars
+        #   - any hooks.json references a script that does not exist or is not executable

@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "fullstack-pilot",
+  "description": "Codebase governance for full-stack Microsoft shops (Angular, .NET, SQL Server, Azure)",
+  "owner": {
+    "name": "AgenticPawan",
+    "email": "maintainers@fullstack-pilot.dev"
+  },
+  "metadata": {
+    "pluginRoot": "./plugins"
+  },
+  "plugins": [
+    {
+      "name": "pilot-core",
+      "source": "./plugins/pilot-core",
+      "description": "Shared governance: commit conventions, PR templates, and code-health checks for all full-stack Microsoft projects",
+      "version": "0.1.0",
+      "author": { "name": "FullStack Pilot Contributors" },
+      "license": "MIT",
+      "keywords": ["governance", "commits", "code-health", "microsoft"]
+    },
+    {
+      "name": "pilot-angular",
+      "source": "./plugins/pilot-angular",
+      "description": "Angular / TypeScript governance: component patterns, signal migration, and standalone best practices",
+      "version": "0.1.0",
+      "author": { "name": "FullStack Pilot Contributors" },
+      "license": "MIT",
+      "keywords": ["angular", "typescript", "signals", "standalone"]
+    },
+    {
+      "name": "pilot-dotnet",
+      "source": "./plugins/pilot-dotnet",
+      "description": "C# / ASP.NET Core governance: minimal-API patterns, EF Core best practices, and NuGet security audits",
+      "version": "0.1.0",
+      "author": { "name": "FullStack Pilot Contributors" },
+      "license": "MIT",
+      "keywords": ["dotnet", "csharp", "aspnetcore", "efcore", "nuget"]
+    },
+    {
+      "name": "pilot-sql",
+      "source": "./plugins/pilot-sql",
+      "description": "SQL Server / EF Core governance: migration safety checks, query review, and index analysis",
+      "version": "0.1.0",
+      "author": { "name": "FullStack Pilot Contributors" },
+      "license": "MIT",
+      "keywords": ["sql-server", "efcore", "migrations", "query-review"]
+    },
+    {
+      "name": "pilot-azure",
+      "source": "./plugins/pilot-azure",
+      "description": "Azure / Bicep / ACA governance: resource-naming rules, cost guardrails, and deployment safety hooks",
+      "version": "0.1.0",
+      "author": { "name": "FullStack Pilot Contributors" },
+      "license": "MIT",
+      "keywords": ["azure", "bicep", "aca", "cost", "deployment"]
+    }
+  ]
+}

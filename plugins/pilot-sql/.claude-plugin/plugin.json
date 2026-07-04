@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "pilot-sql",
+  "displayName": "Pilot SQL",
+  "version": "0.1.0",
+  "description": "SQL Server / EF Core codebase governance: migration safety checks, query review, and index gap analysis",
+  "author": {
+    "name": "AgenticPawan",
+    "url": "https://github.com/AgenticPawan"
+  },
+  "homepage": "https://github.com/AgenticPawan/FullStack-Plugin#pilot-sql",
+  "repository": "https://github.com/AgenticPawan/FullStack-Plugin",
+  "license": "MIT",
+  "keywords": ["sql-server", "efcore", "migrations", "query-review", "index"]
+}

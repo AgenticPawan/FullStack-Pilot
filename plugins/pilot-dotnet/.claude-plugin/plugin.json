@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "pilot-dotnet",
+  "displayName": "Pilot .NET",
+  "version": "0.1.0",
+  "description": "C# / ASP.NET Core codebase governance: minimal-API patterns, Entity Framework Core best practices, and NuGet security audits",
+  "author": {
+    "name": "AgenticPawan",
+    "url": "https://github.com/AgenticPawan"
+  },
+  "homepage": "https://github.com/AgenticPawan/FullStack-Plugin#pilot-dotnet",
+  "repository": "https://github.com/AgenticPawan/FullStack-Plugin",
+  "license": "MIT",
+  "keywords": ["dotnet", "csharp", "aspnetcore", "efcore", "nuget", "minimal-api"]
+}
