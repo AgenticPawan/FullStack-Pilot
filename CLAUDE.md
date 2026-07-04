@@ -6,7 +6,7 @@
 It ships codebase-governance skills, agents, and hooks for Angular, .NET, SQL Server,
 and Azure projects. Hosted publicly at `AgenticPawan/FullStack-Plugin`; installed via:
 
-    /plugin marketplace add AgenticPawan/FullStack-Plugin
+    /plugin marketplace add AgenticPawan/FullStack-Pilot
 
 ## Repository layout
 
