@@ -21,7 +21,7 @@
     {
       "name": "pilot-angular",
       "source": "./plugins/pilot-angular",
-      "description": "Angular / TypeScript governance: signals, performance, accessibility, security, HTTP resilience, and the v15-to-v20 upgrade path",
+      "description": "Angular / TypeScript governance: signals, performance, accessibility, security, HTTP resilience, the v15-to-v20 upgrade path, coding standards, multi-layout shells, theming, and shared UI libraries",
       "author": { "name": "FullStack Pilot Contributors" },
       "license": "MIT",
       "keywords": ["angular", "typescript", "signals", "standalone"]
@@ -29,7 +29,7 @@
     {
       "name": "pilot-dotnet",
       "source": "./plugins/pilot-dotnet",
-      "description": "C# / ASP.NET Core governance placeholder — manifest only today; house conventions layer on top of dotnet/skills, not yet implemented",
+      "description": "C# / ASP.NET Core governance: Clean Architecture, SOLID/DRY, performance, caching, permission-based auth, multitenancy, soft delete, audit fields, CORS, repository pattern, shared libraries, Excel/PDF document I/O, and email templating",
       "author": { "name": "FullStack Pilot Contributors" },
       "license": "MIT",
       "keywords": ["dotnet", "csharp", "aspnetcore", "efcore", "nuget"]

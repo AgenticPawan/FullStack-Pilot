@@ -2,8 +2,8 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "pilot-angular",
   "displayName": "Pilot Angular",
-  "version": "0.9.0",
-  "description": "Angular / TypeScript codebase governance: component patterns, signal migration, standalone best practices, and accessibility audits",
+  "version": "0.10.0",
+  "description": "Angular / TypeScript codebase governance: component patterns, signal migration, standalone best practices, accessibility audits, version-gated coding standards, multi-layout shells, theming, and shared UI libraries",
   "author": {
     "name": "AgenticPawan",
     "url": "https://github.com/AgenticPawan"

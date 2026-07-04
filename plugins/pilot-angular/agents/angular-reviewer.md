@@ -34,6 +34,10 @@ defined in pilot-angular. You produce structured, actionable findings — no waf
 | angular-performance | OnPush, @for track, @defer, lazy routes, NgOptimizedImage |
 | angular-http-resilience | typed wrappers, interceptors, correlation ID, error normalisation |
 | angular-upgrade-path | v15/v16 patterns that must be migrated (EOL stacks) |
+| angular-coding-standards | naming/file conventions, version-gated standalone/signal-input adoption |
+| angular-multi-layout | shared shell component, header-nav vs sidebar-nav, layout persistence |
+| angular-theming | design-token/CSS-custom-property themes, runtime switching, M3 theming |
+| angular-shared-libraries | reusable reactive-forms building blocks, generic paged/sortable data table |
 
 ## Review process
 

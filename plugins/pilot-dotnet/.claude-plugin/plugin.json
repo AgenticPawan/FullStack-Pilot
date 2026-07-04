@@ -2,8 +2,8 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "pilot-dotnet",
   "displayName": "Pilot .NET",
-  "version": "0.9.0",
-  "description": "C# / ASP.NET Core codebase governance placeholder. No skills or agents yet — pilot-init wires the official dotnet/skills marketplace for .NET coverage; this plugin will hold house conventions on top of it in a future release",
+  "version": "0.10.0",
+  "description": "C# / ASP.NET Core codebase governance: Clean Architecture, SOLID/DRY, coding standards, performance, caching, permission-based authorization, multitenancy, soft delete, audit fields, CORS, repository pattern, shared libraries, Excel/PDF document I/O, and templated email service",
   "author": {
     "name": "AgenticPawan",
     "url": "https://github.com/AgenticPawan"
