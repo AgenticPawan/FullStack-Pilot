@@ -1,0 +1,29 @@
+{
+  "patterns": [
+    {
+      "id": "no-innerhtml",
+      "name": "UNSAFE_INNERHTML_ASSIGNMENT",
+      "description": "Direct .innerHTML = assignment bypasses Angular's XSS sanitisation",
+      "fileExtensions": [".ts", ".html"],
+      "pattern": "\\.innerHTML\\s*=",
+      "message": "Use Angular [innerHTML] binding or DomSanitizer.bypassSecurityTrustHtml() to prevent XSS"
+    },
+    {
+      "id": "no-sql-concat",
+      "name": "SQL_STRING_CONCATENATION",
+      "description": "SQL query built by string concatenation opens SQL-injection surface",
+      "fileExtensions": [".cs"],
+      "pattern": "\\b(?:SELECT|INSERT|UPDATE|DELETE)\\b[^\\n]*\"\\s*\\+|\\+\\s*\"[^\\n]*\\b(?:SELECT|INSERT|UPDATE|DELETE)\\b",
+      "message": "Use parameterized queries: EF Core, Dapper, or SqlCommand.Parameters"
+    },
+    {
+      "id": "no-datetime-now",
+      "name": "DATETIME_NOW_INSTEAD_OF_TIMEPROVIDER",
+      "description": "DateTime.Now is non-deterministic and untestable; dotnet>=8 ships TimeProvider",
+      "fileExtensions": [".cs"],
+      "requireStackProfile": { "dotnet": ">=8" },
+      "pattern": "\\bDateTime\\.Now\\b",
+      "message": "Inject TimeProvider (Microsoft.Extensions.Time.Testing) instead of DateTime.Now for testability"
+    }
+  ]
+}

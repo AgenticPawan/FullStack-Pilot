@@ -18,6 +18,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { spawnSync } from 'node:child_process';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const IS_WINDOWS = process.platform === 'win32';
@@ -209,27 +210,48 @@ for (const filePath of walk(ROOT)) {
   const pluginRoot = path.dirname(path.dirname(filePath));
   let localErrors = 0;
 
+  // Resolve a path string: substitute ${CLAUDE_PLUGIN_ROOT}, strip shell quotes.
+  // Returns null if the string still has unresolvable variables or isn't a file path.
+  const resolvePath = (raw) => {
+    if (!raw || typeof raw !== 'string') return null;
+    let s = raw.replace(/\$\{CLAUDE_PLUGIN_ROOT\}/g, pluginRoot).replace(/"/g, '');
+    if (s.includes('${')) return null; // other runtime variables — skip
+    // Only treat as a file path if it has a separator or starts with '.'
+    if (!s.includes('/') && !s.includes(SEP) && !s.startsWith('.')) return null;
+    return s;
+  };
+
   for (const matchers of Object.values(data.hooks)) {
     if (!Array.isArray(matchers)) continue;
     for (const matcherEntry of matchers) {
       if (!Array.isArray(matcherEntry.hooks)) continue;
       for (const hook of matcherEntry.hooks) {
         if (hook.type !== 'command') continue;
-        let cmd = hook.command;
-        if (!cmd || typeof cmd !== 'string') continue;
-        // Skip paths containing runtime variables — unresolvable at validate time
-        if (cmd.includes('${')) continue;
-        // Resolve relative paths against plugin root
-        const absCmd = path.isAbsolute(cmd) ? cmd : path.resolve(pluginRoot, cmd);
-        if (!fs.existsSync(absCmd)) {
-          fail(`${rel}: hook script not found: ${cmd}`);
-          localErrors++;
-        } else if (!IS_WINDOWS) {
-          try {
-            fs.accessSync(absCmd, fs.constants.X_OK);
-          } catch {
-            fail(`${rel}: hook script not executable: ${cmd}`);
+
+        // Shell-form: command is the script path — check existence and executability.
+        const cmdPath = resolvePath(hook.command);
+        if (cmdPath) {
+          const abs = path.isAbsolute(cmdPath) ? cmdPath : path.resolve(pluginRoot, cmdPath);
+          if (!fs.existsSync(abs)) {
+            fail(`${rel}: hook script not found: ${hook.command}`);
             localErrors++;
+          } else if (!IS_WINDOWS) {
+            try { fs.accessSync(abs, fs.constants.X_OK); }
+            catch { fail(`${rel}: hook script not executable: ${hook.command}`); localErrors++; }
+          }
+        }
+
+        // Exec-form args: check script paths in args for existence (not executability —
+        // they are invoked via the command binary, not directly).
+        if (Array.isArray(hook.args)) {
+          for (const arg of hook.args) {
+            const argPath = resolvePath(arg);
+            if (!argPath) continue;
+            const abs = path.isAbsolute(argPath) ? argPath : path.resolve(pluginRoot, argPath);
+            if (!fs.existsSync(abs)) {
+              fail(`${rel}: hook script not found (args): ${arg}`);
+              localErrors++;
+            }
           }
         }
       }
@@ -240,6 +262,29 @@ for (const filePath of walk(ROOT)) {
 }
 
 if (hooksCount === 0) info('no hooks.json files found (OK for phase 1)');
+
+// ─── 5. Hook tests ────────────────────────────────────────────────────────────
+
+console.log('\n── hook tests ────────────────────────────────────────────');
+
+const hookTestScript = path.join(ROOT, 'tests', 'hooks', 'run-tests.mjs');
+if (!fs.existsSync(hookTestScript)) {
+  info('tests/hooks/run-tests.mjs not found — skipping hook tests');
+} else {
+  const hookTestResult = spawnSync('node', [hookTestScript], {
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+    timeout: 30000,
+    cwd: ROOT,
+  });
+  if (hookTestResult.stdout) process.stdout.write(hookTestResult.stdout);
+  if (hookTestResult.stderr) process.stderr.write(hookTestResult.stderr);
+  if (hookTestResult.status !== 0) {
+    fail('hook tests: one or more tests failed (see output above)');
+  } else {
+    pass('hook tests: all passed');
+  }
+}
 
 // ─── Summary ─────────────────────────────────────────────────────────────────
 
