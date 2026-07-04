@@ -1,0 +1,54 @@
+{
+  "detectedAt": "2026-07-04T00:00:00.000Z",
+  "angular": {
+    "majorVersion": 17,
+    "bootstrapMode": "standalone",
+    "zoneless": false,
+    "signalsUsed": false,
+    "ssr": false,
+    "eslint": false,
+    "prettier": false,
+    "testRunner": "unknown"
+  },
+  "dotnet": {
+    "solutions": ["VulnerableApp.sln"],
+    "projects": [
+      {
+        "name": "VulnerableApp.Api.csproj",
+        "path": "src/VulnerableApp.Api/VulnerableApp.Api.csproj",
+        "targetFramework": "net8.0",
+        "hostingModel": "minimal",
+        "nullable": true,
+        "implicitUsings": true,
+        "packages": {
+          "efCore": "8.0.4",
+          "mediatR": null,
+          "resilience": null,
+          "serilog": null,
+          "fluentValidation": null,
+          "openApi": "8.0.4"
+        },
+        "testFramework": null,
+        "referencedProjects": []
+      }
+    ]
+  },
+  "sql": {
+    "efCoreMigrations": false,
+    "migrationsPath": null,
+    "rawSqlFiles": false,
+    "dacpac": false,
+    "connectionStringLocations": ["src/VulnerableApp.Api/Data/AppDbContext.cs"]
+  },
+  "azure": null,
+  "evidence": {
+    "angular.majorVersion": "ClientApp/package.json",
+    "angular.bootstrapMode": "ClientApp/src/main.ts",
+    "dotnet.solutions": "VulnerableApp.sln",
+    "dotnet.projects[0].targetFramework": "src/VulnerableApp.Api/VulnerableApp.Api.csproj",
+    "dotnet.projects[0].hostingModel": "src/VulnerableApp.Api/Program.cs",
+    "dotnet.projects[0].packages.efCore": "src/VulnerableApp.Api/VulnerableApp.Api.csproj",
+    "sql.connectionStringLocations[0]": "src/VulnerableApp.Api/Data/AppDbContext.cs"
+  },
+  "unknowns": []
+}
