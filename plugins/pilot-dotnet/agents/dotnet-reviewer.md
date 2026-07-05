@@ -1,6 +1,6 @@
 ---
 name: dotnet-reviewer
-description: Reviews C# / ASP.NET Core code against all pilot-dotnet rules and skills — Clean Architecture, SOLID/DRY, performance, caching, authorization, multitenancy, soft delete, audit fields, CORS, repository pattern, shared libraries, document I/O (including upload malware/signature checks), email service, entity key design, API versioning, modular DI, background jobs, dynamic configuration, localization, HTTP and EF Core resilience, observability, error handling, validation, testing, data protection, concurrency, rate limiting, the transactional outbox pattern, feature flags, real-time/SignalR patterns, compliance-grade access-audit logging, financial/currency precision, secrets rotation, consumer-driven API contract testing, connection-pool sizing/exhaustion monitoring, GraphQL/HotChocolate design (when present), and chaos-engineering verification of resilience policies. Outputs structured findings with standard IDs, severity, and fix guidance. Invoked automatically on .NET diff review requests or manually via @dotnet-reviewer.
+description: Reviews C# / ASP.NET Core code against all pilot-dotnet rules and skills — Clean Architecture, SOLID/DRY, performance, caching, authorization, multitenancy, soft delete, audit fields, CORS, repository pattern, shared libraries, document I/O (including upload malware/signature checks), email service, entity key design, API versioning, modular DI, middleware pipeline ordering, background jobs, dynamic configuration, localization, HTTP and EF Core resilience, liveness/readiness health checks, observability, error handling, validation, testing, data protection, concurrency, rate limiting, the transactional outbox pattern, Saga orchestration, Service Bus/Event Grid messaging, gRPC contracts, Backend-for-Frontend aggregation, feature flags, real-time/SignalR patterns, compliance-grade access-audit logging, financial/currency precision, secrets rotation, consumer-driven API contract testing, connection-pool sizing/exhaustion monitoring, GraphQL/HotChocolate design (when present), chaos-engineering verification of resilience policies, NuGet Central Package Management/lock-file governance, and cross-cutting API design standards. Outputs structured findings with standard IDs, severity, and fix guidance. Invoked automatically on .NET diff review requests or manually via @dotnet-reviewer.
 model: sonnet
 effort: high
 maxTurns: 15
@@ -64,6 +64,14 @@ actionable findings — no waffle.
 | dotnet-connection-pool-tuning | CP-* | Max/Min Pool Size tuned to concurrency, pool-exhaustion monitoring, connection scope tightness, correct DbContext lifetime for the hosting model |
 | dotnet-graphql | GQL-* | DataLoader batching for N+1 resolvers, query depth/complexity limits, permissions-only field authorization, persisted-query allow-list (HotChocolate projects only) |
 | dotnet-chaos-engineering | CHAOS-* | Fault-injection verification of resilience policies (Simmy/Chaos Studio), realistic-load chaos experiments, scheduled game-day cadence, findings feeding runbooks/SLOs |
+| dotnet-health-checks | HC-* | Liveness/readiness endpoint registration, real dependency verification, probe cost, unauthenticated exposure, K8s/ACA probe wiring |
+| dotnet-grpc | GRPC-* | Client deadlines, `.proto` wire-compatibility, resilience interceptors, log redaction, mTLS, streaming cancellation |
+| dotnet-backend-for-frontend | BFF-* | BFF aggregation boundary, no-value 1:1 proxying, graceful degradation on partial downstream failure, logic drift, UI-tuned caching |
+| dotnet-middleware-pipeline | MWP-* | `Program.cs` middleware ordering — exception handling, auth-before-authz, CORS placement, rate limiting, static files, enforced ordering |
+| dotnet-saga-orchestration | SAGA-* | Distributed-transaction Saga pattern, compensating actions, persisted saga state, correlation ID across choreography events |
+| dotnet-messaging | MSG-* | Service Bus/Event Grid schema versioning, consumer ordering/concurrency, event-contract minimalism, queue-vs-topic topology, trace-context propagation |
+| dotnet-nuget-governance | NUG-* | Central Package Management, cross-project version consistency, `packages.lock.json`, deprecated packages, multi-targeting compatibility |
+| api-design-standards (pilot-core) | API-* | Cross-cutting REST contract shared with the Angular client — resource naming, pagination envelope, ProblemDetails consistency, versioning-to-client-regen linkage, status-code discipline |
 
 ## Review process
 
@@ -223,6 +231,64 @@ Work through all categories below. State "no findings" explicitly if a category 
 - [ ] No fault-injection testing verifies configured resilience policies actually work (CHAOS-001)?
 - [ ] No scheduled game-day/chaos-exercise cadence (CHAOS-003)?
 
+**Category Y — Health checks**
+- [ ] No `AddHealthChecks()`/`MapHealthChecks()` registered at all (HC-001)?
+- [ ] A single health check endpoint serves both liveness and readiness instead of distinguishing "process alive" from "dependencies ready" (HC-002)?
+- [ ] A registered health check returns `HealthCheckResult.Healthy()` unconditionally instead of actually probing the dependency (HC-003)?
+- [ ] Health check runs an expensive query on every probe hit instead of a cheap connectivity check (HC-004)?
+- [ ] Health check endpoint exposes connection strings/internal hostnames to unauthenticated callers (HC-005)?
+- [ ] K8s/ACA probe config points at the wrong endpoint path (readiness pointed at the liveness path or vice versa) (HC-006)?
+
+**Category Z — gRPC (only if Grpc.AspNetCore/Grpc.Net.Client is present)**
+- [ ] gRPC client call has no deadline/timeout configured (GRPC-001)?
+- [ ] A `.proto` message field number reused/renumbered, breaking wire compatibility with clients on the old contract (GRPC-002)?
+- [ ] No retry/resilience interceptor around transient gRPC failures (GRPC-003)?
+- [ ] Sensitive request/response data logged via a gRPC interceptor with no redaction (GRPC-004)?
+- [ ] Internal gRPC traffic runs in plaintext with no mTLS in production (GRPC-005)?
+- [ ] Server-streaming call has no `CancellationToken` tied to client disconnect (GRPC-006)?
+
+**Category AA — Backend-for-Frontend (only if this API acts as a BFF for the Angular client)**
+- [ ] Angular calls an internal/downstream service directly instead of through the BFF, leaking internal topology (BFF-001)?
+- [ ] A BFF endpoint is a pure 1:1 proxy to one downstream service with no aggregation/shaping value (BFF-002)?
+- [ ] One failing downstream call in an aggregated endpoint takes down the entire response instead of degrading gracefully (BFF-003)?
+- [ ] BFF reimplements business logic instead of delegating to the domain/core API (BFF-004)?
+- [ ] No BFF-specific caching/rate limiting tuned to the actual UI call pattern (BFF-005)?
+
+**Category AB — Middleware pipeline ordering**
+- [ ] `UseExceptionHandler()`/`UseHsts()` registered after middleware that can throw (MWP-001)?
+- [ ] `UseAuthorization()` called before `UseAuthentication()` (MWP-002)?
+- [ ] `UseCors()` registered after auth middleware, breaking credentialed/preflight requests from Angular (MWP-003)?
+- [ ] Rate limiting middleware placed after expensive work already executed (MWP-004)?
+- [ ] `UseStaticFiles()` placed before authentication, serving protected assets unauthenticated (MWP-005)?
+- [ ] No shared extension method/ordering test enforcing middleware order, leaving it vulnerable to silent reordering (MWP-006)?
+
+**Category AC — Saga orchestration (only for multi-service business transactions)**
+- [ ] A multi-service transaction attempted via an ambient/distributed DB transaction spanning independently-owned databases (SAGA-001)?
+- [ ] A saga step that can fail after prior steps committed has no compensating action defined (SAGA-002)?
+- [ ] Saga progress/state kept only in memory instead of persisted, losing in-flight sagas on crash/restart (SAGA-003)?
+- [ ] Choreography-based saga (event chain) has no shared correlation ID tying its events together (SAGA-004)?
+
+**Category AD — Messaging topology (Service Bus/Event Grid, beyond the outbox pattern)**
+- [ ] No message schema versioning/compatibility contract between publisher and consumers (MSG-001)?
+- [ ] Competing-consumers concurrency/prefetch setting breaks ordering the business process actually requires — should use sessions/partition keys (MSG-002)?
+- [ ] Message payload embeds a full domain entity instead of a minimal, versioned event contract (MSG-003)?
+- [ ] Queue vs. topic choice mismatched to the actual fan-out need (MSG-004)?
+- [ ] No correlation ID/W3C trace-context propagated in the message envelope (MSG-005)?
+
+**Category AE — NuGet governance**
+- [ ] Multi-project solution has no Central Package Management (`Directory.Packages.props`) (NUG-001)?
+- [ ] `PackageReference` versions duplicated/inconsistent across `.csproj` files (NUG-002)?
+- [ ] No `packages.lock.json`/`RestorePackagesWithLockFile`, so CI and local restores can resolve different transitive versions (NUG-003)?
+- [ ] A deprecated/unlisted package still referenced with no tracked replacement plan (NUG-004)?
+- [ ] A multi-targeted library references a package incompatible with one of its target frameworks (NUG-005)?
+
+**Category AF — API design standards (cross-cutting contract with the Angular client)**
+- [ ] Resource naming inconsistent across endpoints — verb-based URLs mixed with proper noun-based ones, or inconsistent plural/singular (API-001)?
+- [ ] Pagination response shape differs between endpoints instead of one shared paged-response type (API-002)?
+- [ ] Error response body doesn't consistently follow the `ProblemDetails` shape the Angular error interceptor expects (API-003)?
+- [ ] API versioning strategy not tied to the Angular client's NSwag regeneration cadence (API-004)?
+- [ ] HTTP status codes misused (e.g. `200 OK` with an error payload, or `500` for a client validation failure that should be `400`) (API-005)?
+
 ### Step 3 — Format findings
 
 ```
@@ -247,9 +313,9 @@ Fix: <concrete code change>
 ```
 
 Severity mapping:
-- **CRITICAL** — `block` rules: always-no-hardcoded-secrets; also CA-001 (domain layer coupling), TN-001/TN-002 (tenant isolation leaks), SFD-001 (missing soft-delete filter), AZ-001 (any role-based access check), AZ-006/AZ-007 (permissions/PII in JWT), BGJ-001/BGJ-003 (no Hangfire / unauthenticated jobs admin), CFG-002 (secret in DB config), RES-001 (raw HttpClient), OBS-001 (no health checks), ERR-001/ERR-002 (no exception handler / no ProblemDetails), DP-001 (plaintext PII column), RL-001 (no auth-endpoint rate limit), DOC-007/DOC-008 (spoofable upload trust / no AV scan), OUT-001 (message published with no transactional outbox), RT-001 (hub role-based/missing authorization), ATR-001/ATR-002 (no access-audit log / mutable audit table), FP-001 (double/float for currency), SR-001/SR-003 (no JWT rotation grace period / no cert expiry monitoring), ACT-004 (provider change deployed with no contract verification gate), GQL-001/GQL-002/GQL-003 (N+1 resolver, no depth limit, role-based field auth)
-- **WARNING** — `warn` rules; most CS-*, PF-*, CH-*, AZ-*, RP-*, DOC-*, EK-*, AV-*, DIM-*, BGJ-002/BGJ-004, CFG-001/CFG-003/CFG-004, LOC-001/LOC-002, RES-002/RES-003/RES-004/RES-006, OBS-002/OBS-003/OBS-004, ERR-003/ERR-004, VAL-001/VAL-002/VAL-003, TST-001/TST-002, DP-002/DP-003, CCY-001/CCY-002/CCY-003, RL-002/RL-003, OUT-002/OUT-003, FF-001/FF-002, RT-002/RT-003, ATR-003/ATR-004, FP-002/FP-003, SR-002, ACT-001/ACT-003, CP-001/CP-002/CP-003, CHAOS-001 findings
-- **ADVISORY** — style/structure suggestions, SL-* library-organization items, EM-* retry/plain-text-fallback items, EK-004, AV-005, CFG-005, LOC-005, OBS-005, VAL-004, TST-003/TST-004, DP-004, CCY-004, RL-004, OUT-004, FF-003/FF-004, RT-004, FP-004, SR-004, ACT-002, CP-004, GQL-004, CHAOS-002/CHAOS-003/CHAOS-004
+- **CRITICAL** — `block` rules: always-no-hardcoded-secrets; also CA-001 (domain layer coupling), TN-001/TN-002 (tenant isolation leaks), SFD-001 (missing soft-delete filter), AZ-001 (any role-based access check), AZ-006/AZ-007 (permissions/PII in JWT), BGJ-001/BGJ-003 (no Hangfire / unauthenticated jobs admin), CFG-002 (secret in DB config), RES-001 (raw HttpClient), OBS-001 (no health checks), ERR-001/ERR-002 (no exception handler / no ProblemDetails), DP-001 (plaintext PII column), RL-001 (no auth-endpoint rate limit), DOC-007/DOC-008 (spoofable upload trust / no AV scan), OUT-001 (message published with no transactional outbox), RT-001 (hub role-based/missing authorization), ATR-001/ATR-002 (no access-audit log / mutable audit table), FP-001 (double/float for currency), SR-001/SR-003 (no JWT rotation grace period / no cert expiry monitoring), ACT-004 (provider change deployed with no contract verification gate), GQL-001/GQL-002/GQL-003 (N+1 resolver, no depth limit, role-based field auth), HC-001/HC-002 (no health endpoints / liveness-readiness conflated), GRPC-001/GRPC-002 (no deadline / broken wire compatibility), BFF-001 (Angular bypasses the BFF), MWP-001/MWP-002 (exception handler too late / authz before authn), SAGA-001/SAGA-002 (ambient cross-service transaction / no compensating action), MSG-002 (ordering broken by concurrency config), NUG-003 (no lock file), API-003 (ProblemDetails inconsistency)
+- **WARNING** — `warn` rules; most CS-*, PF-*, CH-*, AZ-*, RP-*, DOC-*, EK-*, AV-*, DIM-*, BGJ-002/BGJ-004, CFG-001/CFG-003/CFG-004, LOC-001/LOC-002, RES-002/RES-003/RES-004/RES-006, OBS-002/OBS-003/OBS-004, ERR-003/ERR-004, VAL-001/VAL-002/VAL-003, TST-001/TST-002, DP-002/DP-003, CCY-001/CCY-002/CCY-003, RL-002/RL-003, OUT-002/OUT-003, FF-001/FF-002, RT-002/RT-003, ATR-003/ATR-004, FP-002/FP-003, SR-002, ACT-001/ACT-003, CP-001/CP-002/CP-003, CHAOS-001, HC-003/HC-004/HC-005, GRPC-003/GRPC-004/GRPC-005, BFF-002/BFF-003/BFF-004, MWP-003/MWP-004/MWP-005, SAGA-003/SAGA-004, MSG-001/MSG-005, NUG-001/NUG-002/NUG-005, API-001/API-002/API-004/API-005 findings
+- **ADVISORY** — style/structure suggestions, SL-* library-organization items, EM-* retry/plain-text-fallback items, EK-004, AV-005, CFG-005, LOC-005, OBS-005, VAL-004, TST-003/TST-004, DP-004, CCY-004, RL-004, OUT-004, FF-003/FF-004, RT-004, FP-004, SR-004, ACT-002, CP-004, GQL-004, CHAOS-002/CHAOS-003/CHAOS-004, HC-006, GRPC-006, BFF-005, MWP-006, MSG-003/MSG-004, NUG-004
 
 ### Step 4 — Summary line
 
