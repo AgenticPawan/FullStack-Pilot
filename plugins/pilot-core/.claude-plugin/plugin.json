@@ -2,8 +2,8 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "pilot-core",
   "displayName": "Pilot Core",
-  "version": "0.14.0",
-  "description": "Shared governance utilities for full-stack Microsoft projects: commit conventions, PR templates, code-health checks, the dependency-supply-chain policy layer over dotnet/npm vulnerability scanning (patch-cadence SLAs, version-pinning, private-feed policy, SBOM), incident-response runbook/postmortem governance, open-source license compliance, safe test-data management for lower environments, Architecture Decision Record discipline, local full-stack dev-environment onboarding, and dedicated search-service integration (Azure Cognitive Search/Elasticsearch) governance",
+  "version": "0.15.0",
+  "description": "Shared governance utilities for full-stack Microsoft projects: commit conventions, git branching/PR-review workflow governance, PR templates, code-health checks, the dependency-supply-chain policy layer over dotnet/npm vulnerability scanning (patch-cadence SLAs, version-pinning, private-feed policy, SBOM), CI-level secret scanning as the safety net beyond local pre-write hooks, cross-cutting REST API design standards tying frontend/backend contracts together, load/performance testing strategy gated on SLO/error-budget targets, incident-response runbook/postmortem governance, open-source license compliance, safe test-data management for lower environments, Architecture Decision Record discipline, local full-stack dev-environment onboarding, and dedicated search-service integration (Azure Cognitive Search/Elasticsearch) governance",
   "author": {
     "name": "AgenticPawan",
     "url": "https://github.com/AgenticPawan"
@@ -11,5 +11,5 @@
   "homepage": "https://github.com/AgenticPawan/FullStack-Pilot#pilot-core",
   "repository": "https://github.com/AgenticPawan/FullStack-Pilot",
   "license": "MIT",
-  "keywords": ["governance", "commits", "code-health", "microsoft", "fullstack", "supply-chain", "sbom", "incident-response", "postmortem", "license-compliance", "test-data", "adr", "decision-records", "onboarding", "search-integration"]
+  "keywords": ["governance", "commits", "code-health", "microsoft", "fullstack", "supply-chain", "sbom", "incident-response", "postmortem", "license-compliance", "test-data", "adr", "decision-records", "onboarding", "search-integration", "git-workflow", "secret-scanning", "api-design", "load-testing"]
 }
