@@ -21,7 +21,7 @@
     {
       "name": "pilot-angular",
       "source": "./plugins/pilot-angular",
-      "description": "Angular / TypeScript governance: signals, performance, accessibility, security (permissions-ONLY route guards/UI gating), HTTP resilience, the v15-to-v20 upgrade path, coding standards, multi-layout shells, theming, shared UI libraries, JSON-schema-driven dynamic forms, testing conventions, i18n, global error handling, PWA/offline support, frontend telemetry, Nx/module-federation monorepo governance, and third-party script governance",
+      "description": "Angular / TypeScript governance: signals, performance, accessibility, security (permissions-ONLY route guards/UI gating), HTTP resilience, the v15-to-v20 upgrade path, coding standards, multi-layout shells, theming, shared UI libraries, JSON-schema-driven dynamic forms, testing conventions, i18n, global error handling, PWA/offline support, frontend telemetry, Nx/module-federation monorepo governance, third-party script governance, OpenAPI/NSwag-generated API clients, and a shared UI kit for dialogs/toasts/confirmation prompts",
       "author": { "name": "FullStack Pilot Contributors" },
       "license": "MIT",
       "keywords": ["angular", "typescript", "signals", "standalone"]
