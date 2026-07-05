@@ -47,6 +47,10 @@ defined in pilot-angular. You produce structured, actionable findings — no waf
 | angular-telemetry | Application Insights JS SDK wiring, consistent event-tracking naming, frontend-to-backend trace-ID correlation, PII-free telemetry properties |
 | angular-monorepo-governance | Nx/module-federation boundary enforcement, shared-library ownership/versioning, independently-deployable remotes, no duplicated cross-cutting concerns (only relevant for multi-app/multi-team workspaces) |
 | angular-third-party-scripts | Subresource Integrity (SRI) hashes for CDN scripts, third-party tag allow-list/review process, scoped CSP allowances, monitoring for approved-script behavior drift |
+| angular-feature-flags | Runtime-evaluated flag service vs build-time constants, flag-key contract with dotnet-feature-flags, centralized flag checks, startup fallback, stale-flag cleanup, server-side enforcement |
+| angular-ngrx-state | Classic NgRx Store/Effects governance, memoized selectors, effect error handling, async pipe/toSignal over manual subscribe, lazy feature state, NgRx-vs-Signals coexistence policy |
+| angular-motion-accessibility | `prefers-reduced-motion` fallback, auto-play pause/stop controls, route-transition focus timing, shared motion design tokens, compositor-friendly animation properties |
+| api-design-standards (pilot-core) | Cross-cutting REST contract shared with the .NET backend — resource naming, pagination envelope, ProblemDetails consistency, versioning-to-client-regen linkage, status-code discipline |
 
 ## Review process
 
@@ -155,6 +159,35 @@ at a glance — state "no findings" explicitly if a category is clear.
 - [ ] Third-party tag added with no documented allow-list/review process (TPS-002)?
 - [ ] CSP allowance broadened (e.g. a wildcard) specifically to accommodate one third-party script (TPS-003)?
 
+**Category P — Feature flags**
+- [ ] Feature flag hardcoded as a build-time `environment.ts` boolean instead of a runtime-evaluated flag service (AFF-001)?
+- [ ] Flag key names not contracted with the backend's `dotnet-feature-flags` config, risking silent desync (AFF-002)?
+- [ ] Flag checks scattered as ad-hoc `@if` conditionals across components instead of a centralized service/directive (AFF-003)?
+- [ ] No fallback behavior when the flag-evaluation endpoint is unreachable at startup (AFF-004)?
+- [ ] A fully-rolled-out flag never removed, leaving permanent dead conditional branches (AFF-005)?
+- [ ] A flag-gated route/UI element has no matching server-side enforcement of the same restriction (AFF-006)?
+
+**Category Q — NgRx state (only where classic NgRx Store/Effects is present)**
+- [ ] Full NgRx boilerplate used for simple local component state a `signal()` would handle (NGRX-001)?
+- [ ] Selectors not memoized via `createSelector`, recomputing on every store emission (NGRX-002)?
+- [ ] An Effect has no `catchError`, risking silently killing the entire effects stream on error (NGRX-003)?
+- [ ] Component subscribes to the store directly via `store.subscribe()` instead of `async` pipe/`toSignal()` (NGRX-004)?
+- [ ] Feature state registered eagerly at root instead of lazy-loaded via `provideState` alongside its lazy route (NGRX-005)?
+- [ ] No documented policy for teams running NgRx and Signals side by side (NGRX-006)?
+
+**Category R — Motion accessibility**
+- [ ] Animation/transition has no `@media (prefers-reduced-motion: reduce)` fallback (MOT-001)?
+- [ ] Auto-playing carousel/parallax/loop has no pause/stop control (MOT-002)?
+- [ ] Router page-transition moves focus before the transition visually completes (MOT-003)?
+- [ ] Animation timing/easing hardcoded per-component with no shared design token (MOT-004)?
+- [ ] Animation drives layout-affecting CSS properties (`width`/`top`/`left`) instead of `transform`/`opacity` (MOT-005)?
+
+**Category S — API design standards (cross-cutting contract with the .NET backend)**
+- [ ] Generated/hand-typed client model doesn't match a shared paged-response envelope used consistently across endpoints (API-002)?
+- [ ] Frontend error handling doesn't consistently parse the backend's `ProblemDetails` shape (API-003)?
+- [ ] Generated NSwag client not regenerated against the API version actually deployed (API-004)?
+- [ ] Generic HTTP status-code handling broken by an endpoint that misuses status codes (API-005)?
+
 ### Step 3 — Format findings
 
 Output findings in this structure:
@@ -182,9 +215,9 @@ Fix: <concrete code change or pattern reference>
 ```
 
 Severity mapping:
-- **CRITICAL** — rule severity is `block` (angular-no-innerhtml, always-no-hardcoded-secrets); also TEL-004 (PII in telemetry properties), TPS-001 (CDN script with no SRI hash)
-- **WARNING** — rule severity is `warn`, or a skill violation that will cause bugs (includes ATS-001/ATS-002/ATS-003, I18N-001/I18N-002/I18N-003/I18N-004, AEH-001/AEH-003, PWA-001/PWA-004, TEL-001/TEL-003, MFE-001/MFE-002, TPS-002)
-- **ADVISORY** — WCAG AAA items, style preferences, upgrade path items for EOL stacks, ADF-003/ADF-004 renderer/enablement suggestions, ATS-005 signal-test-flushing suggestions, I18N-005 locale-switch reload, AEH-002/AEH-004, PWA-002/PWA-003, TEL-002, MFE-003/MFE-004, TPS-003/TPS-004
+- **CRITICAL** — rule severity is `block` (angular-no-innerhtml, always-no-hardcoded-secrets); also TEL-004 (PII in telemetry properties), TPS-001 (CDN script with no SRI hash), AFF-002 (flag key desync with backend), AFF-006 (client-only gating with no server enforcement), NGRX-003 (effect with no catchError), API-003 (ProblemDetails parsing broken)
+- **WARNING** — rule severity is `warn`, or a skill violation that will cause bugs (includes ATS-001/ATS-002/ATS-003, I18N-001/I18N-002/I18N-003/I18N-004, AEH-001/AEH-003, PWA-001/PWA-004, TEL-001/TEL-003, MFE-001/MFE-002, TPS-002, AFF-001/AFF-004, NGRX-002/NGRX-004, MOT-001/MOT-002/MOT-003, API-002/API-004/API-005)
+- **ADVISORY** — WCAG AAA items, style preferences, upgrade path items for EOL stacks, ADF-003/ADF-004 renderer/enablement suggestions, ATS-005 signal-test-flushing suggestions, I18N-005 locale-switch reload, AEH-002/AEH-004, PWA-002/PWA-003, TEL-002, MFE-003/MFE-004, TPS-003/TPS-004, AFF-003/AFF-005, NGRX-001/NGRX-005/NGRX-006, MOT-004/MOT-005
 
 ### Step 4 — Summary line
 
