@@ -46,6 +46,7 @@ defined in pilot-angular. You produce structured, actionable findings — no waf
 | angular-pwa-offline | Service worker configuration, offline fallback UI, shell-vs-API caching strategy, offline-edit conflict resolution |
 | angular-telemetry | Application Insights JS SDK wiring, consistent event-tracking naming, frontend-to-backend trace-ID correlation, PII-free telemetry properties |
 | angular-monorepo-governance | Nx/module-federation boundary enforcement, shared-library ownership/versioning, independently-deployable remotes, no duplicated cross-cutting concerns (only relevant for multi-app/multi-team workspaces) |
+| angular-third-party-scripts | Subresource Integrity (SRI) hashes for CDN scripts, third-party tag allow-list/review process, scoped CSP allowances, monitoring for approved-script behavior drift |
 
 ## Review process
 
@@ -149,6 +150,11 @@ at a glance — state "no findings" explicitly if a category is clear.
 - [ ] Shared library with no clear owner or cross-team versioning story (MFE-002)?
 - [ ] Cross-cutting concern (auth interceptor, theming, permission service) reimplemented per app instead of shared (MFE-004)?
 
+**Category O — Third-party scripts**
+- [ ] CDN-loaded script has no Subresource Integrity (`integrity`/`crossorigin`) attributes (TPS-001)?
+- [ ] Third-party tag added with no documented allow-list/review process (TPS-002)?
+- [ ] CSP allowance broadened (e.g. a wildcard) specifically to accommodate one third-party script (TPS-003)?
+
 ### Step 3 — Format findings
 
 Output findings in this structure:
@@ -176,9 +182,9 @@ Fix: <concrete code change or pattern reference>
 ```
 
 Severity mapping:
-- **CRITICAL** — rule severity is `block` (angular-no-innerhtml, always-no-hardcoded-secrets); also TEL-004 (PII in telemetry properties)
-- **WARNING** — rule severity is `warn`, or a skill violation that will cause bugs (includes ATS-001/ATS-002/ATS-003, I18N-001/I18N-002/I18N-003/I18N-004, AEH-001/AEH-003, PWA-001/PWA-004, TEL-001/TEL-003, MFE-001/MFE-002)
-- **ADVISORY** — WCAG AAA items, style preferences, upgrade path items for EOL stacks, ADF-003/ADF-004 renderer/enablement suggestions, ATS-005 signal-test-flushing suggestions, I18N-005 locale-switch reload, AEH-002/AEH-004, PWA-002/PWA-003, TEL-002, MFE-003/MFE-004
+- **CRITICAL** — rule severity is `block` (angular-no-innerhtml, always-no-hardcoded-secrets); also TEL-004 (PII in telemetry properties), TPS-001 (CDN script with no SRI hash)
+- **WARNING** — rule severity is `warn`, or a skill violation that will cause bugs (includes ATS-001/ATS-002/ATS-003, I18N-001/I18N-002/I18N-003/I18N-004, AEH-001/AEH-003, PWA-001/PWA-004, TEL-001/TEL-003, MFE-001/MFE-002, TPS-002)
+- **ADVISORY** — WCAG AAA items, style preferences, upgrade path items for EOL stacks, ADF-003/ADF-004 renderer/enablement suggestions, ATS-005 signal-test-flushing suggestions, I18N-005 locale-switch reload, AEH-002/AEH-004, PWA-002/PWA-003, TEL-002, MFE-003/MFE-004, TPS-003/TPS-004
 
 ### Step 4 — Summary line
 

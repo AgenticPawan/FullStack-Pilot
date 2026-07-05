@@ -49,6 +49,8 @@ supported .NET range (8, 9, 10, 11 — see the [root README](../README.md#suppor
 | `dotnet-secrets-rotation` | JWT signing-key rotation with grace-period overlap, DB credential rotation cadence, certificate expiry monitoring, rotation audit logging |
 | `dotnet-api-contract-testing` | Consumer-driven contract tests (Pact) between the Angular frontend and this API, error-response contract coverage, shared TypeScript-schema generation, provider-verification deploy gate |
 | `dotnet-connection-pool-tuning` | `Max`/`Min Pool Size` tuned to expected concurrency, pool-exhaustion monitoring, connection/`DbContext` scope tightness, correct `DbContext` lifetime for the hosting model |
+| `dotnet-graphql` | `DataLoader` batching for N+1 resolvers, query depth/complexity limits, permissions-only field authorization, persisted-query allow-list — only applies when HotChocolate/GraphQL is present |
+| `dotnet-chaos-engineering` | Fault-injection verification (Polly Simmy/Azure Chaos Studio) that `dotnet-resilience`/`dotnet-outbox-pattern`/`dotnet-connection-pool-tuning` policies actually work, realistic-load experiments, scheduled game-day cadence, findings feeding runbooks/SLOs |
 
 ## Relationship to dotnet/skills
 

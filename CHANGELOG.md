@@ -3,6 +3,35 @@
 All notable changes to FullStack Pilot are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.20.0] — 2026-07-05 (pilot-dotnet), pilot-angular 0.16.0 → 0.17.0
+
+### Added
+- Closes the round-3 gap audit's Tier-3 backlog (Tier 1 in `[0.18.0]`, Tier 2 in
+  `[0.19.0]`) — the full round-3 audit is now fully shipped.
+- `pilot-dotnet`: two new skills, both conditional/narrow by design — `dotnet-graphql`
+  (only applies when HotChocolate/GraphQL is present: `DataLoader` batching for N+1
+  resolvers, query depth/complexity limits closing a DoS vector unique to GraphQL's
+  client-driven query shape, permissions-only field authorization, persisted-query
+  allow-list) and `dotnet-chaos-engineering` (fault-injection verification via Polly
+  Simmy/Azure Chaos Studio that the resilience policies already established elsewhere —
+  `dotnet-resilience`'s retries, `dotnet-outbox-pattern`'s idempotent consumers,
+  `dotnet-connection-pool-tuning`'s pool sizing — actually behave as configured under a
+  real fault, not just on paper; scheduled game-day cadence; findings feeding back into
+  `incident-response-runbook`/`azure-slo-error-budget`).
+- `pilot-angular`: `angular-third-party-scripts` — SRI hashes for CDN-loaded scripts, a
+  documented third-party tag allow-list/review process, scoped CSP allowances instead of
+  vendor-driven wildcards, and monitoring for approved-script behavior drift after
+  initial review. A supply-chain concern for code the application doesn't control at
+  all, closer in spirit to `dependency-supply-chain` than to `angular-security`'s XSS
+  prevention.
+- `dotnet-reviewer`/`angular-reviewer` agents: inventory rows and review-checklist
+  categories for all three additions.
+
+### Changed
+- `plugin.json`: `pilot-dotnet` `0.19.0` → `0.20.0`; `pilot-angular` `0.16.0` → `0.17.0`.
+- `docs/pilot-dotnet.md`, `docs/pilot-angular.md`, `README.md`: skill tables and counts
+  updated (pilot-dotnet 36→38, pilot-angular 17→18).
+
 ## [0.19.0] — 2026-07-05 (pilot-dotnet), pilot-azure 0.13.0 → 0.14.0, pilot-core 0.12.0 → 0.13.0
 
 ### Added

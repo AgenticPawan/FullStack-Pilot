@@ -21,7 +21,7 @@
     {
       "name": "pilot-angular",
       "source": "./plugins/pilot-angular",
-      "description": "Angular / TypeScript governance: signals, performance, accessibility, security (permissions-ONLY route guards/UI gating), HTTP resilience, the v15-to-v20 upgrade path, coding standards, multi-layout shells, theming, shared UI libraries, JSON-schema-driven dynamic forms, testing conventions, i18n, global error handling, PWA/offline support, frontend telemetry, and Nx/module-federation monorepo governance",
+      "description": "Angular / TypeScript governance: signals, performance, accessibility, security (permissions-ONLY route guards/UI gating), HTTP resilience, the v15-to-v20 upgrade path, coding standards, multi-layout shells, theming, shared UI libraries, JSON-schema-driven dynamic forms, testing conventions, i18n, global error handling, PWA/offline support, frontend telemetry, Nx/module-federation monorepo governance, and third-party script governance",
       "author": { "name": "FullStack Pilot Contributors" },
       "license": "MIT",
       "keywords": ["angular", "typescript", "signals", "standalone"]
@@ -29,7 +29,7 @@
     {
       "name": "pilot-dotnet",
       "source": "./plugins/pilot-dotnet",
-      "description": "C# / ASP.NET Core governance: Clean Architecture, SOLID/DRY, performance, caching, permissions-ONLY auth (no role checks), multitenancy, soft delete, audit fields, CORS, repository pattern, shared libraries, Excel/PDF document I/O, email templating, Guid entity keys, API versioning, modular DI, Hangfire background jobs, DB-backed configuration, localization, HTTP/EF Core resilience, observability, error handling, validation, testing, data protection, concurrency, rate limiting, the transactional outbox pattern, feature flags, real-time/SignalR, compliance access-audit logging, financial/currency precision, secrets rotation, API contract testing, and connection-pool tuning",
+      "description": "C# / ASP.NET Core governance: Clean Architecture, SOLID/DRY, performance, caching, permissions-ONLY auth (no role checks), multitenancy, soft delete, audit fields, CORS, repository pattern, shared libraries, Excel/PDF document I/O, email templating, Guid entity keys, API versioning, modular DI, Hangfire background jobs, DB-backed configuration, localization, HTTP/EF Core resilience, observability, error handling, validation, testing, data protection, concurrency, rate limiting, the transactional outbox pattern, feature flags, real-time/SignalR, compliance access-audit logging, financial/currency precision, secrets rotation, API contract testing, connection-pool tuning, GraphQL design, and chaos engineering",
       "author": { "name": "FullStack Pilot Contributors" },
       "license": "MIT",
       "keywords": ["dotnet", "csharp", "aspnetcore", "efcore", "nuget"]

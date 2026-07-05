@@ -2,8 +2,8 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "pilot-angular",
   "displayName": "Pilot Angular",
-  "version": "0.16.0",
-  "description": "Angular / TypeScript codebase governance: component patterns, signal migration, standalone best practices, accessibility audits, version-gated coding standards, multi-layout shells, theming, shared UI libraries, JSON-schema-driven dynamic reactive forms, permissions-ONLY route guards/UI gating (no role checks), testing conventions (Testing Library, harnesses, e2e), i18n (shared key space with dotnet-localization, locale formatting, RTL), global error handling (ProblemDetails-aware), PWA/offline support, frontend telemetry (Application Insights JS SDK, trace-ID correlation), and Nx/module-federation monorepo governance",
+  "version": "0.17.0",
+  "description": "Angular / TypeScript codebase governance: component patterns, signal migration, standalone best practices, accessibility audits, version-gated coding standards, multi-layout shells, theming, shared UI libraries, JSON-schema-driven dynamic reactive forms, permissions-ONLY route guards/UI gating (no role checks), testing conventions (Testing Library, harnesses, e2e), i18n (shared key space with dotnet-localization, locale formatting, RTL), global error handling (ProblemDetails-aware), PWA/offline support, frontend telemetry (Application Insights JS SDK, trace-ID correlation), Nx/module-federation monorepo governance, and third-party script governance (SRI, tag allow-list)",
   "author": {
     "name": "AgenticPawan",
     "url": "https://github.com/AgenticPawan"
@@ -11,5 +11,5 @@
   "homepage": "https://github.com/AgenticPawan/FullStack-Pilot#pilot-angular",
   "repository": "https://github.com/AgenticPawan/FullStack-Pilot",
   "license": "MIT",
-  "keywords": ["angular", "typescript", "signals", "standalone", "accessibility"]
+  "keywords": ["angular", "typescript", "signals", "standalone", "accessibility", "sri", "third-party-scripts"]
 }

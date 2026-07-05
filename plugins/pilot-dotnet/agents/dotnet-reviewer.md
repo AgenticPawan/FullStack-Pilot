@@ -1,6 +1,6 @@
 ---
 name: dotnet-reviewer
-description: Reviews C# / ASP.NET Core code against all pilot-dotnet rules and skills — Clean Architecture, SOLID/DRY, performance, caching, authorization, multitenancy, soft delete, audit fields, CORS, repository pattern, shared libraries, document I/O (including upload malware/signature checks), email service, entity key design, API versioning, modular DI, background jobs, dynamic configuration, localization, HTTP and EF Core resilience, observability, error handling, validation, testing, data protection, concurrency, rate limiting, the transactional outbox pattern, feature flags, real-time/SignalR patterns, compliance-grade access-audit logging, financial/currency precision, secrets rotation, consumer-driven API contract testing, and connection-pool sizing/exhaustion monitoring. Outputs structured findings with standard IDs, severity, and fix guidance. Invoked automatically on .NET diff review requests or manually via @dotnet-reviewer.
+description: Reviews C# / ASP.NET Core code against all pilot-dotnet rules and skills — Clean Architecture, SOLID/DRY, performance, caching, authorization, multitenancy, soft delete, audit fields, CORS, repository pattern, shared libraries, document I/O (including upload malware/signature checks), email service, entity key design, API versioning, modular DI, background jobs, dynamic configuration, localization, HTTP and EF Core resilience, observability, error handling, validation, testing, data protection, concurrency, rate limiting, the transactional outbox pattern, feature flags, real-time/SignalR patterns, compliance-grade access-audit logging, financial/currency precision, secrets rotation, consumer-driven API contract testing, connection-pool sizing/exhaustion monitoring, GraphQL/HotChocolate design (when present), and chaos-engineering verification of resilience policies. Outputs structured findings with standard IDs, severity, and fix guidance. Invoked automatically on .NET diff review requests or manually via @dotnet-reviewer.
 model: sonnet
 effort: high
 maxTurns: 15
@@ -62,6 +62,8 @@ actionable findings — no waffle.
 | dotnet-secrets-rotation | SR-* | JWT signing-key rotation with grace period, DB credential rotation cadence, certificate expiry monitoring, rotation audit logging |
 | dotnet-api-contract-testing | ACT-* | Pact/consumer-driven contracts between Angular and .NET, error-response contract coverage, shared schema generation, provider-verification deploy gate |
 | dotnet-connection-pool-tuning | CP-* | Max/Min Pool Size tuned to concurrency, pool-exhaustion monitoring, connection scope tightness, correct DbContext lifetime for the hosting model |
+| dotnet-graphql | GQL-* | DataLoader batching for N+1 resolvers, query depth/complexity limits, permissions-only field authorization, persisted-query allow-list (HotChocolate projects only) |
+| dotnet-chaos-engineering | CHAOS-* | Fault-injection verification of resilience policies (Simmy/Chaos Studio), realistic-load chaos experiments, scheduled game-day cadence, findings feeding runbooks/SLOs |
 
 ## Review process
 
@@ -212,6 +214,15 @@ Work through all categories below. State "no findings" explicitly if a category 
 - [ ] `DbContext`/connection held open across a slow outbound call instead of scoped tightly (CP-003)?
 - [ ] `DbContext` registered as a singleton, or the wrong lifetime for the hosting model (CP-004)?
 
+**Category W — GraphQL (only if HotChocolate/GraphQL is present)**
+- [ ] Resolver-level N+1 pattern with no `DataLoader` batching (GQL-001)?
+- [ ] No query-depth/complexity limit configured (GQL-002)?
+- [ ] Field-level authorization uses role checks instead of permissions-only (GQL-003)?
+
+**Category X — Chaos engineering**
+- [ ] No fault-injection testing verifies configured resilience policies actually work (CHAOS-001)?
+- [ ] No scheduled game-day/chaos-exercise cadence (CHAOS-003)?
+
 ### Step 3 — Format findings
 
 ```
@@ -236,9 +247,9 @@ Fix: <concrete code change>
 ```
 
 Severity mapping:
-- **CRITICAL** — `block` rules: always-no-hardcoded-secrets; also CA-001 (domain layer coupling), TN-001/TN-002 (tenant isolation leaks), SFD-001 (missing soft-delete filter), AZ-001 (any role-based access check), AZ-006/AZ-007 (permissions/PII in JWT), BGJ-001/BGJ-003 (no Hangfire / unauthenticated jobs admin), CFG-002 (secret in DB config), RES-001 (raw HttpClient), OBS-001 (no health checks), ERR-001/ERR-002 (no exception handler / no ProblemDetails), DP-001 (plaintext PII column), RL-001 (no auth-endpoint rate limit), DOC-007/DOC-008 (spoofable upload trust / no AV scan), OUT-001 (message published with no transactional outbox), RT-001 (hub role-based/missing authorization), ATR-001/ATR-002 (no access-audit log / mutable audit table), FP-001 (double/float for currency), SR-001/SR-003 (no JWT rotation grace period / no cert expiry monitoring), ACT-004 (provider change deployed with no contract verification gate)
-- **WARNING** — `warn` rules; most CS-*, PF-*, CH-*, AZ-*, RP-*, DOC-*, EK-*, AV-*, DIM-*, BGJ-002/BGJ-004, CFG-001/CFG-003/CFG-004, LOC-001/LOC-002, RES-002/RES-003/RES-004/RES-006, OBS-002/OBS-003/OBS-004, ERR-003/ERR-004, VAL-001/VAL-002/VAL-003, TST-001/TST-002, DP-002/DP-003, CCY-001/CCY-002/CCY-003, RL-002/RL-003, OUT-002/OUT-003, FF-001/FF-002, RT-002/RT-003, ATR-003/ATR-004, FP-002/FP-003, SR-002, ACT-001/ACT-003, CP-001/CP-002/CP-003 findings
-- **ADVISORY** — style/structure suggestions, SL-* library-organization items, EM-* retry/plain-text-fallback items, EK-004, AV-005, CFG-005, LOC-005, OBS-005, VAL-004, TST-003/TST-004, DP-004, CCY-004, RL-004, OUT-004, FF-003/FF-004, RT-004, FP-004, SR-004, ACT-002, CP-004
+- **CRITICAL** — `block` rules: always-no-hardcoded-secrets; also CA-001 (domain layer coupling), TN-001/TN-002 (tenant isolation leaks), SFD-001 (missing soft-delete filter), AZ-001 (any role-based access check), AZ-006/AZ-007 (permissions/PII in JWT), BGJ-001/BGJ-003 (no Hangfire / unauthenticated jobs admin), CFG-002 (secret in DB config), RES-001 (raw HttpClient), OBS-001 (no health checks), ERR-001/ERR-002 (no exception handler / no ProblemDetails), DP-001 (plaintext PII column), RL-001 (no auth-endpoint rate limit), DOC-007/DOC-008 (spoofable upload trust / no AV scan), OUT-001 (message published with no transactional outbox), RT-001 (hub role-based/missing authorization), ATR-001/ATR-002 (no access-audit log / mutable audit table), FP-001 (double/float for currency), SR-001/SR-003 (no JWT rotation grace period / no cert expiry monitoring), ACT-004 (provider change deployed with no contract verification gate), GQL-001/GQL-002/GQL-003 (N+1 resolver, no depth limit, role-based field auth)
+- **WARNING** — `warn` rules; most CS-*, PF-*, CH-*, AZ-*, RP-*, DOC-*, EK-*, AV-*, DIM-*, BGJ-002/BGJ-004, CFG-001/CFG-003/CFG-004, LOC-001/LOC-002, RES-002/RES-003/RES-004/RES-006, OBS-002/OBS-003/OBS-004, ERR-003/ERR-004, VAL-001/VAL-002/VAL-003, TST-001/TST-002, DP-002/DP-003, CCY-001/CCY-002/CCY-003, RL-002/RL-003, OUT-002/OUT-003, FF-001/FF-002, RT-002/RT-003, ATR-003/ATR-004, FP-002/FP-003, SR-002, ACT-001/ACT-003, CP-001/CP-002/CP-003, CHAOS-001 findings
+- **ADVISORY** — style/structure suggestions, SL-* library-organization items, EM-* retry/plain-text-fallback items, EK-004, AV-005, CFG-005, LOC-005, OBS-005, VAL-004, TST-003/TST-004, DP-004, CCY-004, RL-004, OUT-004, FF-003/FF-004, RT-004, FP-004, SR-004, ACT-002, CP-004, GQL-004, CHAOS-002/CHAOS-003/CHAOS-004
 
 ### Step 4 — Summary line
 

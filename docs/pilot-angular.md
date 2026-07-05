@@ -31,6 +31,7 @@ targets 17–20; 15–16 are EOL and get upgrade guidance only.
 | `angular-pwa-offline` | `@angular/service-worker` configuration, offline fallback UI, shell-vs-API caching strategy, offline-edit conflict resolution — only relevant for field/offline-capable apps |
 | `angular-telemetry` | Application Insights JS SDK wiring, consistent event-tracking naming convention, frontend-to-backend trace-ID correlation, PII-free telemetry properties |
 | `angular-monorepo-governance` | Nx/module-federation boundary enforcement, shared-library ownership and cross-team versioning, independently-deployable remote apps, no duplicated cross-cutting concerns — only relevant once a workspace spans multiple apps/teams |
+| `angular-third-party-scripts` | Subresource Integrity (SRI) hashes for CDN-loaded scripts, a documented third-party tag allow-list/review process, scoped CSP allowances instead of vendor-driven wildcards, monitoring for approved-script behavior drift |
 
 ## Version policy
 
