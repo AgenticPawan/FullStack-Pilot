@@ -9,27 +9,66 @@ backend, SQL Server for data, and Azure/Bicep for infrastructure. It runs a stac
 → governance-scaffold → audit → remediation pipeline so a team gets consistent checks
 without every developer hand-writing `CLAUDE.md` rules.
 
-## Install
+## What you need before you start (5-minute primer)
 
-Three steps: add the marketplace, install the plugins you need, restart.
+You do **not** need to know anything about plugin development to use this. You just need:
 
-```shell
-/plugin marketplace add AgenticPawan/FullStack-Pilot
-```
+1. **A code editor / terminal** — any computer with a terminal (Mac, Windows, Linux) works.
+2. **[Claude Code](https://claude.ai/code) installed** — this is Anthropic's command-line
+   coding assistant. If you don't have it yet, follow Anthropic's install guide, then run
+   `claude` once in any folder to confirm it starts.
+3. **A full-stack project** — either one you already have (Angular + .NET + SQL Server,
+   any subset is fine) or a brand-new empty folder if you're starting from scratch.
+4. **Git** installed (`git --version` in a terminal should print something, not an error).
 
-```shell
-/plugin install pilot-core@fullstack-pilot
-/plugin install pilot-angular@fullstack-pilot
-/plugin install pilot-sql@fullstack-pilot
-/plugin install pilot-azure@fullstack-pilot
-```
+That's it. "FullStack Pilot" itself is not software you run directly — it's a pack of
+extra knowledge and checklists ("skills") that Claude Code loads and uses automatically
+while it helps you code. Think of it like installing a set of house rules and a checklist
+for a new employee, except the employee is Claude and the rules are for Angular/.NET/SQL
+Server/Azure best practices.
 
-`pilot-core` is required by every other plugin — install it first.
+Everything below happens **inside a Claude Code session** — you open a terminal, `cd`
+into your project folder, type `claude` to start a session, and then type the commands
+shown (they start with `/`).
 
-Restart Claude Code (or run `/plugin marketplace update`) so newly installed skills and
-commands load.
+## Part A — Add FullStack Pilot to Claude Code (do this once)
 
-### Local / development install
+This step makes the plugin pack available on your machine. You only do this once, ever
+(not once per project).
+
+1. Open a terminal.
+2. Start Claude Code by typing:
+   ```shell
+   claude
+   ```
+3. Inside the Claude Code session, register this plugin pack ("marketplace" just means
+   "a catalog of plugins Claude Code knows how to fetch"):
+   ```shell
+   /plugin marketplace add AgenticPawan/FullStack-Pilot
+   ```
+4. Install the plugins you want. `pilot-core` is required — it's the shared engine every
+   other plugin depends on. Install the others based on what your project actually uses;
+   it's fine to skip ones you don't need (e.g. skip `pilot-azure` if you don't deploy to
+   Azure).
+   ```shell
+   /plugin install pilot-core@fullstack-pilot
+   /plugin install pilot-angular@fullstack-pilot
+   /plugin install pilot-dotnet@fullstack-pilot
+   /plugin install pilot-sql@fullstack-pilot
+   /plugin install pilot-azure@fullstack-pilot
+   ```
+5. Restart Claude Code so the newly installed skills load — exit the session (type `exit`
+   or press `Ctrl+D`) and run `claude` again. (Alternatively, run
+   `/plugin marketplace update` without restarting.)
+
+That's the entire "installation." From here on, Claude Code will quietly consult these
+skills whenever it reviews or writes Angular/.NET/SQL/Azure code — you don't invoke them
+by name, they just make Claude's suggestions follow your team's conventions.
+
+### Local / development install (only if you cloned this repo yourself)
+
+If you've cloned the FullStack-Pilot repository itself (e.g. to contribute or to preview
+changes before they're published), point Claude Code at your local copy instead of GitHub:
 
 ```shell
 git clone https://github.com/AgenticPawan/FullStack-Pilot
@@ -49,41 +88,147 @@ Or load a single plugin directly without a marketplace entry:
 claude --plugin-dir ./plugins/pilot-core
 ```
 
-## 60-second quickstart
+## Part B — Using FullStack Pilot in a project you already have
 
-Run these three commands, in order, against your own Angular/.NET/SQL/Azure project
-(not this plugin repo):
+Follow this if you already have an existing Angular/.NET/SQL Server/Azure codebase and
+want Pilot's governance applied to it.
 
+**Step 1 — Open a terminal in your project's root folder** (the folder that contains
+your `.git` folder, `.sln`/`package.json`, etc.) — not the FullStack-Pilot repo.
+
+```shell
+cd path/to/your-existing-project
+claude
+```
+
+**Step 2 — Detect your stack.** Run:
 ```shell
 /pilot-init
 ```
-Detects your stack (Angular/.NET/SQL Server/Azure versions, evidence-cited), asks you to
-confirm, then scaffolds `CLAUDE.md` and version-gated rules into `.claude/rules/`.
+Claude reads your project (looking at real files — `package.json`, `.csproj`, `.sln`,
+Bicep files) to figure out which Angular/.NET/SQL Server/Azure versions you're on. It
+shows you a summary table and asks you to confirm it got it right before doing anything
+else. Once confirmed, it writes a `CLAUDE.md` file (a plain-English description of your
+project's conventions) and a `.claude/rules/` folder (machine-checkable rules matched to
+your exact versions — e.g. it won't apply Angular 20 rules to an Angular 16 app).
+
+*Nothing you have is deleted or overwritten without asking.* If it finds an outdated
+stack (e.g. Angular 15 or .NET 7), it tells you that instead of silently applying rules
+meant for newer versions.
+
+**Step 3 — Find existing problems.** Run:
+```shell
+/pilot-audit
+```
+This runs your project's own tools (`dotnet list package --vulnerable`, `npm audit`,
+linters) plus a Claude-driven read-through looking for things tools can't catch — broken
+permission checks, tenant-data leaks, hardcoded secrets, and so on. It writes a plain
+report you can read: `AUDIT-REPORT.md`, plus a machine-readable `findings.json`.
+
+**Step 4 — Fix problems safely, a batch at a time.** Run:
+```shell
+/pilot-fix --batch P0
+```
+`P0` means "most severe first." This creates a separate git branch, applies only the
+most critical fixes, and runs your build to make sure nothing broke — if it did, Pilot
+automatically undoes the change instead of leaving your project broken. Review the
+branch's diff like you would any pull request, then repeat with `--batch P1`, `--batch
+P2`, etc. for lower-severity issues, at your own pace. Nothing merges to your main branch
+without you doing it yourself.
+
+**Step 5 (ongoing) — Just keep coding.** From here on, whenever you ask Claude Code to
+add a feature, review a diff, or fix a bug in this project, it automatically applies the
+matching skill's conventions (e.g. "never check roles, only permissions" for auth, or
+"always use parameterized queries" for SQL) without you having to ask for it by name.
+
+## Part C — Starting a brand-new full-stack project from scratch
+
+Follow this if you don't have a project yet and want to start one with governance built
+in from day one, rather than bolted on later.
+
+**Step 1 — Create an empty folder and initialize git.**
+```shell
+mkdir my-new-app
+cd my-new-app
+git init
+```
+
+**Step 2 — Scaffold the actual application code.** FullStack Pilot governs conventions;
+it doesn't generate the initial Angular/.NET project skeleton for you — use the standard
+official tools first:
+```shell
+# Angular frontend
+npx @angular/cli new client --routing --style=scss
+
+# .NET backend (example: a Web API)
+dotnet new webapi -n Server
+dotnet new sln
+dotnet sln add Server
+```
+Adjust these to whatever shape your project needs (a Blazor app, a class library, a
+Minimal API — any combination is fine). The important part is that by the end of this
+step, you have at least one recognizable Angular and/or .NET project file on disk
+(`angular.json`, `*.csproj`) inside `my-new-app`.
+
+**Step 3 — Start Claude Code in this new folder and install Pilot** (skip this if you
+already did Part A on this machine before — the marketplace registration is per-machine,
+not per-project):
+```shell
+claude
+/plugin marketplace add AgenticPawan/FullStack-Pilot
+/plugin install pilot-core@fullstack-pilot
+/plugin install pilot-angular@fullstack-pilot
+/plugin install pilot-dotnet@fullstack-pilot
+```
+
+**Step 4 — Run the same three commands as an existing project**, in the same order:
+```shell
+/pilot-init
+```
+On a brand-new project this is fast — there's little to detect and no legacy code to
+work around. It writes your `CLAUDE.md` and version-gated rules immediately, matched to
+whatever Angular/.NET version you just scaffolded.
 
 ```shell
 /pilot-audit
 ```
-Runs available scanners (`dotnet list package --vulnerable`, `npm audit`, `semgrep`,
-`eslint`, `az bicep lint`) plus a bounded Claude semantic pass for IDOR, tenant-isolation
-gaps, authN/authZ flaws, and secrets. Writes `.claude/pilot/audit/findings.json` and
-`AUDIT-REPORT.md`.
+On a fresh scaffold this usually comes back clean or with a small number of starter-
+template nitpicks — that's expected and a good sign.
 
 ```shell
 /pilot-fix --batch P0
 ```
-Applies fixes for one severity tier at a time on a dedicated branch, verifies with a
-build, and rolls back automatically on regression. Never mixes severity tiers or
-touches more than 10 files without asking.
+Apply any findings the same way as an existing project (there's usually little to fix
+this early).
+
+**Step 5 — Commit the scaffold, then build.** Once `CLAUDE.md` and `.claude/rules/`
+exist and your first audit is clean, commit everything and start building features
+normally. Every piece of code Claude writes for you from this point forward is checked
+against the rules Pilot just set up — you're building on governance from commit #1
+instead of retrofitting it after the project has grown.
+
+```shell
+git add .
+git commit -m "chore: scaffold project with FullStack Pilot governance"
+```
+
+## Quick reference — the three commands you'll use most
+
+| Command | What it does in one sentence |
+|---|---|
+| `/pilot-init` | Figures out your stack and writes the conventions/rules files |
+| `/pilot-audit` | Scans for existing problems and writes a report |
+| `/pilot-fix --batch <tier>` | Fixes one severity tier of problems on a safe, reviewable branch |
 
 ## Plugins
 
 | Plugin | Status | Purpose |
 |---|---|---|
-| `pilot-core` | Implemented | 10 skills: stack detection, scaffold, audit/fix pipelines, MCP discovery, dependency-supply-chain policy (patch SLAs, SBOM), incident-response runbook/postmortem governance, open-source license compliance, safe test-data management, `/pilot-init` `/pilot-audit` `/pilot-fix` `/pilot-learn` |
-| `pilot-angular` | Implemented | 18 skills + reviewer agent: signals & state, performance, a11y (WCAG 2.2 AA), security (XSS/CSP, permissions-ONLY route guards/UI gating), HTTP resilience, memory-leak detection, v15→v20 upgrade path, coding standards, multi-layout shells, theming, JSON-driven dynamic forms, testing conventions, i18n, global error handling, PWA/offline support, frontend telemetry, Nx/module-federation monorepo governance, third-party script governance |
-| `pilot-sql` | Implemented | 7 skills + reviewer agent: SQL injection defense, migration safety, multitenancy isolation, performance review, PII data protection (Always Encrypted, Dynamic Data Masking, TDE), index/statistics maintenance, backup/restore-drill verification |
+| `pilot-core` | Implemented | 17 skills: stack detection, scaffold, audit/fix pipelines, MCP discovery, dependency-supply-chain policy (patch SLAs, SBOM), git branching/PR-review workflow governance, CI-level secret scanning, cross-cutting REST API design standards, SLO-gated load/performance testing, incident-response runbook/postmortem governance, open-source license compliance, safe test-data management, `/pilot-init` `/pilot-audit` `/pilot-fix` `/pilot-learn` |
+| `pilot-angular` | Implemented | 30 skills + reviewer agent: signals & state, classic NgRx governance, performance, a11y (WCAG 2.2 AA), motion/reduced-motion accessibility, security (XSS/CSP, permissions-ONLY route guards/UI gating), HTTP resilience, memory-leak detection, v15→v20 upgrade path, coding standards, multi-layout shells, theming, JSON-driven dynamic forms, testing conventions, i18n, global error handling, PWA/offline support, frontend telemetry, Nx/module-federation monorepo governance, third-party script governance, frontend feature-flag governance |
+| `pilot-sql` | Implemented | 8 skills + reviewer agent: schema design (naming, keys, constraints), SQL injection defense, migration safety, multitenancy isolation, performance review, PII data protection (Always Encrypted, Dynamic Data Masking, TDE), index/statistics maintenance, backup/restore-drill verification |
 | `pilot-azure` | Implemented | 13 skills + reviewer agent: CAF naming, security baseline, Well-Architected Framework review, Bicep patterns, centralized observability, CI/CD deployment security, multi-region disaster recovery, cost/FinOps guardrails, AKS cluster governance, API Management gateway policy review, enterprise-scale landing-zone topology, SLO/error-budget policy, container image security |
-| `pilot-dotnet` | Implemented | 38 skills + reviewer agent: Clean Architecture, SOLID/DRY, performance, caching, permissions-ONLY auth (no role checks, ever; JWT PII/permission hardening), multitenancy, soft delete, Guid-typed audit fields, CORS, repository pattern, shared libraries, document I/O, email service, Guid entity keys, API versioning, modular DI, Hangfire background jobs, DB-backed configuration, localization, HTTP/EF Core resilience, observability, error handling, validation, testing, data protection, concurrency, rate limiting, transactional outbox pattern, feature flags, real-time/SignalR, compliance access-audit logging, financial/currency precision, secrets rotation, API contract testing, connection-pool tuning, GraphQL design, chaos engineering — see [Relationship to dotnet/skills](#relationship-to-dotnetskills) |
+| `pilot-dotnet` | Implemented | 56 skills + reviewer agent: Clean Architecture, SOLID/DRY, performance, caching, permissions-ONLY auth (no role checks, ever; JWT PII/permission hardening), multitenancy, soft delete, Guid-typed audit fields, CORS, repository pattern, shared libraries, document I/O, email service, Guid entity keys, API versioning, modular DI, middleware pipeline ordering, Hangfire background jobs, DB-backed configuration, localization, HTTP/EF Core resilience, liveness/readiness health checks, observability, error handling, validation, testing, data protection, concurrency, rate limiting, transactional outbox pattern, Saga orchestration, Service Bus/Event Grid messaging, gRPC, Backend-for-Frontend aggregation, feature flags, real-time/SignalR, compliance access-audit logging, financial/currency precision, secrets rotation, API contract testing, connection-pool tuning, GraphQL design, chaos engineering, NuGet Central Package Management — see [Relationship to dotnet/skills](#relationship-to-dotnetskills) |
 
 ## Supported versions
 
