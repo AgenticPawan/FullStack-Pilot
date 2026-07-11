@@ -39,6 +39,12 @@ function info(msg) {
   console.log(`  – info  ${msg}`);
 }
 
+let warnings = 0;
+function warn(msg) {
+  console.log(`  ! warn  ${msg}`);
+  warnings++;
+}
+
 // ─── Directory walker ────────────────────────────────────────────────────────
 
 const SKIP_DIRS = new Set([
@@ -151,6 +157,9 @@ for (const filePath of walk(ROOT)) {
     fail(`${rel}: invalid JSON — ${error}`);
   } else if (typeof data.name !== 'string' || !data.name.trim()) {
     fail(`${rel}: missing required field "name" (string)`);
+  } else if (typeof data.description === 'string' && data.description.length > 600) {
+    // Token budget: plugin descriptions load into every session.
+    fail(`${rel}: "description" is ${data.description.length} chars — max is 600 (per-session token cost)`);
   } else {
     pass(`${rel}: name="${data.name}" version="${data.version ?? 'unset'}"`);
   }
@@ -176,10 +185,13 @@ for (const filePath of walk(ROOT)) {
     continue;
   }
   const desc = fm['description'] ?? '';
-  if (desc.length > 1024) {
-    fail(`${rel}: "description" is ${desc.length} chars — max is 1024`);
+  const combined = desc.length + (fm['when_to_use'] ?? '').length;
+  if (combined > 1024) {
+    fail(`${rel}: description+when_to_use is ${combined} chars — max is 1024`);
+  } else if (combined > 500) {
+    warn(`${rel}: description+when_to_use is ${combined} chars — target is <=500 (per-session token cost)`);
   } else {
-    pass(`${rel}: frontmatter OK (description: ${desc.length} chars)`);
+    pass(`${rel}: frontmatter OK (description+when_to_use: ${combined} chars)`);
   }
 }
 
@@ -202,7 +214,8 @@ for (const filePath of walk(ROOT)) {
 
   agentCount++;
   const rel = path.relative(ROOT, filePath);
-  const fm = parseFrontmatter(fs.readFileSync(filePath, 'utf8'));
+  const content = fs.readFileSync(filePath, 'utf8');
+  const fm = parseFrontmatter(content);
 
   if (!fm) {
     fail(`${rel}: missing YAML frontmatter (file must begin with --- block)`);
@@ -230,7 +243,35 @@ for (const filePath of walk(ROOT)) {
     agentOk = false;
   }
 
-  if (agentOk) pass(`${rel}: frontmatter OK (name="${fm['name']}")`);
+  // Model-tier policy (CLAUDE.md model matrix):
+  //   fsp-scout = haiku, fsp-architect = opus, implementors inherit (no model key),
+  //   reviewers/support/fsp-analyst/fsp-qa = sonnet or omitted.
+  const model = fm['model'] ?? '';
+  if (base === 'fsp-scout' && model !== 'haiku') {
+    fail(`${rel}: fsp-scout must declare "model: haiku" (T1 read tier)`);
+    agentOk = false;
+  }
+  if (base === 'fsp-architect' && model !== 'opus') {
+    fail(`${rel}: fsp-architect must declare "model: opus" (T3 planning tier)`);
+    agentOk = false;
+  }
+  if (base.endsWith('-implementor') && model && model !== 'inherit') {
+    fail(`${rel}: implementor agents must not hardcode a model — orchestrators pass one per invocation`);
+    agentOk = false;
+  }
+  if ((base.endsWith('-reviewer') || base.endsWith('-support') || base === 'fsp-analyst' || base === 'fsp-qa')
+      && model && model !== 'sonnet') {
+    fail(`${rel}: ${base} must declare "model: sonnet" or omit the model field (T2 tier)`);
+    agentOk = false;
+  }
+
+  // Token discipline: every agent must declare its read budget.
+  if (!content.includes('Read budget')) {
+    fail(`${rel}: agent body must declare a "Read budget" (token discipline)`);
+    agentOk = false;
+  }
+
+  if (agentOk) pass(`${rel}: frontmatter OK (name="${fm['name']}", model=${model || 'inherit'})`);
 }
 
 if (agentCount === 0) info('no agent files found');
@@ -363,6 +404,7 @@ if (!fs.existsSync(hookTestScript)) {
 // ─── Summary ─────────────────────────────────────────────────────────────────
 
 console.log('\n' + '─'.repeat(56));
+if (warnings > 0) console.log(`! ${warnings} warning(s) — non-blocking, see above.`);
 if (errors === 0) {
   console.log('✓ All checks passed.\n');
   process.exit(0);
