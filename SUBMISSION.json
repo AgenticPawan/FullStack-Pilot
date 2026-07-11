@@ -1,0 +1,16 @@
+{
+  "name": "fullstack-pilot",
+  "description": "Codebase governance for full-stack Microsoft shops (Angular, .NET, SQL Server, Azure) — stack-detection to governance-scaffold to audit to remediation pipeline for consistent conventions across a team.",
+  "author": {
+    "name": "AgenticPawan",
+    "url": "https://github.com/AgenticPawan"
+  },
+  "category": "development",
+  "source": {
+    "source": "github",
+    "repo": "AgenticPawan/FullStack-Pilot",
+    "commit": "69acf32722730d1b93f5d2bf25e3a0fd354f11b6",
+    "sha": "69acf32722730d1b93f5d2bf25e3a0fd354f11b6"
+  },
+  "homepage": "https://github.com/AgenticPawan/FullStack-Pilot"
+}
