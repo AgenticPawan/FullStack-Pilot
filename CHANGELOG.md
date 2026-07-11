@@ -3,6 +3,20 @@
 All notable changes to FullStack Pilot are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 2026-07-12 — plugin split-eligibility audit (docs only)
+
+No version bumps — documentation only.
+
+### Added
+- [docs/SPLIT-ELIGIBILITY-AUDIT-2026-07.md](docs/SPLIT-ELIGIBILITY-AUDIT-2026-07.md) —
+  a submission-readiness review deciding, per plugin, whether it should be split before
+  proposing FullStack Pilot to `anthropics/claude-plugins-official`. Verdict: **keep all
+  five as-is**. Each is judged on domain coherence and cross-dependency (shared trio,
+  shared base skills, cross-references), not skill count — so pilot-dotnet (57 skills) and
+  pilot-angular (31) stay whole because every skill governs one artifact under one agent
+  trio, and pilot-core stays whole because it is the runtime/glue the other plugins install
+  against. Linked from the README Documentation section.
+
 ## 2026-07-12 — full governance wiring audit + UI/UX skill + foundation gate
 
 pilot-core 0.20.0 → 0.21.0, pilot-angular 0.21.0 → 0.22.0, pilot-dotnet 0.25.0 → 0.26.0,

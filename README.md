@@ -412,6 +412,8 @@ every `hooks.json` for schema correctness and script existence, then runs
 - [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) — skill authoring conventions, PR process
 - [docs/SECURITY.md](docs/SECURITY.md) — vulnerability reporting
 - [CLAUDE.md](CLAUDE.md) — plugin layout, `SKILL.md`/hooks conventions, commit format
+- [docs/GOVERNANCE-AUDIT-2026-07.md](docs/GOVERNANCE-AUDIT-2026-07.md) — agent ↔ rule ↔ skill ↔ MCP ↔ command wiring audit
+- [docs/SPLIT-ELIGIBILITY-AUDIT-2026-07.md](docs/SPLIT-ELIGIBILITY-AUDIT-2026-07.md) — per-plugin split-vs-keep review for marketplace submission
 - [CHANGELOG.md](CHANGELOG.md) — release history
 
 ## License
