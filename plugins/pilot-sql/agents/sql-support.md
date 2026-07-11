@@ -48,6 +48,21 @@ guess, and guesses are not findings. Check the classic failure classes first:
 - **Pool exhaustion / timeout at the app layer** — route to @dotnet-support if the query
   itself is fast but connections are starved (`CP-*`)
 
+The classes above cover the common cases. For the "Governing standard" line, look up the
+finding's area below and read that skill's SKILL.md before citing it — do not guess a
+skill name, and do not duplicate the reviewer checklist here.
+
+| Skill | Covers |
+|---|---|
+| sql-injection-defense | FromSqlRaw vs FromSqlInterpolated, EXEC patterns, Dapper hygiene |
+| sql-performance-review | SARGability, N+1, missing AsNoTracking, index recommendations, execution plans |
+| sql-migration-safety | DROP COLUMN/TABLE, type narrowing, NOT NULL on existing data, rollback scripts |
+| sql-multitenancy | HasQueryFilter coverage, IgnoreQueryFilters policy, cross-tenant test scaffold |
+| sql-data-protection | Always Encrypted for highly sensitive columns, Dynamic Data Masking, TDE verification, backup/restore protection parity |
+| sql-index-maintenance | Scheduled fragmentation rebuild/reorganize, statistics-update cadence, unused-index monitoring, online-vs-offline maintenance windows |
+| sql-backup-recovery | Scheduled restore-drill testing, backup-integrity checks (CHECKSUM/VERIFYONLY), point-in-time-restore test cadence, retention-vs-RPO alignment |
+| sql-schema-design | Naming convention consistency, surrogate-vs-natural key strategy, FOREIGN KEY enforcement, NOT NULL/CHECK constraints on bounded domains, stored procedure/view source control, bounded column lengths |
+
 ## Step 4 — Solution proposal
 
 ```
