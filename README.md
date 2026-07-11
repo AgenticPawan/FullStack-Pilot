@@ -56,6 +56,7 @@ This step makes the plugin pack available on your machine. You only do this once
    /plugin install pilot-dotnet@fullstack-pilot
    /plugin install pilot-sql@fullstack-pilot
    /plugin install pilot-azure@fullstack-pilot
+   /plugin install pilot-rag@fullstack-pilot     # optional: local self-hosted RAG over your own codebase
    ```
 5. Restart Claude Code so the newly installed skills load — exit the session (type `exit`
    or press `Ctrl+D`) and run `claude` again. (Alternatively, run
@@ -343,6 +344,7 @@ the full pipeline reference.
 | `pilot-angular` | Implemented | 31 skills + reviewer, implementor & support agents: signals & state, classic NgRx governance, performance, a11y (WCAG 2.2 AA), UI/UX visual consistency (spacing/type scale, responsive layout, visual hierarchy, design-to-code fidelity), motion/reduced-motion accessibility, security (XSS/CSP, permissions-ONLY route guards/UI gating), HTTP resilience, memory-leak detection, v15→v20 upgrade path, coding standards, multi-layout shells, theming, JSON-driven dynamic forms, testing conventions, i18n, global error handling, PWA/offline support, frontend telemetry, Nx/module-federation monorepo governance, third-party script governance, frontend feature-flag governance |
 | `pilot-sql` | Implemented | 8 skills + reviewer, implementor & support agents: schema design (naming, keys, constraints), SQL injection defense, migration safety, multitenancy isolation, performance review, PII data protection (Always Encrypted, Dynamic Data Masking, TDE), index/statistics maintenance, backup/restore-drill verification |
 | `pilot-azure` | Implemented | 13 skills + reviewer, implementor & support agents: CAF naming, security baseline, Well-Architected Framework review, Bicep patterns, centralized observability, CI/CD deployment security, multi-region disaster recovery, cost/FinOps guardrails, AKS cluster governance, API Management gateway policy review, enterprise-scale landing-zone topology, SLO/error-budget policy, container image security |
+| `pilot-rag` | Implemented | 5 skills + the `rag-implementor` scaffold agent: `/fsp-rag-init` builds a local, self-hosted, provider-agnostic RAG system into `./pilot-rag/` inside your own project so Claude Code can answer questions about your Angular/.NET/SQL/Azure code cited to real files — discovery/ingestion manifest with secret redaction, Microsoft.Extensions.AI provider abstraction (swap Ollama↔Azure OpenAI by appsettings only, architecture-tested for zero vendor refs in the core), five chunkers with idempotent Qdrant ingestion, an SSE `/ask` endpoint with score floor and source citation, an Angular Signals chat UI, and a retrieval hit-rate eval gate. .NET-only orchestration (no Python/LangChain), read-only against your app, question-answering only |
 | `pilot-dotnet` | Implemented | 57 skills + reviewer, implementor & support agents: Clean Architecture, SOLID/DRY, performance, caching, permissions-ONLY auth (no role checks, ever; JWT PII/permission hardening), security headers (HSTS/CSP/anti-forgery/safe JSON deserialization), multitenancy, soft delete, Guid-typed audit fields, CORS, repository pattern, shared libraries, document I/O, email service, Guid entity keys, API versioning, modular DI, middleware pipeline ordering, Hangfire background jobs, DB-backed configuration, localization, HTTP/EF Core resilience, liveness/readiness health checks, observability, error handling, validation, testing, data protection, concurrency, rate limiting, transactional outbox pattern, Saga orchestration, Service Bus/Event Grid messaging, gRPC, Backend-for-Frontend aggregation, feature flags, real-time/SignalR, compliance access-audit logging, financial/currency precision, secrets rotation, API contract testing, connection-pool tuning, GraphQL design, chaos engineering, NuGet Central Package Management — see [Relationship to dotnet/skills](#relationship-to-dotnetskills) |
 
 ## Supported versions
@@ -406,7 +408,7 @@ every `hooks.json` for schema correctness and script existence, then runs
 
 - [docs/pilot-core.md](docs/pilot-core.md), [docs/pilot-angular.md](docs/pilot-angular.md),
   [docs/pilot-sql.md](docs/pilot-sql.md), [docs/pilot-azure.md](docs/pilot-azure.md),
-  [docs/pilot-dotnet.md](docs/pilot-dotnet.md) — per-plugin reference
+  [docs/pilot-dotnet.md](docs/pilot-dotnet.md), [docs/pilot-rag.md](docs/pilot-rag.md) — per-plugin reference
 - [docs/mcp-setup.md](plugins/pilot-core/docs/mcp-setup.md) — MCP server credentials and setup
 - [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) — common install/runtime issues
 - [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) — skill authoring conventions, PR process

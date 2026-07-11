@@ -49,6 +49,14 @@
       "author": { "name": "FullStack Pilot Contributors" },
       "license": "MIT",
       "keywords": ["azure", "bicep", "aca", "cost", "deployment"]
+    },
+    {
+      "name": "pilot-rag",
+      "source": "./plugins/pilot-rag",
+      "description": "Local, self-hosted RAG scaffold for full-stack Microsoft codebases. /fsp-rag-init builds a provider-agnostic question-answering system in ./pilot-rag/ within your project so Claude Code can answer questions about your own Angular/.NET/SQL/Azure code, cited to real files: Microsoft.Extensions.AI (IChatClient/IEmbeddingGenerator) with an architecture test proving zero vendor refs in the core, Roslyn/regex/Markdown/OpenAPI/config chunkers with idempotent Qdrant ingestion and secret redaction, an SSE /ask endpoint with a cosine score floor and source citation, an Angular Signals chat UI, and a retrieval hit-rate eval gate — swap Ollama<->Azure OpenAI by appsettings only, .NET-only orchestration (no Python/LangChain/Semantic Kernel), read-only against your app — with the @rag-implementor scaffold agent",
+      "author": { "name": "FullStack Pilot Contributors" },
+      "license": "MIT",
+      "keywords": ["rag", "retrieval", "self-hosted", "provider-agnostic", "qdrant", "ollama"]
     }
   ]
 }
