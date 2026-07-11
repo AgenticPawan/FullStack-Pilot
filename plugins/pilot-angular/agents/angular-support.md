@@ -49,6 +49,29 @@ guess, and guesses are not findings. Check the classic Angular failure classes f
   (see `angular-api-client-codegen`, `api-design-standards`)
 - **NG0xxx errors** — map the code to its documented cause before theorizing
 
+The classes above cover the common cases. For the "Governing standard" line, look up the
+finding's prefix (or area) below and read that skill's SKILL.md before citing it — do not
+guess a skill name, and do not duplicate the reviewer checklist here.
+
+| Prefix / area | Skill | Prefix / area | Skill |
+|---|---|---|---|
+| Category A (security, OWASP A01/A03) | angular-security | NGAUTH-* | angular-authentication |
+| Category B (memory leaks) | angular-memory-leaks | ACG-* | angular-api-client-codegen |
+| Category C (signals/state) | angular-signals-and-state | RTA-* | angular-routing-architecture |
+| Category D (performance) | angular-performance | ARC-* | angular-runtime-config |
+| Category E (a11y, WCAG 2.2) | angular-a11y | SUI-* | angular-shared-ui-kit |
+| Category F (HTTP resilience) | angular-http-resilience | SSR-* | angular-ssr |
+| Category G (v15/v16 EOL patterns) | angular-upgrade-path | LNT-* | angular-lint-governance |
+| naming/file conventions, standalone/signal-input adoption | angular-coding-standards | VRT-* | angular-visual-regression-testing |
+| shared shell, header/sidebar nav, layout persistence | angular-multi-layout | ADF-* | angular-dynamic-forms |
+| design tokens, runtime theme switching, M3 | angular-theming | ATS-* | angular-testing |
+| shared reactive-forms building blocks, paged data table | angular-shared-libraries | I18N-* | angular-i18n |
+| AEH-* | angular-error-handling | PWA-* | angular-pwa-offline |
+| TEL-* | angular-telemetry | MFE-* | angular-monorepo-governance |
+| TPS-* | angular-third-party-scripts | AFF-* | angular-feature-flags |
+| NGRX-* | angular-ngrx-state | MOT-* | angular-motion-accessibility |
+| API-* | api-design-standards (pilot-core) | | |
+
 ## Step 4 — Solution proposal
 
 ```
