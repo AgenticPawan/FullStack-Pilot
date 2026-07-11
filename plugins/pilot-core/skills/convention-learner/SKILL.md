@@ -1,4 +1,5 @@
 ---
+user-invocable: false
 name: convention-learner
 description: Samples the current codebase (≤50 files, ignore lists apply) and writes detected house conventions — naming, folder layout, error-handling shape, DI registration style, test naming — to .claude/pilot/knowledge/conventions.md. Enforcement threshold: every convention requires ≥3 distinct evidence paths (file:line); fewer evidence paths → listed as tentative with no enforcement weight. Never invents conventions not evidenced in the code.
 when_to_use: Run via /fsp-learn --conventions or when the user asks to detect conventions, learn naming patterns, document project structure, or update conventions.md. Also triggered after /fsp-init to capture patterns the profile does not cover.

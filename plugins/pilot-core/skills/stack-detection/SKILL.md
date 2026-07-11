@@ -1,4 +1,5 @@
 ---
+user-invocable: false
 name: stack-detection
 description: Evidence-based technology-stack detector. Analyzes the current working repository for Angular (v15–20), .NET (net6–net11), SQL Server, and Azure presence. Every conclusion must cite a file path. Writes .claude/pilot/stack-profile.json then prints a summary table for user confirmation before any downstream governance runs.
 when_to_use: Run when the user invokes /fsp-init, asks to detect the project stack, requests a stack profile, or when a governance skill needs stack context that has not yet been profiled.
