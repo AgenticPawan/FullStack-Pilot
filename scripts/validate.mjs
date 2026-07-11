@@ -185,6 +185,80 @@ for (const filePath of walk(ROOT)) {
 
 if (skillCount === 0) info('no SKILL.md files found (OK for phase 1)');
 
+// ─── 3b. agent files ─────────────────────────────────────────────────────────
+// Conventions (CLAUDE.md): every agent has name + description frontmatter;
+// *-reviewer and *-support agents MUST declare disallowedTools with Write and
+// Edit; *-implementor agents MUST NOT disallow Write/Edit.
+
+console.log('\n── agent files ───────────────────────────────────────────');
+let agentCount = 0;
+
+for (const filePath of walk(ROOT)) {
+  if (
+    !filePath.endsWith('.md') ||
+    path.basename(path.dirname(filePath)) !== 'agents' ||
+    !filePath.includes(`${SEP}plugins${SEP}`)
+  ) continue;
+
+  agentCount++;
+  const rel = path.relative(ROOT, filePath);
+  const fm = parseFrontmatter(fs.readFileSync(filePath, 'utf8'));
+
+  if (!fm) {
+    fail(`${rel}: missing YAML frontmatter (file must begin with --- block)`);
+    continue;
+  }
+
+  let agentOk = true;
+  for (const field of ['name', 'description']) {
+    if (!fm[field] || !fm[field].trim()) {
+      fail(`${rel}: missing required frontmatter field "${field}"`);
+      agentOk = false;
+    }
+  }
+
+  const base = path.basename(filePath, '.md');
+  const disallowed = (fm['disallowedTools'] ?? '').split(',').map(s => s.trim());
+  const readOnly = disallowed.includes('Write') && disallowed.includes('Edit');
+
+  if ((base.endsWith('-reviewer') || base.endsWith('-support')) && !readOnly) {
+    fail(`${rel}: reviewer/support agents must declare "disallowedTools: Write, Edit"`);
+    agentOk = false;
+  }
+  if (base.endsWith('-implementor') && readOnly) {
+    fail(`${rel}: implementor agents must NOT disallow Write/Edit`);
+    agentOk = false;
+  }
+
+  if (agentOk) pass(`${rel}: frontmatter OK (name="${fm['name']}")`);
+}
+
+if (agentCount === 0) info('no agent files found');
+
+// ─── 3c. command files ───────────────────────────────────────────────────────
+// Convention (CLAUDE.md): all plugin command files are named fsp-<verb>.md.
+
+console.log('\n── command files ─────────────────────────────────────────');
+let commandCount = 0;
+
+for (const filePath of walk(ROOT)) {
+  if (
+    !filePath.endsWith('.md') ||
+    path.basename(path.dirname(filePath)) !== 'commands' ||
+    !filePath.includes(`${SEP}plugins${SEP}`)
+  ) continue;
+
+  commandCount++;
+  const rel = path.relative(ROOT, filePath);
+  if (!path.basename(filePath).startsWith('fsp-')) {
+    fail(`${rel}: command files must be named fsp-<verb>.md`);
+  } else {
+    pass(`${rel}: fsp- prefix OK`);
+  }
+}
+
+if (commandCount === 0) info('no command files found');
+
 // ─── 4. hooks.json files ─────────────────────────────────────────────────────
 
 console.log('\n── hooks.json files ─────────────────────────────────────');
