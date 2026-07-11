@@ -1,0 +1,27 @@
+# .NET build output (test fixtures compile locally)
+bin/
+obj/
+*.user
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Test / coverage output
+TestResults/
+coverage/
+*.trx
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vs/
+.vscode/
+.idea/
+*.swp
+
+# Local Claude settings (keep shared .claude/ content tracked)
+.claude/settings.local.json
