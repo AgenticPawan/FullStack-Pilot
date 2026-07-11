@@ -66,10 +66,27 @@ Each plugin directory MUST have:
   remove `when_to_use` keywords; they are the skill-routing signal.
 - Do NOT set `disable-model-invocation: true` on skills that commands instruct Claude
   to run (stack-detection, pilot-scaffold, audit-orchestration, batched-remediation,
-  convention-learner, mcp-discovery) — it would block the Skill tool and break
-  /fsp-init, /fsp-audit, /fsp-fix, /fsp-learn. Command-internal skills users should
-  not run directly carry `user-invocable: false` instead (hides the /-menu entry,
-  keeps Skill-tool invocation working).
+  convention-learner, mcp-discovery, fsp-build-orchestration) — it would block the
+  Skill tool and break /fsp-init, /fsp-audit, /fsp-fix, /fsp-learn, /fsp-build.
+  Command-internal skills users should not run directly carry `user-invocable: false`
+  instead (hides the /-menu entry, keeps Skill-tool invocation working).
+
+## Pipeline artifact layout (`.claude/pilot/` in the user's project)
+
+Fixed locations — commands and agents rely on these paths for handoffs and reuse:
+
+    .claude/pilot/
+      stack-profile.json            ← /fsp-init (stack-detection); input to everything else
+      context/<scope-slug>.md       ← fsp-scout briefs (≤150 lines; reused unless --refresh)
+      specs/<feature>.md            ← fsp-analyst specs (US-n / AC-n ids; ≤2 pages)
+      architecture/ASSESSMENT.md    ← fsp-architect Assess mode (/fsp-architect)
+      architecture/adr/             ← ADR stubs the assessment drafts
+      builds/<feature>/PLAN.md      ← fsp-architect Plan mode (/fsp-build step 3)
+      builds/<feature>/STATE.json   ← pipeline checkpoint; enables /fsp-build --resume
+      builds/<feature>/QA-REPORT.md ← fsp-qa traceability (AC-n → test → pass/fail)
+      builds/<feature>/SUMMARY.md   ← /fsp-build final report
+      audit/findings.json, audit/AUDIT-REPORT.md  ← /fsp-audit
+      knowledge/conventions.md, knowledge/lessons.md  ← /fsp-learn
 
 ## SKILL.md conventions
 

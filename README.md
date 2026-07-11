@@ -212,13 +212,15 @@ git add .
 git commit -m "chore: scaffold project with FullStack Pilot governance"
 ```
 
-## Quick reference — the three commands you'll use most
+## Quick reference — the commands you'll use most
 
 | Command | What it does in one sentence |
 |---|---|
 | `/fsp-init` | Figures out your stack and writes the conventions/rules files |
 | `/fsp-audit` | Scans for existing problems and writes a report |
 | `/fsp-fix --batch <tier>` | Fixes one severity tier of problems on a safe, reviewable branch |
+| `/fsp-architect` | Assesses the whole solution against the target state and writes a ranked gap register with buildable enhancement plans |
+| `/fsp-build <feature>` | Builds a feature end to end — spec → plan → implement → review → test — on a reviewable branch, in one command |
 
 ## Agents — review, implement, support
 
@@ -284,11 +286,34 @@ servers are configured: `@azure-support` can query live Azure diagnostics
 the running app's browser console and network traffic via Playwright. Both stay
 strictly read-only — they never restart, scale, or mutate anything.
 
+## The autonomous delivery team — `/fsp-architect` and `/fsp-build`
+
+Beyond the per-stack specialists, `pilot-core` ships a four-role delivery team —
+Business Analyst (`@fsp-analyst`), context scout (`@fsp-scout`), Solution Architect
+(`@fsp-architect`), and QA engineer (`@fsp-qa`) — wired into two commands:
+
+- **`/fsp-architect`** answers "what should we improve next?" It scouts your solution
+  cheaply (haiku), then has the architect (opus) rank the gaps between your codebase
+  and the target state the pilot skills encode. Each gap comes with an enhancement
+  plan and a ready-to-run `/fsp-build` line.
+- **`/fsp-build <feature | spec-file | GAP-id>`** answers "build it." One command runs
+  spec → scout → plan → **your confirmation** → implement → paired review → QA test
+  traceability → summary. Work lands on a `pilot/build-<feature>` branch that is never
+  merged for you; a stopped run resumes with `--resume` without redoing finished steps.
+
+Each role runs on the cheapest model tier that can do its job (haiku to read, sonnet
+to analyze, opus only to plan and for complexity-tagged work items), and every handoff
+is a file under `.claude/pilot/` rather than pasted chat — the pipeline is built to be
+token-frugal by construction. Safety gates are non-negotiable: auth changes,
+destructive migrations, public-API contract changes, and resource deletion always stop
+for your sign-off, even with `--yes`. See [docs/pilot-core.md](docs/pilot-core.md) for
+the full pipeline reference.
+
 ## Plugins
 
 | Plugin | Status | Purpose |
 |---|---|---|
-| `pilot-core` | Implemented | 17 skills + fullstack-support triage agent: stack detection, scaffold, audit/fix pipelines, MCP discovery, dependency-supply-chain policy (patch SLAs, SBOM), git branching/PR-review workflow governance, CI-level secret scanning, cross-cutting REST API design standards, SLO-gated load/performance testing, incident-response runbook/postmortem governance, open-source license compliance, safe test-data management, `/fsp-init` `/fsp-audit` `/fsp-fix` `/fsp-learn` |
+| `pilot-core` | Implemented | 18 skills + 5 agents (the fsp-analyst/fsp-scout/fsp-architect/fsp-qa delivery team and fullstack-support triage): stack detection, scaffold, audit/fix pipelines, the one-shot build pipeline, MCP discovery, dependency-supply-chain policy (patch SLAs, SBOM), git branching/PR-review workflow governance, CI-level secret scanning, cross-cutting REST API design standards, SLO-gated load/performance testing, incident-response runbook/postmortem governance, open-source license compliance, safe test-data management, `/fsp-init` `/fsp-audit` `/fsp-fix` `/fsp-learn` `/fsp-architect` `/fsp-build` |
 | `pilot-angular` | Implemented | 30 skills + reviewer, implementor & support agents: signals & state, classic NgRx governance, performance, a11y (WCAG 2.2 AA), motion/reduced-motion accessibility, security (XSS/CSP, permissions-ONLY route guards/UI gating), HTTP resilience, memory-leak detection, v15→v20 upgrade path, coding standards, multi-layout shells, theming, JSON-driven dynamic forms, testing conventions, i18n, global error handling, PWA/offline support, frontend telemetry, Nx/module-federation monorepo governance, third-party script governance, frontend feature-flag governance |
 | `pilot-sql` | Implemented | 8 skills + reviewer, implementor & support agents: schema design (naming, keys, constraints), SQL injection defense, migration safety, multitenancy isolation, performance review, PII data protection (Always Encrypted, Dynamic Data Masking, TDE), index/statistics maintenance, backup/restore-drill verification |
 | `pilot-azure` | Implemented | 13 skills + reviewer, implementor & support agents: CAF naming, security baseline, Well-Architected Framework review, Bicep patterns, centralized observability, CI/CD deployment security, multi-region disaster recovery, cost/FinOps guardrails, AKS cluster governance, API Management gateway policy review, enterprise-scale landing-zone topology, SLO/error-budget policy, container image security |

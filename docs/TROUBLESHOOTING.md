@@ -70,6 +70,41 @@ This is a safety gate, not a failure — the command prints sub-batches and wait
 to choose one rather than opening a mega-PR. Lower `--max-files` further for
 security-sensitive areas, or pick a sub-batch.
 
+## `/fsp-architect` and `/fsp-build`
+
+### The assessment/plan header says "FALLBACK: verify opus availability"
+
+`fsp-architect` is pinned to opus (T3 tier) and prints the model it actually resolved
+to. If your org's `availableModels` allowlist excludes opus, Claude Code silently falls
+back to the inherited model — the pipeline still works, but planning depth may drop.
+Ask your admin to allow opus, or treat the output as a sonnet-tier draft.
+
+### The assessment cites briefs that feel stale
+
+Scout briefs under `.claude/pilot/context/` are reused across runs to save tokens.
+After significant refactors, re-run with `/fsp-architect --refresh` to force new
+briefs.
+
+### `/fsp-build` stopped mid-pipeline
+
+By design — a failed verification, a declined gate, or a review escalation stops the
+pipeline after writing `builds/<feature>/STATE.json`. Fix or answer whatever it
+stopped for, then continue with `/fsp-build --resume <feature-slug>`; completed steps
+are never re-run.
+
+### `--yes` didn't skip a confirmation
+
+`--yes` waives only the plan-summary gate (Step 4). Hard safety gates — auth/policy
+changes, public API contract changes, destructive migrations, resource
+deletion/RBAC/network loosening — always stop for explicit sign-off, by design.
+
+### QA-REPORT.md lists "reverted paths"
+
+The QA agent may only write test files. The pipeline checks its working-tree changes
+deterministically (`git status --porcelain` against the test-path allowlist) and reverts anything else,
+routing it back to the owning implementor as a defect. The revert is the enforcement
+working, not data loss — the change re-lands through the implementor if it's needed.
+
 ## Agents
 
 ### `@<agent-name>` doesn't appear in the typeahead

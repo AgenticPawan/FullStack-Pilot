@@ -10,8 +10,42 @@ Shared governance utilities every other pilot plugin depends on. Install this fi
 | `/fsp-audit` | Runs the `audit-orchestration` skill: available scanners + a bounded Claude semantic pass, normalized into `.claude/pilot/audit/findings.json` and `AUDIT-REPORT.md`. |
 | `/fsp-fix --batch <tier>` | Runs the `batched-remediation` skill: fixes one severity tier (`P0`–`P3`) at a time on its own branch, verifies with a build, rolls back on regression. |
 | `/fsp-learn [--conventions] [--lessons] [--diff-only]` | Distills durable, project-specific knowledge from the session into `conventions.md` / `lessons.md`. Never runs git; you review and commit. |
+| `/fsp-architect [--scope <area>] [--refresh]` | Whole-solution architecture assessment: scout briefs feed `fsp-architect`'s Assess mode; you get a ranked gap register in chat and per-gap enhancement plans (each with a ready-to-run `/fsp-build` line) in `.claude/pilot/architecture/ASSESSMENT.md`. |
+| `/fsp-build <feature \| spec-file \| GAP-id> [--yes] [--max-files <n>] [--resume <slug>]` | One-shot delivery pipeline (`fsp-build-orchestration` skill): spec → scout → plan → your confirmation → implement → review → test → summary, all on branch `pilot/build-<feature>` — never merged for you. |
 
-## Agents
+## The autonomous delivery team
+
+Four `fsp-` agents cover the roles around the stack specialists, each pinned to the
+cheapest model tier that can do its job (CI-enforced — see the model matrix in
+[CLAUDE.md](../CLAUDE.md)):
+
+| Agent | Tier | Role | Deliverable |
+|---|---|---|---|
+| `@fsp-scout` | T1 haiku | Explores a scope within a strict read budget so expensive agents never re-read source | `.claude/pilot/context/<scope>.md` brief (≤150 lines) |
+| `@fsp-analyst` | T2 sonnet | Business Analyst: turns a raw ask into a bounded, testable spec; one batched clarification round | `.claude/pilot/specs/<feature>.md` (US-n stories, AC-n criteria) |
+| `@fsp-architect` | T3 opus | Solution Architect: Assess (whole-solution gap register) and Plan (spec → complexity-tagged work items) modes; prints the model it actually resolved to | `architecture/ASSESSMENT.md` / `builds/<feature>/PLAN.md` |
+| `@fsp-qa` | T2 sonnet | QA: traces every AC-n to a test it saw pass; writes tests only — product defects route back to the owning implementor | `builds/<feature>/QA-REPORT.md` traceability |
+
+All handoffs are **files under `.claude/pilot/`, never chat** — downstream agents get
+paths. Each agent can be invoked directly (`@fsp-analyst customers need invoice
+splitting`), but they're designed to run as a pipeline via `/fsp-build`:
+
+```
+> /fsp-build "customers can split an invoice across two payment methods"
+  1 spec    → .claude/pilot/specs/invoice-split.md         (fsp-analyst, sonnet)
+  2 scout   → .claude/pilot/context/*.md                   (fsp-scout, haiku, reused if fresh)
+  3 plan    → .claude/pilot/builds/invoice-split/PLAN.md   (fsp-architect, opus)
+  4 gate    → plan summary printed; you confirm (--yes skips this, never the hard gates)
+  5 build   → branch pilot/build-invoice-split             (implementors; opus only for complexity-high items)
+  6 review  → paired reviewers on the diff; max 2 fix loops, then escalation
+  7 test    → QA-REPORT.md; non-test writes from QA are detected via git diff and reverted
+  8 report  → SUMMARY.md; the branch is yours to review and merge
+```
+
+Every step checkpoints `builds/<feature>/STATE.json`, so a stopped run continues with
+`/fsp-build --resume <feature>` without re-paying completed steps.
+
+## Agents (triage)
 
 - **fullstack-support** — first-line product-support triage. When something is broken
   and you don't know which layer owns it (frontend? backend? database? Azure?), invoke
@@ -43,6 +77,9 @@ roster and workflow examples.
 - **audit-orchestration** — scanner orchestration + semantic triage for `/fsp-audit`.
 - **batched-remediation** — branch-per-tier fix pipeline for `/fsp-fix`.
 - **convention-learner** — used by `/fsp-learn --conventions`.
+- **fsp-build-orchestration** — the `/fsp-build` pipeline engine (Step 0–8 logic,
+  STATE.json checkpointing, hard safety gates, the deterministic QA write-scope check).
+  Internal: invoked by the command, hidden from the `/`-menu.
 - **mcp-discovery** — scans your dependency graph for companion MCP servers and proposes
   them; never auto-registers a server without per-server consent.
 - **dependency-supply-chain** — the policy layer over `audit-orchestration`'s raw dotnet/npm
