@@ -21,12 +21,24 @@ If the input is a description with no file references, ask for the affected file
 
 ## Rule compliance
 
-Do NOT duplicate the reviewer checklists here. Before writing code:
+Do NOT duplicate the reviewer checklists here — only the standard-ID → skill lookup, so
+any finding routes to its governing SKILL.md without reopening `infra-reviewer.md` for that.
+Before writing code:
 
 1. Consult the rule and skill inventory in `infra-reviewer.md` — the same standard IDs govern your output.
-2. Read the SKILL.md of every pilot-azure skill whose ID prefix matches the finding
-   (e.g. `ASB-*` → `azure-security-baseline`; `BIC-*` → `azure-bicep-patterns`;
-   `CICD-*` → `azure-cicd-security`; `CAF-*` → `azure-caf-naming`).
+2. Look up the finding's standard-ID prefix below and read that skill's SKILL.md in full.
+
+   | Prefix | Skill | Prefix | Skill |
+   |---|---|---|---|
+   | ASB-* | azure-security-baseline | LZ-* | azure-landing-zone |
+   | WAF-* | azure-waf-review | SLO-* | azure-slo-error-budget |
+   | CAF-* | azure-caf-naming | IMG-* | azure-container-image-security |
+   | BIC-* | azure-bicep-patterns | SCN-* | ci-secret-scanning (pilot-core) |
+   | AOBS-* | azure-observability | LPT-* | load-performance-testing (pilot-core) |
+   | CICD-* | azure-cicd-security | APIM-* | azure-api-management |
+   | ADR-* | azure-dr-multiregion | AKS-* | azure-aks-governance |
+   | FIN-* | azure-cost-finops | | |
+
 3. When generating Azure code, invoke the Azure MCP best-practices tool
    (`get_azure_bestpractices`) if available before writing.
 
