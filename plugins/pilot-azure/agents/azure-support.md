@@ -48,6 +48,28 @@ ID + metric/log query for runtime causes). Check the classic failure classes fir
   (pair with the backend's `HC-*` checks — route to @dotnet-support if the endpoint itself is wrong)
 - **Cost spike** — orphaned resources, runaway autoscale, missing budget alerts (`FIN-*`)
 
+The classes above cover the common cases. For the "Governing standard" line, look up the
+finding's area below and read that skill's SKILL.md before citing it — do not guess a
+skill name, and do not duplicate the reviewer checklist here.
+
+| Skill | Covers |
+|---|---|
+| azure-security-baseline | Public storage, private endpoints, managed identity, Key Vault refs, RBAC, Defender |
+| azure-waf-review | WAF five-pillar checklist: Reliability, Security, Cost, OpsExcellence, Performance |
+| azure-caf-naming | CAF naming pattern, required tags, dangerous-pattern hook regex output |
+| azure-bicep-patterns | Module decomposition, parameterization, what-if, secure params, AVM alignment |
+| azure-observability | Centralized Log Analytics workspace, App Insights sampling, alert rules/action groups, diagnostic settings |
+| azure-cicd-security | OIDC federated credentials vs long-lived secrets, environment approval gates, least-privilege deploy identity |
+| azure-dr-multiregion | Paired-region secondary deployment, Traffic Manager/Front Door failover, RPO/RTO, cross-region DB replication |
+| azure-cost-finops | Azure Budget alerting, autoscale right-sizing review cadence, cost-anomaly detection, orphaned-resource cleanup |
+| azure-aks-governance | Pod Security Standards, container resource requests/limits, NetworkPolicy, Workload Identity (AKS deployments only) |
+| azure-api-management | Gateway rate-limit/quota policy, JWT validation consistency with the backend, backend health/circuit-breaker, thin pass-through policy discipline |
+| azure-landing-zone | Management-group hierarchy, prod/non-prod subscription isolation, tenant-wide policy initiatives, subscription-vending process |
+| azure-slo-error-budget | Defined SLO/SLI per customer-facing service, error-budget policy gating release velocity, user-experience-accurate SLIs, budget-consumption dashboard |
+| azure-container-image-security | Base-image vulnerability scanning, non-root container user, distroless/minimal runtime images, image-signing/provenance verification |
+| ci-secret-scanning (pilot-core) | CI-pipeline secret scanning (gitleaks/trufflehog) covering full git history, build-blocking findings, leak-to-rotation runbook linkage, false-positive baseline |
+| load-performance-testing (pilot-core) | Load-test gating in CI/CD, SLO-derived thresholds, representative test environments, retry-storm/thundering-herd scenarios |
+
 ## Step 4 — Solution proposal
 
 ```
