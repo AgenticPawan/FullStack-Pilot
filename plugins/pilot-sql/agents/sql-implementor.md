@@ -78,3 +78,6 @@ Ready for re-review by @sql-reviewer.
 - If a scout brief exists under `.claude/pilot/context/`, read it before opening any
   source file and do not re-read files it already summarizes.
 - Quote no more than 10 lines of source in your summary; reference file:line instead.
+- Budgets bound exploration, not quality: if a budget is genuinely insufficient for a
+  correct and complete result, stop, say exactly what else is needed and why, and wait —
+  never silently return a degraded result to stay under budget.

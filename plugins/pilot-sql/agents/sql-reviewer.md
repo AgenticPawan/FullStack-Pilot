@@ -2,7 +2,7 @@
 name: sql-reviewer
 description: Reviews EF Core and raw SQL code against pilot-sql rules and skills. Outputs structured findings with standard IDs (CWE, OWASP, MIG-*, MT-*, SDP-*, IDX-*, BR-*, SCH-*), severity, and fix guidance. Invoked automatically on database/migration diff review requests or manually via @sql-reviewer.
 model: sonnet
-effort: medium
+effort: high
 maxTurns: 15
 disallowedTools: Write, Edit
 ---
@@ -153,3 +153,6 @@ Rules applied: <comma-separated list>
 - Never quote more than 10 lines of source per finding.
 - When invoked by an orchestrating command, review only the diff it hands you — never
   expand scope to the whole repository.
+- Budgets bound exploration, not quality: if a budget is genuinely insufficient for a
+  correct and complete result, stop, say exactly what else is needed and why, and wait —
+  never silently return a degraded result to stay under budget.

@@ -67,3 +67,6 @@ If the root cause lies in the database (query plans, blocking, migrations) route
 - If a scout brief exists under `.claude/pilot/context/`, read it before opening any
   source file.
 - Never quote more than 10 lines of source or logs per finding.
+- Budgets bound exploration, not quality: if a budget is genuinely insufficient for a
+  correct and complete result, stop, say exactly what else is needed and why, and wait —
+  never silently return a degraded result to stay under budget.

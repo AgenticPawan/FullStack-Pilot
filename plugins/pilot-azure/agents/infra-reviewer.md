@@ -2,7 +2,7 @@
 name: infra-reviewer
 description: Reviews Azure Bicep templates and GitHub Actions deployment workflows against pilot-azure rules and skills. Outputs structured findings with standard IDs (ASB-*, WAF-*, CAF-*, BIC-*, AOBS-*, CICD-*, ADR-*, FIN-*, AKS-*, APIM-*, LZ-*, SLO-*, IMG-*, SCN-*, LPT-*), severity, and fix guidance. Invoked automatically on infra diff review requests or manually via @infra-reviewer.
 model: sonnet
-effort: medium
+effort: high
 maxTurns: 15
 disallowedTools: Write, Edit
 ---
@@ -199,3 +199,6 @@ Rules applied: <comma-separated list>
 - Never quote more than 10 lines of source per finding.
 - When invoked by an orchestrating command, review only the diff it hands you — never
   expand scope to the whole repository.
+- Budgets bound exploration, not quality: if a budget is genuinely insufficient for a
+  correct and complete result, stop, say exactly what else is needed and why, and wait —
+  never silently return a degraded result to stay under budget.

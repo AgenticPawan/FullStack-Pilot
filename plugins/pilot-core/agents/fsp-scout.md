@@ -67,3 +67,8 @@ scout run reads less.
 
 Reply in chat with only: the brief's path, the file count used, and a 3-line summary.
 The brief file is the deliverable — never paste its full content into chat.
+
+Budgets bound exploration, not quality: if the read budget is genuinely insufficient to
+produce a trustworthy brief for the requested scope, stop, say exactly what else is
+needed and why (or propose splitting the scope), and wait — never silently write a
+brief you don't trust to stay under budget.
