@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "pilot-core",
   "displayName": "Pilot Core",
-  "version": "0.17.0",
+  "version": "0.18.0",
   "description": "Shared governance for full-stack Microsoft projects: stack detection and scaffolding, security audit/fix pipelines (/fsp-init, /fsp-audit, /fsp-fix, /fsp-learn), MCP discovery, dependency supply-chain and license policy, CI secret scanning, REST API design standards, SLO-gated load testing, incident-response runbooks, test-data management, ADR discipline, dev onboarding, search-service integration, and the @fullstack-support triage agent that routes any symptom to the right specialist",
   "author": {
     "name": "AgenticPawan",

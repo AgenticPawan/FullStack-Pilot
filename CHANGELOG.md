@@ -3,6 +3,35 @@
 All notable changes to FullStack Pilot are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 2026-07-11 — autonomous-team Phase 2: BA, Solution Architect, and QA agents
+
+pilot-core 0.17.0 → 0.18.0
+
+### Added
+- `fsp-analyst` (sonnet) — Business Analyst: turns a raw feature ask into a bounded,
+  testable spec at `.claude/pilot/specs/<feature>.md` (numbered user stories,
+  Given/When/Then acceptance criteria, edge cases, permission implications, out of
+  scope, open questions). One batched clarification round, then commit.
+- `fsp-architect` (opus, `memory: project`) — Solution Architect with two modes:
+  Assess (whole-solution gap register ranked risk×value against the target state the
+  pilot skills encode, with per-gap enhancement plans and ADR stubs, written to
+  `.claude/pilot/architecture/ASSESSMENT.md`) and Plan (spec → dependency-ordered,
+  complexity-tagged work items at `.claude/pilot/builds/<feature>/PLAN.md`; only
+  justified `complexity: high` items get opus implementor turns). Prints its resolved
+  model in every output header; consumes scout briefs, max 10 source files.
+- `fsp-qa` (sonnet) — QA engineer: traces every AC-id to a test, writes/extends tests
+  per dotnet-testing/angular-testing conventions, runs them, and writes a traceability
+  report to `.claude/pilot/builds/<feature>/QA-REPORT.md`. Test-path-only write
+  contract; product defects route back to the owning implementor.
+- `fullstack-support`: not-a-defect routing — feature asks → fsp-analyst,
+  architecture concerns → fsp-architect.
+
+### Changed (plan amendment)
+- §11.1 QA write-scope enforcement: agent-frontmatter hooks are ignored for plugin
+  subagents (documented platform restriction), so enforcement moves to the /fsp-build
+  pipeline — a deterministic `git diff --name-only` check after the QA step rejects
+  any non-test change. Stronger than the hook it replaces.
+
 ## 2026-07-11 — Phase 1 quality-first amendments
 
 ### Changed

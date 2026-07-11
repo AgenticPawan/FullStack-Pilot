@@ -1,7 +1,9 @@
 # FullStack Pilot — Autonomous Full-Stack Team Plan
 
-Status: **Phase 1 implemented** (model matrix, fsp-scout, token rules, CI enforcement —
-2026-07-11); Phases 2–4 pending review/approval.
+Status: **Phases 1–2 implemented** (Phase 1: model matrix, fsp-scout, token rules, CI
+enforcement; Phase 2: fsp-analyst, fsp-architect, fsp-qa agents + fullstack-support
+routing — 2026-07-11). Phase 3 (/fsp-architect and /fsp-build commands) next; Phase 4
+(docs/housekeeping) after.
 Owner: AgenticPawan. Drafted 2026-07-11.
 
 ## 1. Goal
@@ -240,10 +242,14 @@ Modified (~20):
 
 ## 11. Open questions — DECIDED 2026-07-11
 
-1. **QA write scope** — DECIDED: enforce with an **agent-level PreToolUse hook**
-   (agent frontmatter supports `hooks`), blocking Write/Edit outside `tests/**`,
-   `**/*.spec.ts`, `**/*Tests.cs` for `fsp-qa`, in addition to the prompt contract.
-   The reviewer diff re-check remains the second net. To implement in Phase 2.
+1. **QA write scope** — AMENDED during Phase 2 (2026-07-11): the hook approach is
+   impossible — sub-agents docs state plugin subagents' `hooks` frontmatter is
+   **ignored for security reasons**. Replaced with something stronger:
+   **deterministic pipeline enforcement** — `/fsp-build` (Phase 3) runs
+   `git diff --name-only` after the QA step and rejects/reverts any change outside
+   the test-path allowlist. The fsp-qa prompt carries the same allowlist as a hard
+   contract with a pre-write self-check, and the reviewer diff re-check remains the
+   third net.
 2. **Opus fallback visibility** — DECIDED: yes; `fsp-architect` prints the model it
    actually resolved to in the assessment/plan header (one line).
 3. **Review loop cap** — DECIDED: keep 2. Findings surviving two implement-review
