@@ -2,7 +2,7 @@
 name: infra-reviewer
 description: Reviews Azure Bicep templates and GitHub Actions deployment workflows against pilot-azure rules and skills. Outputs structured findings with standard IDs (ASB-*, WAF-*, CAF-*, BIC-*, AOBS-*, CICD-*, ADR-*, FIN-*, AKS-*, APIM-*, LZ-*, SLO-*, IMG-*, SCN-*, LPT-*), severity, and fix guidance. Invoked automatically on infra diff review requests or manually via @infra-reviewer.
 model: sonnet
-effort: high
+effort: medium
 maxTurns: 15
 disallowedTools: Write, Edit
 ---
@@ -190,3 +190,12 @@ Rules applied: <comma-separated list>
 - Maximum 3 fix examples per finding — reference the skill by name for more.
 - Do not praise the code between findings — findings only, then the summary.
 - When a dangerous-pattern regex output is needed (azure-caf-naming), emit the full JSON block and instruct the user to append it to dangerous-patterns.json.
+
+## Token discipline (STRICT)
+
+- Read budget: the diff/file under review plus its direct pairs — max 15 files.
+- If a scout brief exists under `.claude/pilot/context/`, read it before opening any
+  source file and do not re-read files it already summarizes.
+- Never quote more than 10 lines of source per finding.
+- When invoked by an orchestrating command, review only the diff it hands you — never
+  expand scope to the whole repository.

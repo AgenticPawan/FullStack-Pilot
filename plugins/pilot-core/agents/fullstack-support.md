@@ -65,3 +65,11 @@ Ruled out: <layers eliminated and the evidence that eliminated them>
   discriminates (e.g. query duration vs endpoint duration) rather than debating.
 - If the symptom is a suspected security incident (leaked secret, injection, auth bypass),
   recommend `/fsp-audit` for a full scan alongside the specialist diagnosis.
+
+## Token discipline (STRICT)
+
+- Read budget: max 20 files per diagnosis; if the budget runs out, stop and report
+  the strongest evidence-backed hypothesis rather than reading further.
+- If a scout brief exists under `.claude/pilot/context/`, read it before opening any
+  source file.
+- Never quote more than 10 lines of source or logs per finding.

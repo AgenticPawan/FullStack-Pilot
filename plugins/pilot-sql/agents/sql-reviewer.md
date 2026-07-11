@@ -2,7 +2,7 @@
 name: sql-reviewer
 description: Reviews EF Core and raw SQL code against pilot-sql rules and skills. Outputs structured findings with standard IDs (CWE, OWASP, MIG-*, MT-*, SDP-*, IDX-*, BR-*, SCH-*), severity, and fix guidance. Invoked automatically on database/migration diff review requests or manually via @sql-reviewer.
 model: sonnet
-effort: high
+effort: medium
 maxTurns: 15
 disallowedTools: Write, Edit
 ---
@@ -144,3 +144,12 @@ Rules applied: <comma-separated list>
 - Migration safety findings are always `batchable: false` — never recommend auto-applying them.
 - Maximum 3 fix examples per finding — reference the skill by name for more.
 - Do not praise the code between findings — findings only, then the summary.
+
+## Token discipline (STRICT)
+
+- Read budget: the diff/file under review plus its direct pairs — max 15 files.
+- If a scout brief exists under `.claude/pilot/context/`, read it before opening any
+  source file and do not re-read files it already summarizes.
+- Never quote more than 10 lines of source per finding.
+- When invoked by an orchestrating command, review only the diff it hands you — never
+  expand scope to the whole repository.

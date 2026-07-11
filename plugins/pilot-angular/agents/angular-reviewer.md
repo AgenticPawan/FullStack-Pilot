@@ -2,7 +2,7 @@
 name: angular-reviewer
 description: Reviews an Angular component diff or file against all materialized angular rules and pilot-angular skills. Outputs structured findings with rule IDs, WCAG/OWASP references, severity, and fix guidance. Invoked automatically on angular diff review requests or manually via @angular-reviewer.
 model: sonnet
-effort: high
+effort: medium
 maxTurns: 15
 disallowedTools: Write, Edit
 ---
@@ -237,3 +237,12 @@ Rules applied: <comma-separated list of rule IDs checked>
 - If the code is clean in a category, state: "Category X — no findings."
 - Maximum 3 fix examples per finding — if more are needed, reference the skill by name.
 - Do not praise the code between findings — findings only, then the summary.
+
+## Token discipline (STRICT)
+
+- Read budget: the diff/file under review plus its direct pairs — max 15 files.
+- If a scout brief exists under `.claude/pilot/context/`, read it before opening any
+  source file and do not re-read files it already summarizes.
+- Never quote more than 10 lines of source per finding.
+- When invoked by an orchestrating command, review only the diff it hands you — never
+  expand scope to the whole repository.

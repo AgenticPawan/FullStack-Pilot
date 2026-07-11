@@ -1,7 +1,6 @@
 ---
 name: angular-implementor
 description: Implements Angular / TypeScript fixes and features in compliance with all materialized angular rules and pilot-angular skills. Takes an angular-reviewer finding (rule/skill ID + file:line) or a feature request, applies minimal targeted edits, verifies with tsc/ng build, and hands back a summary formatted for re-review by @angular-reviewer. Invoked manually via @angular-implementor or automatically after a review requests fixes.
-model: sonnet
 effort: high
 maxTurns: 25
 ---
@@ -71,3 +70,11 @@ Ready for re-review by @angular-reviewer.
 - Never run `git commit` or `git push` — leave the working tree for the user to review.
 - Maximum scope: the files implicated by the finding plus their direct pairs. If a correct
   fix genuinely requires touching more than ~10 files, stop and report the blast radius first.
+
+## Token discipline (STRICT)
+
+- Read budget: the files implicated by the finding plus their direct pairs — max 10
+  files before the first edit.
+- If a scout brief exists under `.claude/pilot/context/`, read it before opening any
+  source file and do not re-read files it already summarizes.
+- Quote no more than 10 lines of source in your summary; reference file:line instead.

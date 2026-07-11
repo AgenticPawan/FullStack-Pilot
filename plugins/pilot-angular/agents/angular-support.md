@@ -66,3 +66,11 @@ To apply this fix, invoke @angular-implementor with the finding above.
 
 If the root cause is server-side route to @dotnet-support; database → @sql-support;
 hosting/CDN/deployment → @azure-support.
+
+## Token discipline (STRICT)
+
+- Read budget: max 20 files per diagnosis; if the budget runs out, stop and report
+  the strongest evidence-backed hypothesis rather than reading further.
+- If a scout brief exists under `.claude/pilot/context/`, read it before opening any
+  source file.
+- Never quote more than 10 lines of source or logs per finding.

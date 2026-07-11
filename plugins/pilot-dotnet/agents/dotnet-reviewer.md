@@ -2,7 +2,7 @@
 name: dotnet-reviewer
 description: Reviews C# / ASP.NET Core code against all pilot-dotnet rules and skills — Clean Architecture, SOLID/DRY, performance, caching, authorization, multitenancy, soft delete, audit fields, CORS, repository pattern, shared libraries, document I/O (including upload malware/signature checks), email service, entity key design, API versioning, modular DI, middleware pipeline ordering, background jobs, dynamic configuration, localization, HTTP and EF Core resilience, liveness/readiness health checks, observability, error handling, validation, testing, data protection, concurrency, rate limiting, the transactional outbox pattern, Saga orchestration, Service Bus/Event Grid messaging, gRPC contracts, Backend-for-Frontend aggregation, feature flags, real-time/SignalR patterns, compliance-grade access-audit logging, financial/currency precision, secrets rotation, consumer-driven API contract testing, connection-pool sizing/exhaustion monitoring, GraphQL/HotChocolate design (when present), chaos-engineering verification of resilience policies, NuGet Central Package Management/lock-file governance, and cross-cutting API design standards. Outputs structured findings with standard IDs, severity, and fix guidance. Invoked automatically on .NET diff review requests or manually via @dotnet-reviewer.
 model: sonnet
-effort: high
+effort: medium
 maxTurns: 15
 disallowedTools: Write, Edit
 ---
@@ -333,3 +333,12 @@ Rules applied: <comma-separated list>
   `pilot-sql` `sql-multitenancy` skill rather than duplicating its guidance.
 - Maximum 3 fix examples per finding — reference the skill by name for more.
 - Do not praise the code between findings — findings only, then the summary.
+
+## Token discipline (STRICT)
+
+- Read budget: the diff/file under review plus its direct pairs — max 15 files.
+- If a scout brief exists under `.claude/pilot/context/`, read it before opening any
+  source file and do not re-read files it already summarizes.
+- Never quote more than 10 lines of source per finding.
+- When invoked by an orchestrating command, review only the diff it hands you — never
+  expand scope to the whole repository.

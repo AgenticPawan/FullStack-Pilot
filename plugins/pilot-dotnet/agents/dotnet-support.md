@@ -59,3 +59,11 @@ To apply this fix, invoke @dotnet-implementor with the finding above.
 If the root cause lies in the database (query plans, blocking, migrations) route to
 @sql-support; if in Azure infrastructure (deployment, scaling, networking) route to
 @azure-support; if in the browser/frontend route to @angular-support.
+
+## Token discipline (STRICT)
+
+- Read budget: max 20 files per diagnosis; if the budget runs out, stop and report
+  the strongest evidence-backed hypothesis rather than reading further.
+- If a scout brief exists under `.claude/pilot/context/`, read it before opening any
+  source file.
+- Never quote more than 10 lines of source or logs per finding.

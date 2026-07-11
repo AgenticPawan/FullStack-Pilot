@@ -69,3 +69,11 @@ next on-call engineer doesn't rediscover this from scratch.
 
 If the root cause is application code route to @dotnet-support or @angular-support;
 database internals → @sql-support.
+
+## Token discipline (STRICT)
+
+- Read budget: max 20 files per diagnosis; if the budget runs out, stop and report
+  the strongest evidence-backed hypothesis rather than reading further.
+- If a scout brief exists under `.claude/pilot/context/`, read it before opening any
+  source file.
+- Never quote more than 10 lines of source or logs per finding.
