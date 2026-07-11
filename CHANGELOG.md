@@ -3,6 +3,27 @@
 All notable changes to FullStack Pilot are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 2026-07-11 — autonomous-team Phase 3: /fsp-architect and /fsp-build commands
+
+pilot-core 0.18.0 → 0.19.0
+
+### Added
+- `/fsp-architect [--scope <area>] [--refresh]` — whole-solution architecture
+  assessment: scout briefs (haiku, reused unless `--refresh`) feed fsp-architect's
+  Assess mode (opus); chat gets the gap-register table and 3-line verdict, disk gets
+  the full `ASSESSMENT.md` with per-gap ready-to-run `/fsp-build` lines and ADR stubs.
+- `/fsp-build <feature | spec-file | GAP-id> [--yes] [--max-files <n>] [--resume]` —
+  the one-shot pipeline: specify (fsp-analyst) → scout → plan (fsp-architect) → user
+  gate → implement (stack implementors; opus only for `complexity: high` items) →
+  diff-scoped review (max 2 fix loops, then escalate with both positions) → QA →
+  summary. Work lands on `pilot/build-<feature>`, never merged automatically.
+- `fsp-build-orchestration` skill (`user-invocable: false`) — the detailed Step 0–8
+  pipeline logic: STATE.json checkpoint after every step (`--resume` never re-pays a
+  completed step), hard safety gates that `--yes` cannot waive, per-item verification
+  commands, `--max-files` enforcement, and the §11.1 deterministic QA write-scope
+  check — `git diff --name-only` after the QA step, non-test paths reverted and
+  routed back as defects.
+
 ## 2026-07-11 — autonomous-team Phase 2: BA, Solution Architect, and QA agents
 
 pilot-core 0.17.0 → 0.18.0

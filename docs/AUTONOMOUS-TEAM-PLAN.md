@@ -1,9 +1,10 @@
 # FullStack Pilot — Autonomous Full-Stack Team Plan
 
-Status: **Phases 1–2 implemented** (Phase 1: model matrix, fsp-scout, token rules, CI
+Status: **Phases 1–3 implemented** (Phase 1: model matrix, fsp-scout, token rules, CI
 enforcement; Phase 2: fsp-analyst, fsp-architect, fsp-qa agents + fullstack-support
-routing — 2026-07-11). Phase 3 (/fsp-architect and /fsp-build commands) next; Phase 4
-(docs/housekeeping) after.
+routing; Phase 3: /fsp-architect and /fsp-build commands + fsp-build-orchestration
+skill with deterministic QA write-scope enforcement — 2026-07-11). Phase 4
+(docs/housekeeping: README/per-plugin docs/TROUBLESHOOTING, fixture dry-runs §10) next.
 Owner: AgenticPawan. Drafted 2026-07-11.
 
 ## 1. Goal
