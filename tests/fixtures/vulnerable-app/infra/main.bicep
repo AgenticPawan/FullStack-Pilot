@@ -1,4 +1,4 @@
-// Vulnerable infrastructure fixture for /pilot-audit acceptance gate
+// Vulnerable infrastructure fixture for /fsp-audit acceptance gate
 // VULN-009: Public blob storage + non-CAF naming
 
 param location string = resourceGroup().location

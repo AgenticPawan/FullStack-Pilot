@@ -1,6 +1,6 @@
 # pilot-drift.yml — Stack Drift Detection
 #
-# Emitted to PROJECT_ROOT/.github/workflows/pilot-drift.yml by /pilot-init.
+# Emitted to PROJECT_ROOT/.github/workflows/pilot-drift.yml by /fsp-init.
 # Compares current package versions and project structure against the saved
 # .claude/pilot/stack-profile.json. Opens a GitHub Issue when drift is detected.
 #

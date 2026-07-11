@@ -1,13 +1,13 @@
-# /pilot-fix — Batched Security Remediation
+# /fsp-fix — Batched Security Remediation
 
-Apply fixes for findings produced by `/pilot-audit`. Creates a reviewable git branch
+Apply fixes for findings produced by `/fsp-audit`. Creates a reviewable git branch
 per severity tier, verifies with build + tests, and rolls back automatically if
 verification fails.
 
 ## Usage
 
 ```
-/pilot-fix --batch <tier> [--max-files <n>]
+/fsp-fix --batch <tier> [--max-files <n>]
 ```
 
 | Argument | Required | Default | Description |
@@ -18,14 +18,14 @@ verification fails.
 **Examples:**
 
 ```
-/pilot-fix --batch P0
-/pilot-fix --batch P1 --max-files 5
-/pilot-fix --batch P0 --max-files 20
+/fsp-fix --batch P0
+/fsp-fix --batch P1 --max-files 5
+/fsp-fix --batch P0 --max-files 20
 ```
 
 ## Prerequisites
 
-- `.claude/pilot/audit/findings.json` must exist. Run `/pilot-audit` first if absent.
+- `.claude/pilot/audit/findings.json` must exist. Run `/fsp-audit` first if absent.
 - Working tree must be clean (no uncommitted changes) before the branch is created.
 - `dotnet` CLI must be available for .NET projects; `node`/`npm` for Angular projects.
 
@@ -47,7 +47,7 @@ verification fails.
 
 | Rule | What happens if violated |
 |------|--------------------------|
-| No mixed severity tiers | Command refuses; tells user to run separate `/pilot-fix --batch` per tier |
+| No mixed severity tiers | Command refuses; tells user to run separate `/fsp-fix --batch` per tier |
 | `--max-files` exceeded | Presents sub-batches; waits for user to pick one |
 | Build/test regression | Branch deleted, rollback to `startBranch`, failure report printed |
 | API surface change | Full stop before any code written; sign-off required per group |

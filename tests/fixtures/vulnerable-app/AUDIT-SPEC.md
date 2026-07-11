@@ -1,6 +1,6 @@
-# vulnerable-app — Acceptance Gate for /pilot-audit
+# vulnerable-app — Acceptance Gate for /fsp-audit
 
-This fixture seeds exactly 8 known vulnerabilities. Running `/pilot-audit` must detect
+This fixture seeds exactly 8 known vulnerabilities. Running `/fsp-audit` must detect
 at least 7 of 8 with correct severity and file:line. Zero fabricated findings allowed.
 
 ## Known vulnerabilities

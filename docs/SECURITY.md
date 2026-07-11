@@ -32,7 +32,7 @@ In scope:
   security control (e.g., a rule that recommends disabling auth)
 
 Out of scope:
-- False positives/negatives in audit findings from `/pilot-audit` — file those as regular
+- False positives/negatives in audit findings from `/fsp-audit` — file those as regular
   bug reports (`skill-request` or `rule-proposal` issue templates), not security reports,
   unless the false negative masks an exploitable condition in FullStack Pilot's own code.
 - Vulnerabilities in `dotnet/skills` or other third-party marketplaces this project

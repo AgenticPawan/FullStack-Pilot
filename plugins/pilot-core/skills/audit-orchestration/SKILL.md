@@ -1,7 +1,7 @@
 ---
 name: audit-orchestration
 description: Four-phase security-audit orchestrator. (1) Detects available scanners (dotnet CLI, npm audit, semgrep, eslint, bicep CLI, Roslyn); missing scanners are listed with install commands and coverage gaps are marked in the report. (2) Runs each scanner scoped to directories from stack-profile.json. (3) Normalises all findings into .claude/pilot/audit/findings.json (fields: id, source, severity P0–P3, cwe, owasp, wcag, file, line, title, evidence, proposedFix, batchable, confidence). (4) Generates AUDIT-REPORT.md with executive summary and prints the P0 table inline. Adds a Claude semantic pass strictly limited to four checks: IDOR/missing authorization, tenant-isolation gaps, authN/authZ logic flaws, secrets in config. Every semantic finding must cite file:line and quote the evidence — findings without evidence are discarded.
-when_to_use: Invoke via /pilot-audit. Use when the user requests a security audit, vulnerability scan, OWASP review, dependency check, or tenant-isolation review on the current project.
+when_to_use: Invoke via /fsp-audit. Use when the user requests a security audit, vulnerability scan, OWASP review, dependency check, or tenant-isolation review on the current project.
 disable-model-invocation: true
 ---
 
@@ -13,7 +13,7 @@ disable-model-invocation: true
 
 ## Step 0 — Load stack profile
 
-Read `PROJECT_ROOT/.claude/pilot/stack-profile.json`. If absent, tell the user to run `/pilot-init` first and stop.
+Read `PROJECT_ROOT/.claude/pilot/stack-profile.json`. If absent, tell the user to run `/fsp-init` first and stop.
 
 Extract scope directories:
 - `dotnetDirs`: directories containing each project listed in `dotnet.projects[*].path` (parent dirs)

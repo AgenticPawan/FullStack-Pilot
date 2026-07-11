@@ -103,7 +103,7 @@ claude
 
 **Step 2 — Detect your stack.** Run:
 ```shell
-/pilot-init
+/fsp-init
 ```
 Claude reads your project (looking at real files — `package.json`, `.csproj`, `.sln`,
 Bicep files) to figure out which Angular/.NET/SQL Server/Azure versions you're on. It
@@ -118,7 +118,7 @@ meant for newer versions.
 
 **Step 3 — Find existing problems.** Run:
 ```shell
-/pilot-audit
+/fsp-audit
 ```
 This runs your project's own tools (`dotnet list package --vulnerable`, `npm audit`,
 linters) plus a Claude-driven read-through looking for things tools can't catch — broken
@@ -127,7 +127,7 @@ report you can read: `AUDIT-REPORT.md`, plus a machine-readable `findings.json`.
 
 **Step 4 — Fix problems safely, a batch at a time.** Run:
 ```shell
-/pilot-fix --batch P0
+/fsp-fix --batch P0
 ```
 `P0` means "most severe first." This creates a separate git branch, applies only the
 most critical fixes, and runs your build to make sure nothing broke — if it did, Pilot
@@ -183,20 +183,20 @@ claude
 
 **Step 4 — Run the same three commands as an existing project**, in the same order:
 ```shell
-/pilot-init
+/fsp-init
 ```
 On a brand-new project this is fast — there's little to detect and no legacy code to
 work around. It writes your `CLAUDE.md` and version-gated rules immediately, matched to
 whatever Angular/.NET version you just scaffolded.
 
 ```shell
-/pilot-audit
+/fsp-audit
 ```
 On a fresh scaffold this usually comes back clean or with a small number of starter-
 template nitpicks — that's expected and a good sign.
 
 ```shell
-/pilot-fix --batch P0
+/fsp-fix --batch P0
 ```
 Apply any findings the same way as an existing project (there's usually little to fix
 this early).
@@ -216,15 +216,15 @@ git commit -m "chore: scaffold project with FullStack Pilot governance"
 
 | Command | What it does in one sentence |
 |---|---|
-| `/pilot-init` | Figures out your stack and writes the conventions/rules files |
-| `/pilot-audit` | Scans for existing problems and writes a report |
-| `/pilot-fix --batch <tier>` | Fixes one severity tier of problems on a safe, reviewable branch |
+| `/fsp-init` | Figures out your stack and writes the conventions/rules files |
+| `/fsp-audit` | Scans for existing problems and writes a report |
+| `/fsp-fix --batch <tier>` | Fixes one severity tier of problems on a safe, reviewable branch |
 
 ## Plugins
 
 | Plugin | Status | Purpose |
 |---|---|---|
-| `pilot-core` | Implemented | 17 skills: stack detection, scaffold, audit/fix pipelines, MCP discovery, dependency-supply-chain policy (patch SLAs, SBOM), git branching/PR-review workflow governance, CI-level secret scanning, cross-cutting REST API design standards, SLO-gated load/performance testing, incident-response runbook/postmortem governance, open-source license compliance, safe test-data management, `/pilot-init` `/pilot-audit` `/pilot-fix` `/pilot-learn` |
+| `pilot-core` | Implemented | 17 skills: stack detection, scaffold, audit/fix pipelines, MCP discovery, dependency-supply-chain policy (patch SLAs, SBOM), git branching/PR-review workflow governance, CI-level secret scanning, cross-cutting REST API design standards, SLO-gated load/performance testing, incident-response runbook/postmortem governance, open-source license compliance, safe test-data management, `/fsp-init` `/fsp-audit` `/fsp-fix` `/fsp-learn` |
 | `pilot-angular` | Implemented | 30 skills + reviewer agent: signals & state, classic NgRx governance, performance, a11y (WCAG 2.2 AA), motion/reduced-motion accessibility, security (XSS/CSP, permissions-ONLY route guards/UI gating), HTTP resilience, memory-leak detection, v15→v20 upgrade path, coding standards, multi-layout shells, theming, JSON-driven dynamic forms, testing conventions, i18n, global error handling, PWA/offline support, frontend telemetry, Nx/module-federation monorepo governance, third-party script governance, frontend feature-flag governance |
 | `pilot-sql` | Implemented | 8 skills + reviewer agent: schema design (naming, keys, constraints), SQL injection defense, migration safety, multitenancy isolation, performance review, PII data protection (Always Encrypted, Dynamic Data Masking, TDE), index/statistics maintenance, backup/restore-drill verification |
 | `pilot-azure` | Implemented | 13 skills + reviewer agent: CAF naming, security baseline, Well-Architected Framework review, Bicep patterns, centralized observability, CI/CD deployment security, multi-region disaster recovery, cost/FinOps guardrails, AKS cluster governance, API Management gateway policy review, enterprise-scale landing-zone topology, SLO/error-budget policy, container image security |
@@ -242,13 +242,13 @@ only helps you get off of. EOL runtimes get an upgrade path, not new rules.
 | SQL Server | current + prior LTS | — |
 | Azure | current API versions per Bicep provider | — |
 
-If `/pilot-init` detects Angular 15/16 or .NET 6/7, it prints an EOL advisory instead of
+If `/fsp-init` detects Angular 15/16 or .NET 6/7, it prints an EOL advisory instead of
 silently applying rules meant for supported versions.
 
 ## Relationship to dotnet/skills
 
 FullStack Pilot **builds on, does not replace**, Microsoft's official
-[`dotnet/skills`](https://github.com/dotnet/skills) marketplace. `/pilot-init` detects
+[`dotnet/skills`](https://github.com/dotnet/skills) marketplace. `/fsp-init` detects
 .NET projects and, in Phase 3, prints the exact commands to install it:
 
 ```shell

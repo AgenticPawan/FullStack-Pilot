@@ -1,4 +1,4 @@
-# /pilot-audit — Security Audit Pipeline
+# /fsp-audit — Security Audit Pipeline
 
 Run a full security audit on the **current working repository** (the user's project, not this plugin repo). Combines automated scanners with a bounded Claude semantic pass — scanners detect, Claude triages. Never present a Claude-only scan as a complete audit.
 
@@ -23,7 +23,7 @@ Run a full security audit on the **current working repository** (the user's proj
 
 ## Prerequisites
 
-- `.claude/pilot/stack-profile.json` must exist. If absent, run `/pilot-init` first.
+- `.claude/pilot/stack-profile.json` must exist. If absent, run `/fsp-init` first.
 - The command proceeds with whatever scanners are installed; missing scanners are documented as coverage gaps, not errors.
 
 ## Execution

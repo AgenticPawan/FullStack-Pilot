@@ -1,7 +1,7 @@
 ---
 name: batched-remediation
 description: Batched remediation pipeline. Reads .claude/pilot/audit/findings.json, filters to the requested severity tier (--batch P0|P1|P2|P3), groups by root cause (one package bump = one edit regardless of how many findings cite it), validates the batch fits --max-files (default 10), creates branch pilot/fix-<tier>-<n>, applies fixes, runs dotnet build and affected tests (routing through dotnet-test plugin when installed), then rolls back and reports on failure. Updates findings.json status (open→fixed/deferred/wontfix+reason) and writes a PR-ready description listing each finding ID, fix applied, and verification step. Hard rules: never mix severity tiers; never exceed --max-files; API surface changes require explicit human sign-off before any code is written.
-when_to_use: Invoke via /pilot-fix. Use when the user asks to fix, remediate, or patch findings from a prior audit. Requires findings.json produced by /pilot-audit.
+when_to_use: Invoke via /fsp-fix. Use when the user asks to fix, remediate, or patch findings from a prior audit. Requires findings.json produced by /fsp-audit.
 disable-model-invocation: true
 ---
 
@@ -22,7 +22,7 @@ See `fix-strategies.md` (same directory) for per-CWE fix recipes.
 - `--batch <tier>`: required. One of `P0`, `P1`, `P2`, `P3`.
 - `--max-files <n>`: optional, default `10`. Maximum distinct files modified across the whole batch.
 
-Read `PROJECT_ROOT/.claude/pilot/audit/findings.json`. If absent, tell the user to run `/pilot-audit` first and stop.
+Read `PROJECT_ROOT/.claude/pilot/audit/findings.json`. If absent, tell the user to run `/fsp-audit` first and stop.
 
 Record `startBranch` (current git branch: `git rev-parse --abbrev-ref HEAD`).
 
@@ -261,7 +261,7 @@ Fixed findings:
 
 PR description → .claude/pilot/audit/PR-<tier>-<n>.md
 
-Run /pilot-audit to verify the updated P<tier> count.
+Run /fsp-audit to verify the updated P<tier> count.
 ```
 
 Print the `git diff --stat HEAD` output so the user can review the scope without opening files.

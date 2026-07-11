@@ -1,4 +1,4 @@
-# /pilot-init — Stack Detection and Scaffold
+# /fsp-init — Stack Detection and Scaffold
 
 Analyze the **current working repository** (the user's project, not this plugin repo), produce a technology-stack profile, then scaffold the project's Claude setup based on the confirmed profile.
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // pilot-drift-check.mjs
 // Compares current package.json + *.csproj versions against .claude/pilot/stack-profile.json.
-// Emitted to PROJECT_ROOT/.github/scripts/pilot-drift-check.mjs by /pilot-init.
+// Emitted to PROJECT_ROOT/.github/scripts/pilot-drift-check.mjs by /fsp-init.
 // Outputs GitHub Actions step outputs: drift_detected (true/false) and drift_body (markdown).
 
 import fs from 'node:fs';
@@ -40,7 +40,7 @@ if (profile.angular) {
           current: `v${currentMajor}`,
           file: 'package.json',
           action: currentMajor > profile.angular.majorVersion
-            ? 'Run `/pilot-init` to update stack-profile.json and activate new governance rules.'
+            ? 'Run `/fsp-init` to update stack-profile.json and activate new governance rules.'
             : 'Downgrade detected — verify intentional.',
         });
       }
@@ -58,7 +58,7 @@ if (profile.angular) {
           saved: 'eslint: false',
           current: `${sp} detected`,
           file: 'package.json',
-          action: 'Run `/pilot-init` to activate angular-eslint governance rules.',
+          action: 'Run `/fsp-init` to activate angular-eslint governance rules.',
         });
       }
     }
@@ -76,7 +76,7 @@ if (profile.dotnet) {
         saved: savedProject.path,
         current: 'file not found',
         file: savedProject.path,
-        action: 'Run `/pilot-init` to update the project list.',
+        action: 'Run `/fsp-init` to update the project list.',
       });
       continue;
     }
@@ -91,7 +91,7 @@ if (profile.dotnet) {
         saved: savedProject.targetFramework,
         current: tfMatch[1],
         file: savedProject.path,
-        action: 'Run `/pilot-init` to update profile and check for new governance rules.',
+        action: 'Run `/fsp-init` to update profile and check for new governance rules.',
       });
     }
 
@@ -113,7 +113,7 @@ if (profile.dotnet) {
             saved: savedVersion,
             current: currentVersion,
             file: savedProject.path,
-            action: 'Verify compatibility. Run `/pilot-audit` to check for new vulnerability advisories.',
+            action: 'Verify compatibility. Run `/fsp-audit` to check for new vulnerability advisories.',
           });
         }
       } else if (savedProject.packages?.[key]) {
@@ -123,7 +123,7 @@ if (profile.dotnet) {
           saved: savedProject.packages[key],
           current: 'not found in csproj',
           file: savedProject.path,
-          action: 'Confirm intentional removal. Update stack-profile.json via `/pilot-init`.',
+          action: 'Confirm intentional removal. Update stack-profile.json via `/fsp-init`.',
         });
       }
     }
@@ -139,7 +139,7 @@ if (profile.dotnet) {
         saved: 'not in stack-profile.json',
         current: path.relative(ROOT, f),
         file: path.relative(ROOT, f),
-        action: 'Run `/pilot-init` to profile this project and apply governance rules.',
+        action: 'Run `/fsp-init` to profile this project and apply governance rules.',
       });
     }
   }
@@ -172,7 +172,7 @@ ${rows}
 
 **Next steps:**
 1. Review the changes above.
-2. Run \`/pilot-init\` in a Claude Code session on the default branch to update \`stack-profile.json\` and re-materialize governance rules.
+2. Run \`/fsp-init\` in a Claude Code session on the default branch to update \`stack-profile.json\` and re-materialize governance rules.
 3. Close this issue once \`stack-profile.json\` is committed.
 
 [View workflow run](${runUrl})

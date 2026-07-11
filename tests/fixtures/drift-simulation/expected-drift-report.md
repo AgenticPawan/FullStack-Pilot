@@ -33,20 +33,20 @@ Pilot drift detection found **1** change(s) since the last `stack-profile.json` 
 
 | Change | File | Delta | Recommended action |
 |--------|------|-------|-------------------|
-| Angular major version | package.json | `v18` → `v19` | Run `/pilot-init` to update stack-profile.json and activate new governance rules. |
+| Angular major version | package.json | `v18` → `v19` | Run `/fsp-init` to update stack-profile.json and activate new governance rules. |
 
 ---
 
 **Next steps:**
 1. Review the changes above.
-2. Run `/pilot-init` in a Claude Code session on the default branch to update
+2. Run `/fsp-init` in a Claude Code session on the default branch to update
    `stack-profile.json` and re-materialize governance rules.
 3. Close this issue once `stack-profile.json` is committed.
 ```
 
 ---
 
-## What `/pilot-init` does after drift is confirmed
+## What `/fsp-init` does after drift is confirmed
 
 When Angular major version drifts from 18 → 19:
 

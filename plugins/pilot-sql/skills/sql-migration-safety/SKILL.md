@@ -131,4 +131,4 @@ add a nullable column). Flag as MIG-006 when:
 }
 ```
 
-`batchable: false` — migration changes require human review; /pilot-fix should not auto-apply.
+`batchable: false` — migration changes require human review; /fsp-fix should not auto-apply.

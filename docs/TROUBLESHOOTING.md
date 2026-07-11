@@ -30,7 +30,7 @@ Run `claude plugin validate ./plugins/<plugin-name>` to check `plugin.json` and 
 `SKILL.md`/`hooks.json` for schema errors. A malformed `hooks/hooks.json` prevents the
 **entire plugin** from loading, not just the hook.
 
-## `/pilot-init`
+## `/fsp-init`
 
 ### "Does this look correct?" keeps asking — Phase 2 never starts
 
@@ -44,24 +44,24 @@ Expected behavior, not an error — see the [supported-versions matrix](../READM
 These versions get upgrade-path guidance (`angular-upgrade-path`, `dotnet-upgrade`), not
 new governance rules.
 
-## `/pilot-audit`
+## `/fsp-audit`
 
 ### "Coverage gap" noted for a scanner
 
-`/pilot-audit` runs whatever scanners are installed and documents missing ones as
+`/fsp-audit` runs whatever scanners are installed and documents missing ones as
 coverage gaps rather than failing. Install the missing tool (the report prints the
 install command) and re-run for full coverage.
 
 ### Command fails with "stack-profile.json not found"
 
-Run `/pilot-init` first — `/pilot-audit` depends on the confirmed stack profile it writes
+Run `/fsp-init` first — `/fsp-audit` depends on the confirmed stack profile it writes
 to `.claude/pilot/stack-profile.json`.
 
-## `/pilot-fix`
+## `/fsp-fix`
 
 ### "Working tree must be clean" error
 
-`/pilot-fix` refuses to create its fix branch over uncommitted changes. Commit or stash
+`/fsp-fix` refuses to create its fix branch over uncommitted changes. Commit or stash
 first.
 
 ### Batch exceeds `--max-files`

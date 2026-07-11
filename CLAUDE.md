@@ -24,9 +24,22 @@ Each plugin directory MUST have:
 
     <plugin>/
       .claude-plugin/plugin.json        ← manifest: name, version, description, author
+      commands/fsp-<verb>.md            ← commands (when added)
       skills/<skill-name>/SKILL.md      ← skills (when added)
       agents/<name>.md                  ← agents (when added)
       hooks/hooks.json                  ← hooks (when added)
+
+## Command conventions
+
+- Command files MUST be named `fsp-<verb>.md` (invoked as `/fsp-<verb>`).
+  The `fsp-` prefix brands every FullStack Pilot command; CI enforces it.
+
+## Agent conventions
+
+- Agent filenames follow `<stack>-{reviewer|implementor|support}.md`.
+- `*-reviewer` and `*-support` agents MUST declare `disallowedTools: Write, Edit`
+  (they diagnose and report — never modify files). `*-implementor` agents MUST NOT.
+- Every agent MUST have `name` and `description` frontmatter.
 
 ## SKILL.md conventions
 

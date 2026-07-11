@@ -1,4 +1,4 @@
-# /pilot-learn — Session Knowledge Distillation
+# /fsp-learn — Session Knowledge Distillation
 
 Distil durable, project-specific knowledge from the current session into versioned
 knowledge files. The user reviews and commits. This command **never** runs git.
@@ -10,7 +10,7 @@ knowledge files. The user reviews and commits. This command **never** runs git.
 ## Usage
 
 ```
-/pilot-learn [--conventions] [--lessons] [--diff-only]
+/fsp-learn [--conventions] [--lessons] [--diff-only]
 ```
 
 | Flag | Effect |
@@ -105,7 +105,7 @@ Show as a unified diff block:
 ### Final output
 
 ```
-## /pilot-learn complete
+## /fsp-learn complete
 
 Conventions  → .claude/pilot/knowledge/conventions.md  (run --conventions to refresh)
 Lessons      → .claude/pilot/knowledge/lessons.md       (<N> new entries appended)

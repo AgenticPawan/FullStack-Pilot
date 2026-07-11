@@ -1,7 +1,7 @@
 ---
 name: pilot-scaffold
-description: Phase 2 of /pilot-init. Reads the confirmed stack-profile.json, runs a compact one-block interview covering unknowns plus architecture/tenancy/compliance/team-size, generates a facts-only CLAUDE.md (hard limit 100 lines), and materializes version-gated governance rules from the rules catalog into .claude/rules/.
-when_to_use: Run automatically after the user confirms the stack profile during /pilot-init. Also triggered by /pilot-scaffold if the user wants to re-run scaffolding after editing stack-profile.json.
+description: Phase 2 of /fsp-init. Reads the confirmed stack-profile.json, runs a compact one-block interview covering unknowns plus architecture/tenancy/compliance/team-size, generates a facts-only CLAUDE.md (hard limit 100 lines), and materializes version-gated governance rules from the rules catalog into .claude/rules/.
+when_to_use: Run automatically after the user confirms the stack profile during /fsp-init. Also triggered by /pilot-scaffold if the user wants to re-run scaffolding after editing stack-profile.json.
 ---
 
 <!-- CONSTRAINTS -->
@@ -167,7 +167,7 @@ Full catalog: \`plugins/pilot-core/rules-catalog/\`
 - House conventions: `.claude/pilot/knowledge/conventions.md` — load on demand for naming/layout questions
 - Session lessons: `.claude/pilot/knowledge/lessons.md` — load on demand for project-specific gotchas
 
-> Run `/pilot-learn` to populate these files. They load on demand — not included in every session.
+> Run `/fsp-learn` to populate these files. They load on demand — not included in every session.
 
 ## Open Questions
 <List only items from unknowns[] that the user did NOT resolve in Step 3. Omit if empty.>
@@ -242,13 +242,13 @@ Print:
   Stack profile              → PROJECT_ROOT/.claude/pilot/stack-profile.json
   Drift workflow written     → PROJECT_ROOT/.github/workflows/pilot-drift.yml
 
-Knowledge files (populated by /pilot-learn):
+Knowledge files (populated by /fsp-learn):
   → PROJECT_ROOT/.claude/pilot/knowledge/conventions.md  (not yet created)
   → PROJECT_ROOT/.claude/pilot/knowledge/lessons.md      (not yet created)
 
 Next steps:
   • Review and commit CLAUDE.md, .claude/rules/, and .github/workflows/pilot-drift.yml.
-  • Run /pilot-learn to populate conventions.md and lessons.md.
-  • Run /pilot-init again in any other repo to detect and scaffold that project.
+  • Run /fsp-learn to populate conventions.md and lessons.md.
+  • Run /fsp-init again in any other repo to detect and scaffold that project.
   • When ready to address EOL stacks, run /pilot-upgrade.
 ```

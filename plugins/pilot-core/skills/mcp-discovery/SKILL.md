@@ -1,7 +1,7 @@
 ---
 name: mcp-discovery
 description: Scans the project dependency graph for technologies that have companion MCP servers, proposes a curated list with one-line supply-chain risk notes, and writes approved entries into the project .mcp.json only after explicit per-server user consent. Never auto-registers third-party servers.
-when_to_use: Run automatically at the end of /pilot-init after scaffold completes. Also triggered when the user runs /mcp-discover or asks "what MCP servers should I add?".
+when_to_use: Run automatically at the end of /fsp-init after scaffold completes. Also triggered when the user runs /mcp-discover or asks "what MCP servers should I add?".
 ---
 
 <!-- CONSTRAINTS -->
