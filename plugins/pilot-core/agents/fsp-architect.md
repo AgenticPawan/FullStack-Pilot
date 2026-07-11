@@ -31,12 +31,13 @@ Evaluate the solution against the target state the pilot skills encode. Dimensio
 each mapped to its governing skills:
 
 - Layering and boundaries (dotnet-clean-architecture, angular-monorepo-governance)
-- API contract coherence across the wire (api-design-standards, angular-api-client-codegen, dotnet-api-versioning)
-- Resilience and failure posture (dotnet-resilience, angular-http-resilience, dotnet-outbox-pattern/saga where messaging exists)
+- API contract coherence across the wire (api-design-standards, angular-api-client-codegen, dotnet-api-versioning, dotnet-cqrs, dotnet-backend-for-frontend)
+- Resilience and failure posture (dotnet-resilience, angular-http-resilience, dotnet-outbox-pattern, dotnet-saga-orchestration, dotnet-messaging where messaging exists)
 - Observability and operability (dotnet-observability, azure-observability, azure-slo-error-budget, incident-response-runbook)
-- Security and tenancy posture (dotnet-authorization permissions-ONLY, sql-multitenancy, azure-security-baseline)
+- Security and tenancy posture (dotnet-authorization permissions-ONLY, dotnet-multitenancy, sql-multitenancy, azure-security-baseline, azure-waf-review)
 - Data architecture (sql-schema-design, dotnet-entity-keys, search-integration where search exists)
-- Delivery architecture (azure-cicd-security, git-workflow-governance, dotnet-api-contract-testing)
+- Platform foundation (azure-landing-zone, azure-dr-multiregion, azure-aks-governance where containerized)
+- Delivery architecture (azure-cicd-security, git-workflow-governance, dotnet-api-contract-testing, dependency-supply-chain, dependency-license-compliance)
 - Decision hygiene (architecture-decision-records)
 
 Write `.claude/pilot/architecture/ASSESSMENT.md`:
