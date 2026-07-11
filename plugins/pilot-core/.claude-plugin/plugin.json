@@ -3,7 +3,7 @@
   "name": "pilot-core",
   "displayName": "Pilot Core",
   "version": "0.16.0",
-  "description": "Shared governance utilities for full-stack Microsoft projects: commit conventions, git branching/PR-review workflow governance, PR templates, code-health checks, the dependency-supply-chain policy layer over dotnet/npm vulnerability scanning (patch-cadence SLAs, version-pinning, private-feed policy, SBOM), CI-level secret scanning as the safety net beyond local pre-write hooks, cross-cutting REST API design standards tying frontend/backend contracts together, load/performance testing strategy gated on SLO/error-budget targets, incident-response runbook/postmortem governance, open-source license compliance, safe test-data management for lower environments, Architecture Decision Record discipline, local full-stack dev-environment onboarding, and dedicated search-service integration (Azure Cognitive Search/Elasticsearch) governance. All commands carry the fsp- prefix (/fsp-init, /fsp-audit, /fsp-fix, /fsp-learn), and @fullstack-support triages any full-stack symptom to the right specialist support agent",
+  "description": "Shared governance for full-stack Microsoft projects: stack detection and scaffolding, security audit/fix pipelines (/fsp-init, /fsp-audit, /fsp-fix, /fsp-learn), MCP discovery, dependency supply-chain and license policy, CI secret scanning, REST API design standards, SLO-gated load testing, incident-response runbooks, test-data management, ADR discipline, dev onboarding, search-service integration, and the @fullstack-support triage agent that routes any symptom to the right specialist",
   "author": {
     "name": "AgenticPawan",
     "url": "https://github.com/AgenticPawan"
