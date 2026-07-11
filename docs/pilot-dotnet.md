@@ -3,11 +3,32 @@
 C# / ASP.NET Core codebase governance for Clean Architecture solutions targeting the
 supported .NET range (8, 9, 10, 11 — see the [root README](../README.md#supported-versions)).
 
-## Agent
+## Agents
 
 - **dotnet-reviewer** — reviews a controller/endpoint/service/DbContext diff or file
   against every rule and all skills below. Runs automatically on .NET diff-review
-  requests, or invoke manually with `@dotnet-reviewer`.
+  requests, or invoke manually with `@dotnet-reviewer`. Read-only.
+- **dotnet-implementor** — the fixing counterpart: takes a reviewer finding
+  (standard ID + `file:line`) or a feature request, reads the governing skill before
+  writing code, applies minimal edits, and verifies with `dotnet build` (plus scoped
+  tests when they exist). Stops for your sign-off before touching `[Authorize]`
+  attributes, public endpoints/DTO signatures, or destructive migrations. Never
+  commits. Invoke with `@dotnet-implementor fix <finding>`.
+- **dotnet-support** — product-support diagnosis for backend symptoms (exceptions,
+  500s, hangs, startup failures). Collects the stack trace and logs, reads the
+  implicated code and its pairs (`Program.cs`, `OnModelCreating`), and reports the
+  root cause with cited `file:line` evidence — checking the classic failure classes
+  first (middleware order, DI lifetimes, sync-over-async, resilience gaps) — then
+  hands off to `@dotnet-implementor`. Invoke with
+  `@dotnet-support <describe the symptom>`.
+
+Usage example:
+
+```
+> @dotnet-reviewer review src/Api/Controllers/OrdersController.cs
+> @dotnet-implementor fix the AZ-001 finding in OrdersController.cs:42
+> @dotnet-support POST /api/orders returns 500 since yesterday's deploy
+```
 
 ## Skills
 

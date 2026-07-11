@@ -220,6 +220,70 @@ git commit -m "chore: scaffold project with FullStack Pilot governance"
 | `/fsp-audit` | Scans for existing problems and writes a report |
 | `/fsp-fix --batch <tier>` | Fixes one severity tier of problems on a safe, reviewable branch |
 
+## Agents — review, implement, support
+
+Each stack plugin ships a trio of specialist agents. You talk to them by @-mentioning
+their name in any Claude Code prompt — no command needed:
+
+| Role | What it does | Can it edit files? |
+|---|---|---|
+| **Reviewer** | Checks a diff or file against every rule and skill in its plugin; outputs findings with standard IDs, severity, and fix guidance | No — read-only |
+| **Implementor** | Takes a reviewer finding (or a feature request) and writes the fix, compliant with the same rules; verifies with your build; never commits | Yes |
+| **Support** | Takes a symptom ("this endpoint returns 500", "this page is blank") and diagnoses it to root cause with cited `file:line` evidence, then proposes a fix | No — read-only |
+
+### Who's who
+
+| Stack | Reviewer | Implementor | Support |
+|---|---|---|---|
+| Angular | `@angular-reviewer` | `@angular-implementor` | `@angular-support` |
+| .NET | `@dotnet-reviewer` | `@dotnet-implementor` | `@dotnet-support` |
+| SQL Server / EF Core | `@sql-reviewer` | `@sql-implementor` | `@sql-support` |
+| Azure / Bicep | `@infra-reviewer` | `@infra-implementor` | `@azure-support` |
+| Not sure which layer? | — | — | `@fullstack-support` |
+
+### The review → implement loop
+
+The reviewer and implementor are designed to work as a pair:
+
+```
+> @dotnet-reviewer review src/Api/Controllers/OrdersController.cs
+  … findings: [CRITICAL] AZ-001 role check at line 42 …
+
+> @dotnet-implementor fix the AZ-001 finding in OrdersController.cs:42
+  … applies the fix, runs dotnet build, reports back …
+
+> @dotnet-reviewer re-check OrdersController.cs
+  … confirms the finding is resolved …
+```
+
+The implementor never commits and never merges — it leaves the change in your working
+tree for you to review like any other diff. It also stops and asks before anything
+risky: changing a public API or auth attribute (.NET), a destructive migration (SQL),
+deleting or re-permissioning a resource (Azure), or changing a route/guard (Angular).
+
+### The support → implement loop
+
+Support agents are for "something is broken and I don't know why" moments. Describe
+the symptom; they gather evidence read-only and hand you a diagnosis:
+
+```
+> @dotnet-support POST /api/orders started returning 500 after yesterday's deploy
+  … reads the stack trace, Program.cs, the endpoint …
+  Root cause: UseAuthorization() moved above UseAuthentication() (MWP-002)
+  Evidence: src/Api/Program.cs:31
+  To apply this fix, invoke @dotnet-implementor with the finding above.
+```
+
+If you don't know which layer owns the problem, start with `@fullstack-support` — it
+triages the symptom (browser error? 500? slow query? deploy failure?), rules layers
+out with quick evidence checks, and hands off to the right specialist for you.
+
+Two of the support agents can go beyond reading source code when the bundled MCP
+servers are configured: `@azure-support` can query live Azure diagnostics
+(resource health, metrics, App Lens, log queries), and `@angular-support` can inspect
+the running app's browser console and network traffic via Playwright. Both stay
+strictly read-only — they never restart, scale, or mutate anything.
+
 ## Plugins
 
 | Plugin | Status | Purpose |

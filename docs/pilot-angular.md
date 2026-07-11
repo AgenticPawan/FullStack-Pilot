@@ -3,11 +3,30 @@
 Angular / TypeScript governance for Angular 15–20. Deep, actively-maintained coverage
 targets 17–20; 15–16 are EOL and get upgrade guidance only.
 
-## Agent
+## Agents
 
 - **angular-reviewer** — reviews a component diff or file against every materialized
   Angular rule and all skills below. Runs automatically on diff-review requests,
-  or invoke manually with `@angular-reviewer`.
+  or invoke manually with `@angular-reviewer`. Read-only.
+- **angular-implementor** — the fixing counterpart: takes a reviewer finding
+  (rule/skill ID + `file:line`) or a feature request, reads the governing skill before
+  writing code, applies minimal edits, and verifies with `tsc --noEmit`/`ng build`.
+  Stops for your sign-off before changing routes, guards, or a generated API client.
+  Never commits. Invoke with `@angular-implementor fix <finding>`.
+- **angular-support** — product-support diagnosis for frontend symptoms (console
+  errors, blank screens, broken requests, memory growth). Gathers evidence read-only —
+  including the live app's console and network traffic via the bundled Playwright MCP
+  tools when available — and reports the root cause with cited `file:line` evidence,
+  then hands off to `@angular-implementor`. Invoke with
+  `@angular-support <describe the symptom>`.
+
+Usage example:
+
+```
+> @angular-reviewer review src/app/orders/order-list.component.ts
+> @angular-implementor fix the takeUntilDestroyed finding in order-list.component.ts:58
+> @angular-support the orders page renders blank after login, console shows NG0100
+```
 
 ## Skills
 

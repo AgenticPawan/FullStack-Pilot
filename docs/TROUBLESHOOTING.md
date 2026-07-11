@@ -70,6 +70,41 @@ This is a safety gate, not a failure — the command prints sub-batches and wait
 to choose one rather than opening a mega-PR. Lower `--max-files` further for
 security-sensitive areas, or pick a sub-batch.
 
+## Agents
+
+### `@<agent-name>` doesn't appear in the typeahead
+
+Agents load at session start — restart Claude Code after installing or updating a
+plugin. Also note agents are namespaced by plugin: if two marketplaces ship an agent
+with the same short name, use the qualified form (e.g. `pilot-dotnet:dotnet-reviewer`).
+
+### The implementor refuses to make a change and asks for sign-off
+
+Working as designed. `*-implementor` agents have hard gates: auth/public-API changes
+(.NET), destructive migrations (SQL), resource deletion/RBAC/network loosening (Azure),
+route/guard changes (Angular). Reply confirming the specific change and it proceeds.
+
+### A support agent answers without citing file:line evidence
+
+That's a bug in the diagnosis, not a style choice — support agents are required to cite
+evidence for every root-cause claim. Ask it to "show the evidence" or re-run with the
+error text/logs included in your prompt; a diagnosis it can't evidence should be
+labeled a hypothesis.
+
+### The reviewer found an issue but nothing got fixed
+
+Reviewers and support agents are read-only by design. Hand the finding to the paired
+implementor: `@dotnet-implementor fix the <ID> finding in <file>:<line>`. The
+implementor edits your working tree but never commits — review and commit the diff
+yourself.
+
+### `@azure-support` / `@angular-support` can't run live diagnostics
+
+Live inspection is optional and depends on the bundled MCP servers being configured
+(Azure credentials for `azure-support`; a running app for `angular-support`'s
+Playwright inspection). Without them the agents still work — they fall back to
+reading source, config, and the logs you paste.
+
 ## MCP servers
 
 See [mcp-setup.md](../plugins/pilot-core/docs/mcp-setup.md) for per-server credential

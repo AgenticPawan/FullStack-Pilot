@@ -3,11 +3,34 @@
 Azure / Bicep governance: naming, security baseline, Well-Architected Framework review,
 and Bicep production-readiness.
 
-## Agent
+## Agents
 
 - **infra-reviewer** — reviews Bicep templates and GitHub Actions deployment workflows
   against all skills below, emitting findings with standard IDs (`ASB-*`, `WAF-*`,
   `CAF-*`, `BIC-*`, `AOBS-*`, `CICD-*`, `ADR-*`, `FIN-*`, `AKS-*`, `APIM-*`, `LZ-*`, `SLO-*`, `IMG-*`).
+  Read-only. Invoke manually with `@infra-reviewer`.
+- **infra-implementor** — the fixing counterpart: takes a reviewer finding or an
+  infrastructure change request and edits Bicep/workflow files, verifying with
+  `az bicep lint`. It recommends — but never runs — `what-if` and deployments, and
+  stops for your sign-off before deleting/renaming a resource, changing RBAC, or
+  loosening any network/public-access setting. Never commits. Invoke with
+  `@infra-implementor fix <finding>`.
+- **azure-support** — product-support diagnosis for infrastructure symptoms (failed
+  deployments, unreachable services, scaling problems, cost spikes, firing alerts).
+  When the bundled Azure MCP tools are configured it queries live diagnostics
+  read-only (`resourcehealth`, `monitor`/`kusto`, `applens`, `quota`) — it never
+  creates, modifies, restarts, or scales a resource. Reports the root cause with
+  cited evidence and hands off to `@infra-implementor`; for recurring incidents it
+  also emits a runbook stub per pilot-core's `incident-response-runbook`. Invoke with
+  `@azure-support <describe the symptom>`.
+
+Usage example:
+
+```
+> @infra-reviewer review infra/main.bicep
+> @infra-implementor fix the ASB-003 finding in infra/storage.bicep:12
+> @azure-support the container app works locally but returns 403 to Key Vault when deployed
+```
 
 ## Skills
 

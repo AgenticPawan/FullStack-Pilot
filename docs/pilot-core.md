@@ -11,6 +11,29 @@ Shared governance utilities every other pilot plugin depends on. Install this fi
 | `/fsp-fix --batch <tier>` | Runs the `batched-remediation` skill: fixes one severity tier (`P0`–`P3`) at a time on its own branch, verifies with a build, rolls back on regression. |
 | `/fsp-learn [--conventions] [--lessons] [--diff-only]` | Distills durable, project-specific knowledge from the session into `conventions.md` / `lessons.md`. Never runs git; you review and commit. |
 
+## Agents
+
+- **fullstack-support** — first-line product-support triage. When something is broken
+  and you don't know which layer owns it (frontend? backend? database? Azure?), invoke
+  `@fullstack-support <describe the symptom>`. It classifies the symptom with quick
+  read-only evidence checks, rules layers out, and hands off to the right specialist —
+  `@angular-support`, `@dotnet-support`, `@sql-support`, or `@azure-support` — with a
+  structured handoff so you don't repeat yourself. Production-down or data-integrity
+  symptoms get flagged urgent per the `incident-response-runbook` skill; suspected
+  security incidents get a `/fsp-audit` recommendation alongside the diagnosis.
+
+Usage example:
+
+```
+> @fullstack-support checkout has been failing for some users since this morning
+  … triage: ProblemDetails 500 in the network tab → backend owns it …
+  ## Triage Handoff → @dotnet-support
+```
+
+The stack-specific reviewer/implementor/support trios live in the other four plugins —
+see the [root README](../README.md#agents--review-implement-support) for the full
+roster and workflow examples.
+
 ## Skills
 
 - **stack-detection** — evidence-based Angular/.NET/SQL Server/Azure detector. Every
