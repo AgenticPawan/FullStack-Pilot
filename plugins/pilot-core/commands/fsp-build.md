@@ -32,7 +32,7 @@ Run the `fsp-build-orchestration` skill now, following every step in order (Step
 
 - **File handoffs, not chat handoffs** — every artifact is a file under `.claude/pilot/`; agents receive paths, never pasted content.
 - **State after every step** — `builds/<feature>/STATE.json` is updated as each step completes, so `--resume` never re-pays a completed step.
-- **QA diff check** — after Step 7, `git diff --name-only` output from the QA step is verified against the test-path allowlist; any product-code change from QA is reverted and logged (deterministic enforcement, not trust).
+- **QA write-scope check** — after Step 7, the QA step's working-tree changes (`git status --porcelain`, which also catches newly created files a plain diff misses) are verified against the test-path allowlist; any product-code change from QA is reverted and logged (deterministic enforcement, not trust).
 - **Hard gates stop the pipeline** even under `--yes`.
 - **The branch is left unmerged** — the summary tells the user how to review and merge.
 

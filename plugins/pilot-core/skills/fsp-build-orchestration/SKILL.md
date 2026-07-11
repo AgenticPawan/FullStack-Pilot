@@ -14,8 +14,9 @@ when_to_use: Invoke via /fsp-build only. Runs when the user asks to build a feat
 <!-- RULE 4: Model override goes opus ONLY for work items the plan marks complexity: high. -->
 <!-- RULE 5: Review loop cap is 2 per work item. Loop 3 = escalate to the user with
      BOTH the reviewer's finding and the implementor's position. -->
-<!-- RULE 6: QA step diff is verified against the test-path allowlist; product-code
-     changes from QA are reverted, logged, and routed back as defects. -->
+<!-- RULE 6: QA step working-tree changes (git status --porcelain — a plain diff
+     misses untracked new files) are verified against the test-path allowlist;
+     product-code changes from QA are reverted, logged, and routed back as defects. -->
 <!-- RULE 7: A failed step stops the pipeline with STATE.json written — never
      force-continue past a failure, never silently retry more than once. -->
 
@@ -111,9 +112,12 @@ For each work item in dependency order:
 2. The implementor edits product code and reports the files it changed.
 3. Run the work item's verification command. Failure → one fix round with the same
    implementor; second failure → mark the item `failed`, write STATE.json, stop (RULE 7).
-4. After each item, check cumulative `git diff --name-only <startBranch> | wc -l`
+4. Commit the verified item on the build branch (`feat(<area>): <WI-n title>`,
+   conventional format) — per-item commits keep every later step's diff isolated
+   and give `--resume` a clean boundary.
+5. After each item, check cumulative `git diff --name-only <startBranch>...HEAD | wc -l`
    against `--max-files`; if exceeded, stop and ask before continuing.
-5. Mark the item `implemented` in STATE.json.
+6. Mark the item `implemented` in STATE.json.
 
 An implementor that hits a hard gate mid-item (e.g. the fix requires an [Authorize]
 change the plan didn't declare) must stop; relay to the user as in Step 4.
@@ -127,7 +131,8 @@ For each stack touched, invoke the paired `@<stack>-reviewer` scoped to
 the PLAN.md path so findings map to work items.
 
 - Findings → route each to the owning implementor (same model tier as its item) for
-  a fix; re-run the item's verification; re-review the fix diff.
+  a fix; re-run the item's verification; re-review the fix diff; commit each accepted
+  fix (`fix(<area>): <finding id>`).
 - **Max 2 implement-review loops per work item.** A finding open after loop 2
   indicates a plan-level problem: stop and print BOTH the reviewer's finding and the
   implementor's position, and ask the user to arbitrate (RULE 5).
@@ -138,24 +143,31 @@ Record loop counts per item; mark `review: done`.
 
 ## Step 7 — Test (fsp-qa) + deterministic write-scope enforcement
 
-Record the pre-QA HEAD: `qaBaseSha = git rev-parse HEAD`.
+Verify the working tree is clean (Steps 5–6 committed everything), then record the
+pre-QA HEAD: `qaBaseSha = git rev-parse HEAD`.
 
 Invoke `fsp-qa` with paths to the spec, PLAN.md, the implementors' summaries, and the
 scout briefs. It writes/extends tests, runs them, and writes
 `builds/<feature>/QA-REPORT.md`.
 
-**Then enforce the write scope (RULE 6)** — trust nothing, check the diff:
+**Then enforce the write scope (RULE 6)** — trust nothing, check the working tree.
+`git diff` alone is NOT sufficient: files QA newly created are untracked and invisible
+to it. Use:
 
 ```
-git diff --name-only <qaBaseSha>
+git status --porcelain
 ```
 
 Allowlist (must match the fsp-qa contract): `tests/**`, `**/e2e/**`, `**/*.spec.ts`,
 `**/*.spec.tsx`, `**/*Tests.cs`, `**/*.Tests/**`, `.claude/pilot/builds/<feature>/**`.
 
-Any path outside the allowlist: `git checkout <qaBaseSha> -- <path>` (revert it),
-log the reverted paths in STATE.json under `qa.revertedPaths`, and record each as a
-defect for the owning implementor. Defects in QA-REPORT.md (including reverted-write
+For every path outside the allowlist:
+- modified/deleted (tracked) → `git checkout <qaBaseSha> -- <path>` (revert it)
+- newly created (untracked, `??`) → delete the file
+
+Log the enforced paths in STATE.json under `qa.revertedPaths` and record each as a
+defect for the owning implementor. Then commit the surviving test changes
+(`test(<feature>): QA coverage for <spec>`). Defects in QA-REPORT.md (including reverted-write
 defects) go through one implementor fix round + verification + QA re-run of the
 affected tests. A FAIL verdict after that round stops the pipeline with the defects
 table printed (RULE 7).
