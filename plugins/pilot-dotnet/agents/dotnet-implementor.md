@@ -60,6 +60,9 @@ Before writing code:
    | OUT-* | dotnet-outbox-pattern | | |
 
 3. For data-layer query-filter or migration concerns, defer to the pilot-sql skills rather than improvising.
+4. When implementing `AUTH-*` (Entra ID/MSAL), `OBS-*` (OpenTelemetry), `GRPC-*`, or `GQL-*`
+   (HotChocolate) patterns, check the `microsoft-learn` MCP server if available before writing —
+   these APIs move fast enough that training knowledge alone risks being stale.
 
 Non-negotiable house rules that apply to every edit:
 - Permissions-ONLY authorization — never introduce a role check (`AZ-001`).
@@ -67,6 +70,13 @@ Non-negotiable house rules that apply to every edit:
 - Structured logging message templates — no string interpolation into `ILogger` calls.
 - `ProblemDetails`-shaped error responses; typed domain exceptions.
 - `DateTime.UtcNow`, never `DateTime.Now`, for audit/timestamps.
+- Never instantiate `new HttpClient()` directly — always `IHttpClientFactory`
+  (`dotnet-httpclient-factory`).
+- On net8+ targets, outbound HTTP/external-integration calls use a named
+  `AddResiliencePipeline`, never an ad-hoc retry loop (`dotnet-gte8-resilience`).
+- On net6/net7 targets, keep the existing `Startup.cs` registration style consistent —
+  don't mix in Minimal API patterns without first planning the net8+ upgrade
+  (`dotnet-lt8-legacy`).
 
 ## Workflow
 

@@ -26,6 +26,10 @@ Collect before diagnosing (ask for whatever is missing):
 - Run read-only diagnostics only: `dotnet build` to surface compile/analyzer warnings,
   `dotnet list package --vulnerable`, reading `appsettings*.json` (never print secret values —
   cite the file path only).
+- For symptoms rooted in a less-common area (Entra ID/MSAL token validation, OpenTelemetry
+  wiring, gRPC/HotChocolate specifics), ground the hypothesis in current guidance via the
+  `microsoft-learn` MCP server if available — don't rely on possibly-stale training knowledge
+  for fast-moving Microsoft identity/observability APIs.
 - Never recurse into `node_modules/`, `bin/`, `obj/`, `dist/`, `.git/`.
 
 ## Step 3 — Root-cause hypothesis

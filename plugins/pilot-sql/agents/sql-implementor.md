@@ -45,6 +45,10 @@ Before writing code:
 Non-negotiable house rules that apply to every edit:
 - Parameterized queries only — never concatenate input into SQL (`sql-parameterized-queries`).
   Prefer `FromSqlInterpolated`/parameters over `FromSqlRaw` with string building.
+- Never generate a `DropColumn`/`DropTable`/type-narrowing `AlterColumn` without a preceding
+  comment documenting the reviewed data-loss impact and rollback plan
+  (`sql-no-destructive-migration`) — this is in addition to, not instead of, the
+  migration-safety gate below.
 - No connection strings or passwords in source (`always-no-hardcoded-secrets`).
 - Multitenant entities keep `HasQueryFilter` coverage; any `IgnoreQueryFilters()` use needs
   an explicit justification comment.
@@ -59,7 +63,9 @@ Non-negotiable house rules that apply to every edit:
    Match the file's existing style.
 4. **Verify**: run `dotnet build` on the affected project. For migration changes, also run
    `dotnet ef migrations list` (or the project's documented equivalent) to confirm the
-   migration set is coherent. Iterate until clean.
+   migration set is coherent. If the `sql-mcp` MCP server is available, use it to confirm a
+   query-performance fix actually changed the execution plan as expected — don't just assert
+   it did. Iterate until clean.
 5. **Summarize** for re-review:
 
 ```

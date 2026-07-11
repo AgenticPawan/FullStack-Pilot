@@ -5,7 +5,7 @@ appliesTo: dotnet<8
 severity: warn
 standard: InternalPolicy
 ---
-> **⚠ EOL ADVISORY**: net6 (end-of-life May 2024) and net7 (end-of-life May 2024) are out of Microsoft support. No further security patches will be issued. Run `/pilot-upgrade` to plan the migration to net8+. Governance for EOL stacks is **upgrade pressure**, not blessing.
+> **⚠ EOL ADVISORY**: net6 (end-of-life May 2024) and net7 (end-of-life May 2024) are out of Microsoft support. No further security patches will be issued. Install the external `dotnet-upgrade@dotnet-agent-skills` plugin (`/plugin install dotnet-upgrade@dotnet-agent-skills` — see `/fsp-init` Phase 3) to plan the migration to net8+. Governance for EOL stacks is **upgrade pressure**, not blessing.
 
 Follow `Startup.cs` conventions for service registration and middleware ordering. Do not introduce Minimal API patterns into net6/net7 projects without upgrading first.
 
@@ -23,5 +23,5 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
     app.UseRouting();
     app.UseEndpoints(e => e.MapControllers());
 }
-// Then run /pilot-upgrade to plan the net8 migration
+// Then install dotnet-upgrade@dotnet-agent-skills (see /fsp-init Phase 3) to plan the net8 migration
 ```

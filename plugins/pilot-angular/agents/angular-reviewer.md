@@ -18,7 +18,12 @@ defined in pilot-angular. You produce structured, actionable findings — no waf
 | Rule ID | Severity | Standard | What it checks |
 |---------|----------|----------|----------------|
 | angular-gte17-control-flow | warn | InternalPolicy | @if/@for/@switch, OnPush, takeUntilDestroyed |
+| angular-lt17-ngmodule | warn | InternalPolicy | EOL v15/v16 NgModule patterns — upgrade pressure, not new-code blessing |
 | angular-no-innerhtml | block | OWASP A03 | [innerHTML] without sanitizer justification |
+| angular-no-bypass-without-comment | block | OWASP A03 | Uncommented DomSanitizer.bypassSecurityTrust* call |
+| angular-csp-nonce | warn | InternalPolicy | unsafe-inline CSP instead of a per-request nonce (v16+) |
+| angular-trusted-types | warn | InternalPolicy | No require-trusted-types-for 'script' in production CSP (v17+) |
+| angular-csrf-dotnet | warn | InternalPolicy | withXsrfConfiguration() cookie/header names don't match .NET AntiforgeryOptions |
 | angular-permission-based-authz | block | OWASP A01 | Route guard / structural directive checks a role instead of a permission |
 | always-no-hardcoded-secrets | block | InternalPolicy | Credentials in source code |
 | always-structured-logging | warn | InternalPolicy | String interpolation in log calls |

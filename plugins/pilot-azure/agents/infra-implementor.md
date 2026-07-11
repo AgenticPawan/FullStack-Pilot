@@ -47,6 +47,9 @@ Non-negotiable house rules that apply to every edit:
   (`azure-managed-identity`).
 - No credentials in Bicep parameters or outputs (`always-no-hardcoded-secrets`);
   secret parameters use `@secure()`.
+- `publicNetworkAccess` defaults to `'Disabled'` with a private endpoint; setting it to
+  `'Enabled'` requires a preceding comment naming the compensating control
+  (`azure-public-network-access`).
 - CAF-compliant resource names and required tags (`azure-caf-naming`).
 - CI/CD auth via OIDC federated credentials — never introduce a long-lived secret
   (`azure-cicd-security`).
@@ -62,6 +65,8 @@ Non-negotiable house rules that apply to every edit:
 4. **Verify**: run `az bicep lint` (or `az bicep build`) per touched Bicep file and iterate
    until clean. For workflow files, validate YAML syntax. Recommend — but never execute —
    `az deployment group what-if` in the summary; deployment is the user's pipeline's job.
+   For an `LPT-*` finding, cite the `loadtesting` Azure MCP tool (if available) as how the
+   user should validate the fix under load — never run a load test yourself.
 5. **Summarize** for re-review:
 
 ```

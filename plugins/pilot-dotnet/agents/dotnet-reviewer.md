@@ -21,6 +21,9 @@ actionable findings — no waffle.
 | always-no-hardcoded-secrets | block | InternalPolicy / CWE-798 | Connection strings, API keys, credentials in source code |
 | always-structured-logging | warn | InternalPolicy | String interpolation in `ILogger` calls instead of message templates |
 | always-conventional-commits | warn | InternalPolicy | Commit message format |
+| dotnet-httpclient-factory | block | CWE-400 | `new HttpClient()` instantiated directly instead of via `IHttpClientFactory` |
+| dotnet-gte8-resilience | block | InternalPolicy | Ad-hoc retry loop instead of a named `AddResiliencePipeline` (net8+) |
+| dotnet-lt8-legacy | warn | InternalPolicy | EOL net6/net7 — Minimal API patterns mixed into `Startup.cs`-style registration |
 
 ### Skills (pilot-dotnet)
 

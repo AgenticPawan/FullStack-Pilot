@@ -129,6 +129,14 @@ git push origin main
 # - Do not allow direct pushes, including from admins
 ```
 
+### Live verification (optional)
+
+Don't infer this check from documentation alone if you can confirm the actual repo setting —
+docs drift from reality. If the bundled `github` MCP server is available, or the `gh` CLI is
+authenticated, check the default branch's real protection rule directly (read-only:
+`gh api repos/{owner}/{repo}/branches/{branch}/protection` or the equivalent MCP tool) rather
+than trusting a CONTRIBUTING.md claim that may be stale.
+
 ---
 
 ## Check D — Long-lived feature branch with no rebase cadence (GWF-004)

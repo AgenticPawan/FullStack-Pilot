@@ -54,6 +54,12 @@ Non-negotiable house rules that apply to every edit:
 - Permission-based authorization only — route guards and structural directives check
   permissions, never roles (`angular-permission-based-authz`).
 - No `[innerHTML]` without a documented sanitizer justification (`angular-no-innerhtml`).
+- No `DomSanitizer.bypassSecurityTrust*` call without a preceding source-justification
+  comment (`angular-no-bypass-without-comment`).
+- CSP: nonce-based only, never `unsafe-inline` (`angular-csp-nonce`); production builds
+  enforce Trusted Types (`angular-trusted-types`).
+- `withXsrfConfiguration()` cookie/header names must match the .NET `AntiforgeryOptions`
+  exactly (`angular-csrf-dotnet`).
 - No hardcoded secrets or API keys (`always-no-hardcoded-secrets`).
 - Subscriptions cleaned up: prefer `async` pipe / `toSignal`, else `takeUntilDestroyed()`.
 - New components: standalone, `OnPush`, `@if/@for` control flow (on v17+ stacks).
@@ -67,7 +73,10 @@ Non-negotiable house rules that apply to every edit:
    migrate unrelated patterns, or reformat untouched lines. Match the file's existing style.
 4. **Verify**: run `npx tsc --noEmit` (or `ng build` if the project has non-trivial template
    type-checking). If lint is configured, run `ng lint` scoped to the touched project.
-   Iterate until clean. Run affected specs if a test runner is configured.
+   Iterate until clean. Run affected specs if a test runner is configured. For a
+   visual/rendering fix, if the app is running and the bundled Playwright MCP tools are
+   available, do a quick live render check (`browser_snapshot`/`browser_console_messages`)
+   rather than asserting the fix looks right from source alone.
 5. **Summarize** for re-review:
 
 ```

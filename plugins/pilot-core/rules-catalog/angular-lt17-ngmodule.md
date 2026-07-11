@@ -5,7 +5,7 @@ appliesTo: angular<17
 severity: advise
 standard: InternalPolicy
 ---
-> **⚠ EOL ADVISORY**: Angular 15 (end-of-life May 2024) and Angular 16 (end-of-life November 2024) are no longer supported by the Angular team. Run `/pilot-upgrade` to plan the migration to Angular 17+. Governance for EOL stacks is **upgrade pressure**, not blessing.
+> **⚠ EOL ADVISORY**: Angular 15 (end-of-life May 2024) and Angular 16 (end-of-life November 2024) are no longer supported by the Angular team. See the `angular-upgrade-path` skill (pilot-angular) for the step-by-step v15→v20 migration, or ask `@angular-implementor` to plan it. Governance for EOL stacks is **upgrade pressure**, not blessing.
 
 Maintain NgModule-based structure for consistency. Declare components in feature modules. Do not introduce standalone components without a clear module boundary plan.
 

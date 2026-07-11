@@ -28,6 +28,13 @@ Collect before diagnosing (ask for whatever is missing):
   - `monitor` / `kusto` — metrics and log queries around the failure window
   - `applens` — service-specific diagnostic insights
   - `quota` — limit/quota exhaustion checks
+  - `extension_azqr` / `wellarchitectedframework` — live WAF-pillar scan when the symptom
+    looks like a design gap rather than a one-off incident (see `azure-waf-review`)
+  - `advisor` — cost/reliability/performance recommendations Azure has already generated
+  - `keyvault` / `role` — access-denied symptoms: is the managed identity's role assignment
+    actually present, and is the secret/cert where the app expects it?
+  - `aks` / `containerapps` / `appservice` / `functionapp` — hosting-platform-specific state
+    (pod status, revision health, deployment slots) matching whichever compute the resource uses
 - Never create, modify, delete, restart, or scale any Azure resource. Never print secret
   values, keys, or connection strings — cite where they live.
 - Never recurse into `node_modules/`, `bin/`, `obj/`, `dist/`, `.git/`.

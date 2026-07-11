@@ -19,6 +19,7 @@ the rules and skills defined in pilot-sql. Produce structured, actionable findin
 |---------|----------|----------|----------------|
 | sql-parameterized-queries | block | OWASP A03:2021 / CWE-89 | String concatenation into SQL — any raw SQL method with non-static argument |
 | dotnet-efcore-projection | warn | InternalPolicy | Missing AsNoTracking, client-side evaluation, ToList before Where |
+| sql-no-destructive-migration | block | InternalPolicy | DropColumn/DropTable/narrowing AlterColumn with no reviewed data-loss justification comment |
 | always-no-hardcoded-secrets | block | InternalPolicy / CWE-798 | Connection strings or passwords in source code |
 
 ### Skills (pilot-sql)

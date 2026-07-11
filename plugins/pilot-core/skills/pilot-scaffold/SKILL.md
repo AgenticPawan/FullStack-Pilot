@@ -34,7 +34,8 @@ If any of the following are true, print the advisory block BEFORE asking questio
 │  Angular 15 (EOL May 2024) / Angular 16 (EOL Nov 2024)     │
 │  Microsoft no longer issues security patches for this       │
 │  version. Governance rules will reflect upgrade pressure.   │
-│  Run /pilot-upgrade when ready to plan the migration.       │
+│  See the angular-upgrade-path skill (pilot-angular), or     │
+│  ask @angular-implementor to plan the v17+ migration.       │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -46,7 +47,8 @@ If any of the following are true, print the advisory block BEFORE asking questio
 │  net6 (EOL May 2024) / net7 (EOL May 2024)                 │
 │  Microsoft no longer issues security patches for this       │
 │  version. Governance rules will reflect upgrade pressure.   │
-│  Run /pilot-upgrade when ready to plan the migration.       │
+│  Install dotnet-upgrade@dotnet-agent-skills (see /fsp-init  │
+│  Phase 3) to plan the net8+ migration.                      │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -250,5 +252,6 @@ Next steps:
   • Review and commit CLAUDE.md, .claude/rules/, and .github/workflows/pilot-drift.yml.
   • Run /fsp-learn to populate conventions.md and lessons.md.
   • Run /fsp-init again in any other repo to detect and scaffold that project.
-  • When ready to address EOL stacks, run /pilot-upgrade.
+  • EOL Angular: see the angular-upgrade-path skill or ask @angular-implementor.
+  • EOL .NET: install dotnet-upgrade@dotnet-agent-skills (see Phase 3 above).
 ```

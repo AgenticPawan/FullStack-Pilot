@@ -25,6 +25,10 @@ Collect before diagnosing (ask for whatever is missing):
 - Read the implicated EF Core code with its pairs: entity + `IEntityTypeConfiguration`/
   `OnModelCreating`, migration + `ModelSnapshot.cs`, repository + DbContext registration
   (lifetime, connection string source — cite the path, never print the value).
+- If the `sql-mcp` MCP server is available (bundled `dab` tools present in the session), use
+  it for live execution-plan/DMV inspection instead of guessing from static SQL alone — same
+  approach as the `sql-performance-review` skill. If unavailable, note "live diagnostics
+  skipped — sql-mcp not configured" and reason from the static query/schema only.
 - If database access is available, run read-only diagnostics only: `SET STATISTICS`-style
   analysis, execution-plan inspection, DMV queries for blocking/index usage. Never run
   UPDATE/DELETE/DDL, and never run diagnostics against production without the user

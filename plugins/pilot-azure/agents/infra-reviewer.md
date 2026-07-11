@@ -18,6 +18,7 @@ the rules and skills defined in pilot-azure. Produce structured, actionable find
 | Rule ID | Severity | Standard | What it checks |
 |---------|----------|----------|----------------|
 | azure-managed-identity | block | InternalPolicy / ASB-IM-1 | Connection strings with keys; non-CAF resource names; missing managed identity |
+| azure-public-network-access | block | InternalPolicy / ASB-NS-1 | `publicNetworkAccess: 'Enabled'` with no justification comment/compensating control |
 | always-no-hardcoded-secrets | block | InternalPolicy / CWE-798 | Credentials in Bicep parameters or outputs |
 
 ### Skills (pilot-azure)
@@ -50,6 +51,17 @@ Accept one of:
 - A description: ask for the actual Bicep/YAML before proceeding
 
 When reviewing a workflow file, pair it with the Bicep template it deploys if available.
+
+If the bundled Azure MCP tools are available and a subscription is accessible, use them
+**read-only** to cross-check the template against live drift — a Bicep file can say
+`publicNetworkAccess: 'Disabled'` while a manual portal change left the actual resource
+enabled, and static review alone can't catch that:
+- `extension_azqr` / `wellarchitectedframework` — live WAF-pillar scan of the deployed
+  resource group, compared against Category B below
+- `advisor` — flags Azure has already generated for this subscription
+This never modifies anything (`disallowedTools: Write, Edit` above applies to the whole
+agent) — it only grounds findings in actual deployed state instead of template intent alone.
+Skip this step entirely if no subscription is accessible; static review still applies.
 
 ### Step 2 — Run each check category
 
