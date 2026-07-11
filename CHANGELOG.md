@@ -3,6 +3,41 @@
 All notable changes to FullStack Pilot are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 2026-07-11 — fsp- command prefix + implementor & support agents (all plugins)
+
+pilot-core 0.15.0 → 0.16.0, pilot-angular 0.20.0 → 0.21.0, pilot-dotnet 0.24.0 → 0.25.0,
+pilot-sql 0.13.0 → 0.14.0, pilot-azure 0.14.0 → 0.15.0
+
+### Changed
+- **BREAKING (command names)**: all commands renamed with the `fsp-` brand prefix —
+  `/pilot-init` → `/fsp-init`, `/pilot-audit` → `/fsp-audit`, `/pilot-fix` → `/fsp-fix`,
+  `/pilot-learn` → `/fsp-learn`. All cross-references in skills, templates, docs, and
+  test fixtures updated. Convention documented in CLAUDE.md and enforced by
+  `scripts/validate.mjs` (a `commands/*.md` file not starting with `fsp-` fails CI).
+
+### Added
+- **Implementor agents** (one per stack plugin) — the fixing counterpart to each
+  reviewer: `@angular-implementor`, `@dotnet-implementor`, `@sql-implementor`,
+  `@infra-implementor`. Each takes a reviewer finding (standard ID + file:line) or a
+  feature request, reads the governing SKILL.md before writing code, applies minimal
+  targeted edits, verifies (`dotnet build` / `tsc --noEmit` / `az bicep lint`), and
+  reports back in a format the paired reviewer can re-check. Hard gates: user sign-off
+  required for API-surface, auth, destructive-migration, or resource-deletion changes;
+  never commits.
+- **Support agents** (one per stack plugin + a triage router) — product-support
+  assistants that diagnose a symptom to root cause with cited `file:line` evidence and
+  propose a fix referencing the governing skill's standard ID, then hand off to the
+  implementor: `@angular-support` (can inspect the live app via bundled Playwright
+  tools), `@dotnet-support`, `@sql-support`, `@azure-support` (can run live read-only
+  diagnostics via bundled Azure MCP tools: resourcehealth, monitor, applens, kusto),
+  and `@fullstack-support` (pilot-core) which classifies any full-stack symptom and
+  routes it to the right specialist with a structured handoff. All support agents are
+  read-only (`disallowedTools: Write, Edit`).
+- `scripts/validate.mjs`: new agent-file checks — `name`/`description` frontmatter
+  required; `*-reviewer`/`*-support` agents must declare `disallowedTools: Write, Edit`;
+  `*-implementor` agents must not.
+- Agent and command conventions sections in CLAUDE.md.
+
 ## [0.20.0] — 2026-07-05 (pilot-dotnet), pilot-angular 0.16.0 → 0.17.0
 
 ### Added
