@@ -7,11 +7,18 @@ Shared governance utilities every other pilot plugin depends on. Install this fi
 | Command | Purpose |
 |---|---|
 | `/fsp-init` | Detects your stack (`stack-detection` skill), confirms with you, then scaffolds `CLAUDE.md` and `.claude/rules/` (`pilot-scaffold` skill). Phase 3 wires `dotnet/skills` for .NET projects; Phase 4 runs MCP discovery. |
+| `/fsp-bootstrap [--yes]` | Runs the `foundation-bootstrap` skill: detects which baseline modules (auth, authz, logging, error handling, health checks, CORS) already exist, scaffolds the missing ones via the stack implementors on `pilot/foundation-bootstrap`, and writes `.claude/pilot/foundation/STATUS.md` — the marker `/fsp-build` checks before allowing feature work on a greenfield project. |
 | `/fsp-audit` | Runs the `audit-orchestration` skill: available scanners + a bounded Claude semantic pass, normalized into `.claude/pilot/audit/findings.json` and `AUDIT-REPORT.md`. |
 | `/fsp-fix --batch <tier>` | Runs the `batched-remediation` skill: fixes one severity tier (`P0`–`P3`) at a time on its own branch, verifies with a build, rolls back on regression. |
 | `/fsp-learn [--conventions] [--lessons] [--diff-only]` | Distills durable, project-specific knowledge from the session into `conventions.md` / `lessons.md`. Never runs git; you review and commit. |
 | `/fsp-architect [--scope <area>] [--refresh]` | Whole-solution architecture assessment: scout briefs feed `fsp-architect`'s Assess mode; you get a ranked gap register in chat and per-gap enhancement plans (each with a ready-to-run `/fsp-build` line) in `.claude/pilot/architecture/ASSESSMENT.md`. |
 | `/fsp-build <feature \| spec-file \| GAP-id> [--yes] [--max-files <n>] [--resume <slug>]` | One-shot delivery pipeline (`fsp-build-orchestration` skill): spec → scout → plan → your confirmation → implement → review → test → summary, all on branch `pilot/build-<feature>` — never merged for you. |
+
+`/fsp-build`'s Step 0 checks `.claude/pilot/foundation/STATUS.md` before proceeding. On a
+project it judges greenfield (little to no existing source beyond scaffold defaults) with no
+foundation modules yet, it stops for your explicit sign-off — never silently skipped by
+`--yes`, the same discipline as its other hard gates — and points you at `/fsp-bootstrap`.
+An existing/brownfield project only gets a one-line recommendation, never a block.
 
 ## The autonomous delivery team
 

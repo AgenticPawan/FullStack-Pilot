@@ -2,8 +2,8 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "pilot-angular",
   "displayName": "Pilot Angular",
-  "version": "0.21.0",
-  "description": "Angular / TypeScript governance for v15-20: signals and state, performance, accessibility (WCAG 2.2 AA), permissions-only route guards, authentication (OIDC/PKCE), HTTP resilience, routing, SSR, testing, i18n, theming, dynamic forms, PWA/offline, telemetry, monorepo and lint governance, OpenAPI/NSwag client generation, feature flags, and NgRx. Ships @angular-reviewer (finds violations), @angular-implementor (fixes them), and @angular-support (diagnoses frontend issues to root cause)",
+  "version": "0.22.0",
+  "description": "Angular / TypeScript governance for v15-20: signals and state, performance, accessibility (WCAG 2.2 AA), UI/UX visual consistency (spacing/type scale, responsive layout, visual hierarchy), permissions-only route guards, authentication (OIDC/PKCE), HTTP resilience, routing, SSR, testing, i18n, theming, dynamic forms, PWA/offline, telemetry, monorepo and lint governance, OpenAPI/NSwag client generation, feature flags, and NgRx. Ships @angular-reviewer (finds violations), @angular-implementor (fixes them), and @angular-support (diagnoses frontend issues to root cause)",
   "author": {
     "name": "AgenticPawan",
     "url": "https://github.com/AgenticPawan"

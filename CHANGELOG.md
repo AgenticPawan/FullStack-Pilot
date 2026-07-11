@@ -3,6 +3,46 @@
 All notable changes to FullStack Pilot are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 2026-07-12 — full governance wiring audit + UI/UX skill + foundation gate
+
+pilot-core 0.20.0 → 0.21.0, pilot-angular 0.21.0 → 0.22.0, pilot-dotnet 0.25.0 → 0.26.0,
+pilot-sql 0.14.0 → 0.14.1, pilot-azure 0.15.0 → 0.15.1. Full findings in
+[docs/GOVERNANCE-AUDIT-2026-07.md](docs/GOVERNANCE-AUDIT-2026-07.md).
+
+### Fixed
+- 5 rule IDs cited by angular-reviewer/angular-implementor/angular-security had no matching
+  `rules-catalog/` file, so `pilot-scaffold` could never materialize them into a project's
+  `.claude/rules/` despite being cited as "always enforced." Added all 5, plus wired the
+  previously-orphaned `angular-lt17-ngmodule` and 3 dotnet-specific rules into their
+  reviewers/implementors, and added 2 new deterministic rules
+  (`sql-no-destructive-migration`, `azure-public-network-access`).
+- Fixed 3 dangling references to a `/pilot-upgrade` command that never existed — pointed at
+  what actually exists instead: the `angular-upgrade-path` skill and the external
+  `dotnet-upgrade@dotnet-agent-skills` plugin.
+- Wired `sql-mcp` explicitly into `sql-support`/`sql-implementor`, `microsoft-learn` into
+  `dotnet-support`/`dotnet-implementor` (previously unreferenced anywhere in pilot-dotnet),
+  more `azure-mcp` tool namespaces into the pilot-azure trio, Playwright into
+  `angular-implementor`, and the previously-orphaned `github` MCP server into
+  `git-workflow-governance`.
+
+### Added
+- `dotnet-security-headers` skill (SECH-*): HSTS, X-Content-Type-Options, clickjacking
+  protection, anti-forgery/CSRF on cookie auth, safe JSON deserialization, and
+  mass-assignment/over-posting via entity-bound requests.
+- `angular-ui-ux-consistency` skill (UXC-*): spacing/typography scale discipline,
+  mobile-first responsive layout, visual hierarchy between actions, cross-feature component
+  visual consistency, and a design-to-code fidelity check — wired into the existing
+  angular-reviewer/angular-implementor/angular-support trio rather than a new agent.
+- `/fsp-bootstrap` command + `foundation-bootstrap` skill: detects which baseline modules
+  (authentication, authorization, logging, error handling, health checks, CORS as Required;
+  rate limiting, startup validation, security headers, observability, CI/CD skeleton, DB
+  migration baseline as Recommended) a project already has, scaffolds the missing Required
+  ones via the stack implementors, and writes `.claude/pilot/foundation/STATUS.md`.
+- `fsp-build-orchestration` Step 0 now reads that status file: a detected-greenfield project
+  with no foundation modules yet stops for explicit sign-off before feature work — never
+  silently waived by `--yes`, same discipline as its other hard gates. Existing/brownfield
+  projects only get a recommendation, never a block.
+
 ## 2026-07-11 — pilot-core: cross-stack fullstack-reviewer/fullstack-implementor agents
 
 pilot-core 0.19.0 → 0.20.0
