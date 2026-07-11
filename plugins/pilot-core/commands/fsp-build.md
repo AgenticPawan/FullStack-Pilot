@@ -25,6 +25,10 @@ Build a feature, module, or assessment gap in the **current working repository**
 
 - `.claude/pilot/stack-profile.json` must exist — run `/fsp-init` first if absent.
 - A clean git working tree (the pipeline creates a branch; it never stashes without asking).
+- On a detected-greenfield project with no `.claude/pilot/foundation/STATUS.md`, Step 0
+  stops and asks you to run `/fsp-bootstrap` first (or explicitly confirm you want to build
+  features without baseline auth/logging/error-handling/health-checks/CORS) — a hard gate,
+  never silently skipped by `--yes`. Existing projects only get a recommendation, not a block.
 
 ## Execution
 

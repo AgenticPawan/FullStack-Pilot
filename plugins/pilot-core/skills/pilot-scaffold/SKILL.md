@@ -250,6 +250,8 @@ Knowledge files (populated by /fsp-learn):
 
 Next steps:
   • Review and commit CLAUDE.md, .claude/rules/, and .github/workflows/pilot-drift.yml.
+  • New project with little/no existing code? Run /fsp-bootstrap to scaffold baseline
+    auth/authz/logging/error-handling/health-checks/CORS before building features.
   • Run /fsp-learn to populate conventions.md and lessons.md.
   • Run /fsp-init again in any other repo to detect and scaffold that project.
   • EOL Angular: see the angular-upgrade-path skill or ask @angular-implementor.

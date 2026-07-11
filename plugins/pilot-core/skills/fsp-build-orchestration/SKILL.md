@@ -9,8 +9,9 @@ when_to_use: Invoke via /fsp-build only. Runs when the user asks to build a feat
 <!-- RULE 1: File handoffs only. Agents receive artifact PATHS, never pasted content. -->
 <!-- RULE 2: Update STATE.json after every completed step, before starting the next. -->
 <!-- RULE 3: Hard safety gates ([Authorize]/policy change, public API contract change,
-     destructive migration, resource deletion / RBAC / network loosening) STOP the
-     pipeline for explicit user sign-off — --yes never waives them. -->
+     destructive migration, resource deletion / RBAC / network loosening, greenfield
+     project with no foundation modules yet) STOP the pipeline for explicit user
+     sign-off — --yes never waives them. -->
 <!-- RULE 4: Model override goes opus ONLY for work items the plan marks complexity: high. -->
 <!-- RULE 5: Review loop cap is 2 per work item. Loop 3 = escalate to the user with
      BOTH the reviewer's finding and the implementor's position. -->
@@ -37,6 +38,21 @@ Extract from the invocation:
 **Preconditions (fresh runs):**
 - `.claude/pilot/stack-profile.json` exists, else stop: "run /fsp-init first".
 - `git status --porcelain` is clean, else stop and ask (never stash silently).
+- **Foundation check**: read `.claude/pilot/foundation/STATUS.md` if present.
+  - Present, every Required module `done` or `skipped-by-user-choice` → proceed.
+  - Absent → judge greenfield from the stack profile's own evidence (e.g. a dotnet project
+    with only `Program.cs` plus scaffold-template files, or an Angular app with only the
+    default `AppComponent` and no custom components/routes beyond the CLI template) —
+    this is a judgment call from available evidence, not a hardcoded file-count threshold.
+    - **Greenfield**: STOP — print "This looks like a new project with no foundation
+      modules yet (auth/authz/logging/error-handling/health-checks/CORS). Run
+      /fsp-bootstrap first, or reply CONFIRM to proceed with feature work without them."
+      This is a hard gate: `--yes` never silently waives it — it still requires the
+      explicit CONFIRM reply, exactly like the other hard gates in RULE 3.
+    - **Brownfield** (existing substantial source): print one line — "No
+      .claude/pilot/foundation/STATUS.md found; if this project is missing baseline
+      auth/logging/error-handling, consider /fsp-bootstrap." — and proceed without
+      blocking. Pilot cannot see modules built before it was installed.
 - Record `startBranch` (`git rev-parse --abbrev-ref HEAD`).
 
 Create `.claude/pilot/builds/<feature-slug>/` and initialize `STATE.json`:
