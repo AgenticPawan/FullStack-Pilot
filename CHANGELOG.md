@@ -3,6 +3,31 @@
 All notable changes to FullStack Pilot are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 2026-07-12 — pilot-rag: self-hosted RAG scaffold plugin
+
+New plugin `pilot-rag` 0.1.0. Added to `marketplace.json`, `CODEOWNERS`, `README.md`
+(install list, Plugins table, Documentation section), and `docs/pilot-rag.md`.
+
+### Added
+- `pilot-rag` — `/fsp-rag-init` scaffolds a local, provider-agnostic RAG system into
+  `./pilot-rag/` **inside the user's own project** so Claude Code can answer questions
+  about their Angular/.NET/SQL/Azure codebase, cited to real files. The target
+  application is **read-only**; orchestration is **.NET-only** (no Python/LangChain) and
+  the system does question-answering only.
+- The original 7-phase build is decomposed into five discrete, gated skills (no phase
+  N+1 with phase N red) plus two inline command steps:
+  - `rag-discovery` (Phase 0) — ingestion manifest + secret redaction.
+  - `rag-provider-abstraction` (Phase 2) — `Microsoft.Extensions.AI` factory with a
+    no-vendor-refs architecture test (swap Ollama↔Azure OpenAI by `appsettings` only).
+  - `rag-chunking` (Phase 3) — five `IChunker`s with idempotent Qdrant ingestion.
+  - `rag-retrieval` (Phase 4) — `/ask` SSE endpoint, 0.35 score floor, source citation.
+  - `rag-eval` (Phase 6) — ≥80% hit-rate gate + provider-swap proof.
+  - Phase 1 (infra) and Phase 5 (Angular Signals chat UI) are inline in `fsp-rag-init`.
+- Single `rag-implementor` scaffold agent (no reviewer/support trio).
+- `SUBMISSION.json` — marketplace submission manifest pinned to this plugin's commit.
+
+`node scripts/validate.mjs` exits 0 (all checks pass, 23/23 hook tests).
+
 ## 2026-07-12 — plugin split-eligibility audit (docs only)
 
 No version bumps — documentation only.

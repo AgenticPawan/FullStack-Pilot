@@ -17,6 +17,7 @@ and Azure projects. Hosted publicly at `AgenticPawan/FullStack-Pilot`; installed
       pilot-dotnet/                     ← C# / ASP.NET Core rules
       pilot-sql/                        ← SQL Server / EF Core rules
       pilot-azure/                      ← Azure / Bicep / ACA rules
+      pilot-rag/                        ← self-hosted RAG scaffold (/fsp-rag-init)
     scripts/validate.mjs                ← zero-dependency CI validator
     .github/workflows/validate.yml      ← runs validate.mjs on every push/PR
 
@@ -66,8 +67,9 @@ Each plugin directory MUST have:
   remove `when_to_use` keywords; they are the skill-routing signal.
 - Do NOT set `disable-model-invocation: true` on skills that commands instruct Claude
   to run (stack-detection, pilot-scaffold, audit-orchestration, batched-remediation,
-  convention-learner, mcp-discovery, fsp-build-orchestration) — it would block the
-  Skill tool and break /fsp-init, /fsp-audit, /fsp-fix, /fsp-learn, /fsp-build.
+  convention-learner, mcp-discovery, fsp-build-orchestration, foundation-bootstrap, and
+  the pilot-rag `rag-*` skills) — it would block the Skill tool and break /fsp-init,
+  /fsp-audit, /fsp-fix, /fsp-learn, /fsp-build, /fsp-bootstrap, /fsp-rag-init.
   Command-internal skills users should not run directly carry `user-invocable: false`
   instead (hides the /-menu entry, keeps Skill-tool invocation working).
 
