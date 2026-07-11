@@ -1,6 +1,6 @@
 ---
 name: test-data-management
-description: Reviews how lower environments (dev/test/staging) get realistic test data safely — closing a gap dotnet-data-protection's production PII controls leave open if a raw prod backup is restored into a less-protected environment. Flags no anonymization/masking step in a prod-to-lower-environment data refresh, no synthetic-data-seeding alternative for teams that don't need real data shapes, lower environments with weaker access control than production despite holding a copy of production data, and no documented policy for which data is safe to copy at all. Outputs findings with pilot-core test-data-management standard IDs.
+description: Reviews how lower environments get realistic test data safely — closing the gap left if a raw prod backup lands in a less-protected environment. Flags no anonymization/masking in prod-to-lower refreshes, no synthetic-seeding alternative, lower environments with weaker access control than the production data they hold, and no policy for what's safe to copy. Outputs pilot-core test-data-management standard IDs.
 when_to_use: test data, data anonymization, data masking, synthetic data seeding, prod data copy, database refresh, staging data refresh, PII in lower environments, test fixtures, data subsetting
 ---
 

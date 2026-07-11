@@ -1,6 +1,6 @@
 ---
 name: angular-dynamic-forms
-description: Reviews JSON-schema-driven Angular reactive forms — a shared field-descriptor model (id, name, type, validations, enabled, localization key, tooltip) that drives FormGroup construction and template rendering. Flags hand-coded per-component form fields where a descriptor should drive them, validation duplicated between the descriptor and ad-hoc Validators calls, missing generic field-renderer components, enabled/disabled state set directly on FormControl instead of from the descriptor, and hardcoded tooltip/label text instead of localization-key resolution. Builds on the shared form-factory guidance in angular-shared-libraries.
+description: Reviews JSON-schema-driven Angular reactive forms — a shared field-descriptor model driving FormGroup construction and template rendering. Flags hand-coded form fields where a descriptor should drive them, validation duplicated between descriptor and ad-hoc Validators, missing generic field renderers, enabled/disabled state set directly on FormControl, and hardcoded tooltips/labels instead of localization keys. Builds on angular-shared-libraries' form-factory guidance.
 when_to_use: dynamic form, JSON-driven form, form schema, field descriptor, metadata-driven form, DynamicFormBuilder, DynamicFormField, form config, configurable validations, form field enabled disabled, tooltip localization, generic form renderer
 applies_to: angular>=17
 ---

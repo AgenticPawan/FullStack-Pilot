@@ -1,6 +1,6 @@
 ---
 name: dotnet-startup-validation
-description: Reviews fail-fast configuration validation at ASP.NET Core startup, so misconfiguration surfaces at boot instead of at first request or silently. Flags options classes bound with no IValidateOptions<T>/data-annotation validation, missing .ValidateOnStart() calls that defer errors until first resolution, required external dependencies with no startup-time reachability check, environment-specific configuration with no schema-parity check, secrets logged in plaintext during startup diagnostics, and no documented smoke test verifying the app came up healthy before traffic is routed. Outputs findings with pilot-dotnet startup-validation standard IDs.
+description: Reviews fail-fast configuration validation at startup so misconfiguration surfaces at boot, not first request. Flags options with no IValidateOptions/data-annotation validation, missing ValidateOnStart(), no startup reachability checks for required dependencies, no environment schema-parity check, secrets logged during startup, and no smoke test before traffic routing. Outputs pilot-dotnet startup-validation standard IDs.
 when_to_use: options validation, IValidateOptions, ValidateOnStart, ValidateDataAnnotations, fail fast startup, configuration validation, appsettings schema parity, startup health check, smoke test on boot, connection string validation, secrets in logs, boot diagnostics
 ---
 

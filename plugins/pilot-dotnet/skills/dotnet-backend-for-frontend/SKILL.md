@@ -1,6 +1,6 @@
 ---
 name: dotnet-backend-for-frontend
-description: Reviews the Backend-for-Frontend (BFF) pattern — a dedicated API layer aggregating and shaping calls to internal services specifically for the Angular client, so internal service topology never reaches the browser. Flags Angular calling downstream services directly, BFF endpoints that are pure 1:1 proxies adding no value, one failing downstream call collapsing an entire aggregated response instead of degrading gracefully, business logic reimplemented in the BFF instead of delegated to the domain API, and no caching/rate limiting tuned to actual UI call patterns. Outputs findings with pilot-dotnet backend-for-frontend standard IDs.
+description: Reviews the BFF pattern — a dedicated API layer aggregating internal services for the Angular client so internal topology never reaches the browser. Flags Angular calling downstream services directly, 1:1 proxy endpoints adding no value, one failing downstream call collapsing an aggregated response, business logic reimplemented in the BFF, and no UI-tuned caching/rate limiting. Outputs pilot-dotnet backend-for-frontend standard IDs.
 when_to_use: BFF, backend for frontend, API aggregation, API gateway pattern, Angular calling internal service directly, graphql-style aggregation, response shaping, partial failure aggregation, BFF caching, internal topology leak
 ---
 

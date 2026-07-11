@@ -1,6 +1,6 @@
 ---
 name: dotnet-authentication
-description: Reviews authentication setup in ASP.NET Core — establishing *who* the caller is, distinct from dotnet-authorization's permission checks on *what* they can do. Flags hand-rolled login endpoints minting tokens with no real IdP, homegrown ASP.NET Core Identity password flows used instead of an external IdP for new enterprise apps, weak password/lockout policy when Identity is used, refresh tokens with no rotation/expiry, long-lived access tokens, no MFA for privileged accounts, disabled token-validation parameters, and unthrottled login endpoints. Outputs findings with pilot-dotnet authentication standard IDs.
+description: Reviews ASP.NET Core authentication — who the caller is, distinct from dotnet-authorization's permission checks. Flags hand-rolled login endpoints minting tokens with no real IdP, homegrown Identity password flows where an external IdP belongs, weak password/lockout policy, refresh tokens without rotation/expiry, long-lived access tokens, no MFA for privileged accounts, and unthrottled login endpoints. Outputs pilot-dotnet authentication standard IDs.
 when_to_use: authentication, AddAuthentication, AddJwtBearer, AddOpenIdConnect, login endpoint, ASP.NET Core Identity, Entra ID, IdentityServer, Duende, Auth0, refresh token, access token expiry, token rotation, MFA, multi-factor authentication, TokenValidationParameters, ClockSkew, account lockout, password policy
 ---
 

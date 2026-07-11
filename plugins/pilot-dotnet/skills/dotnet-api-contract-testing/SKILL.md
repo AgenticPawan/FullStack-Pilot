@@ -1,6 +1,6 @@
 ---
 name: dotnet-api-contract-testing
-description: Reviews consumer-driven contract testing between the Angular frontend and the .NET API — closing the gap dotnet-api-versioning leaves open (it prevents breaking an existing version in place, but nothing verifies the frontend's actual assumptions about a response shape match the backend's real contract before deploy). Flags no contract tests run in CI, contract verification that only checks the happy path, no shared schema source of truth between frontend and backend, and provider-side contract changes deployed with no consumer-side verification. Outputs findings with pilot-dotnet api-contract-testing standard IDs.
+description: Reviews consumer-driven contract testing between Angular and the .NET API — dotnet-api-versioning prevents in-place breaks, but nothing verifies the frontend's actual response-shape assumptions before deploy. Flags no contract tests in CI, happy-path-only verification, no shared schema source of truth, and provider changes deployed without consumer verification. Outputs pilot-dotnet api-contract-testing standard IDs.
 when_to_use: Pact, consumer-driven contract testing, contract test, OpenAPI schema diff, provider verification, pact broker, breaking change detection, API schema mismatch, frontend backend contract
 ---
 

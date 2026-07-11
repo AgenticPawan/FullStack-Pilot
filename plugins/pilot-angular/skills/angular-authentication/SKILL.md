@@ -1,6 +1,6 @@
 ---
 name: angular-authentication
-description: Reviews how an Angular SPA authenticates against an OIDC/OAuth2 identity provider or the .NET backend — distinct from angular-security's permission-based route-guard/UI-gating concern, which assumes authentication already happened. Flags tokens stored in localStorage/sessionStorage instead of an httpOnly Secure cookie, no auth HttpInterceptor centrally attaching the bearer token, no silent token renewal before expiry, hand-rolled OIDC/PKCE instead of a maintained library, auth state not centralized in a single source of truth, and no global 401 handling. Outputs findings with pilot-angular authentication standard IDs.
+description: Reviews how an Angular SPA authenticates against an OIDC/OAuth2 IdP or the .NET backend — distinct from angular-security's permission gating, which assumes authentication already happened. Flags tokens in localStorage instead of httpOnly Secure cookies, no central auth interceptor, no silent renewal, hand-rolled OIDC/PKCE, decentralized auth state, and no global 401 handling. Outputs pilot-angular authentication standard IDs.
 when_to_use: OIDC, OAuth2, PKCE, login, logout, access token, refresh token, silent renew, token storage, localStorage token, httpOnly cookie, bearer token, auth interceptor, angular-oauth2-oidc, MSAL Angular, Entra ID, Azure AD, 401 handling, session expiry, auth state, isAuthenticated, currentUser signal
 applies_to: angular
 ---

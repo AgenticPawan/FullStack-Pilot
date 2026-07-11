@@ -1,6 +1,6 @@
 ---
 name: angular-feature-flags
-description: Reviews Angular frontend feature-flag usage and its coordination with the backend's `dotnet-feature-flags` (Microsoft.FeatureManagement) evaluation — the same flag key must resolve consistently on both sides of the wire. Flags build-time boolean constants requiring a rebuild to toggle, flag keys that drift from the backend's contracted names, ad-hoc conditionals duplicated across components instead of a centralized service, no fallback when flag evaluation is unreachable, stale 100%-rolled-out flags never removed, and client-side-only gating with no server-side enforcement. Outputs findings with pilot-angular feature-flags standard IDs.
+description: Reviews Angular feature-flag usage and its coordination with dotnet-feature-flags — the same flag key must resolve consistently on both sides. Flags build-time constants requiring a rebuild to toggle, flag keys drifting from backend names, ad-hoc conditionals instead of a centralized service, no fallback when evaluation is unreachable, stale fully-rolled-out flags, and client-side-only gating with no server enforcement. Outputs pilot-angular feature-flags standard IDs.
 when_to_use: feature flag, feature toggle, environment.ts flag, FeatureFlagService, flag key drift, IFeatureManager frontend, runtime flag evaluation, flag fallback, stale flag cleanup, client-side gating, structural directive flag, canary rollout Angular
 ---
 

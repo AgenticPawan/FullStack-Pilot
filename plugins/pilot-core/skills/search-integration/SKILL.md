@@ -1,6 +1,6 @@
 ---
 name: search-integration
-description: Reviews integration of a dedicated search service (Azure Cognitive Search / Elasticsearch / OpenSearch) into a full-stack app in place of ad-hoc SQL queries. Flags full-text or fuzzy search implemented as a LIKE query against the primary OLTP database, a search index with no defined re-indexing/sync strategy against the source-of-truth database, no incremental indexing path (change feed/CDC/outbox) forcing slow full reindexes, relevance ranking left at default with no documented scoring profile, no access-control enforcement at the search layer, and no graceful degradation when the search service is unavailable. Outputs findings with pilot-core search-integration standard IDs.
+description: Reviews dedicated search-service integration (Azure AI Search / Elasticsearch / OpenSearch) replacing ad-hoc SQL. Flags full-text/fuzzy search as LIKE queries against the OLTP database, no re-indexing/sync strategy, no incremental indexing path (CDC/outbox), default relevance with no scoring profile, no access control at the search layer, and no degradation when search is down. Outputs pilot-core search-integration standard IDs.
 when_to_use: search integration, Azure Cognitive Search, Azure AI Search, Elasticsearch, OpenSearch, full-text search, fuzzy search, search index, reindexing, incremental indexing, search relevance, scoring profile, search access control, search fallback, LIKE query search
 ---
 

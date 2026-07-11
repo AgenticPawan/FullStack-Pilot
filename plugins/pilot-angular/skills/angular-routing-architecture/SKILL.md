@@ -1,6 +1,6 @@
 ---
 name: angular-routing-architecture
-description: Reviews Angular Router architecture beyond permission guards (owned by angular-security) — resolvers, route data conventions, and nested route composition. Flags components fetching detail data in ngOnInit instead of using a Resolver, magic-string route data instead of a typed convention, deeply nested routes with no lazy-loading boundary, missing wildcard/redirect strategy for unmatched or unauthorized paths, guards duplicated across sibling routes instead of applied once at a parent, and components that never react to paramMap changes between sibling routes. Outputs findings with pilot-angular routing-architecture standard IDs.
+description: Reviews Angular Router architecture beyond permission guards (owned by angular-security) — resolvers, typed route data, nested composition. Flags detail data fetched in ngOnInit instead of a Resolver, magic-string route data, deep routes with no lazy boundary, missing wildcard/redirect strategy, guards duplicated across siblings instead of applied at a parent, and components ignoring paramMap changes. Outputs pilot-angular routing-architecture standard IDs.
 when_to_use: Resolver, route resolver, route data, breadcrumb, route title, lazy loading route, loadChildren, loadComponent, wildcard route, 404 route, 403 route, canActivateChild, paramMap, snapshot params, sibling route navigation, nested routes, route architecture
 applies_to: angular
 ---

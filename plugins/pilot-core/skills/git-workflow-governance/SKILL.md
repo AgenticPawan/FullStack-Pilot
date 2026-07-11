@@ -1,6 +1,6 @@
 ---
 name: git-workflow-governance
-description: Reviews branching strategy, PR size/review policy, and merge hygiene at the process level — distinct from the repo's always-conventional-commits rule, which governs commit MESSAGE format, not branching or review process. Flags no documented branching strategy, no enforced PR size guidance, no required-review/branch-protection rule on the default branch, long-lived feature branches with no rebase cadence, and no documented squash/merge/rebase policy. Outputs findings with pilot-core git-workflow-governance standard IDs.
+description: Reviews branching strategy, PR size/review policy, and merge hygiene — distinct from always-conventional-commits, which governs message format only. Flags no documented branching strategy, no PR size guidance, no branch protection on the default branch, long-lived branches with no rebase cadence, and no squash/merge/rebase policy. Outputs pilot-core git-workflow-governance standard IDs.
 when_to_use: branching strategy, trunk-based development, GitFlow, GitHub Flow, PR size, pull request size limit, branch protection, required reviewers, direct push to main, long-lived branch, feature branch drift, merge conflict, squash merge, rebase merge, merge commit policy, git bisect, git blame
 ---
 

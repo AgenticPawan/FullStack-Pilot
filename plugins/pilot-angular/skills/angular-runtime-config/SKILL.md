@@ -1,6 +1,6 @@
 ---
 name: angular-runtime-config
-description: Reviews runtime environment configuration for containerized Angular SPAs — the frontend mirror of dotnet-dynamic-configuration. Flags API base URLs and feature flags baked into environment.ts at build time (forcing a separate Docker image per environment), no runtime config.json + APP_INITIALIZER pattern, config fetched too late for early-bootstrap consumers like interceptors, secrets placed in a client-visible config.json, no startup error handling when the config endpoint is unreachable, and inconsistent precedence between build-time defaults and runtime overrides. Outputs findings with pilot-angular runtime-config standard IDs.
+description: Reviews runtime environment configuration for containerized Angular SPAs — the frontend mirror of dotnet-dynamic-configuration. Flags API URLs/flags baked into environment.ts at build time (one Docker image per environment), no runtime config.json + APP_INITIALIZER pattern, config fetched too late for interceptors, secrets in client-visible config, no startup error handling for an unreachable config endpoint, and unclear build-vs-runtime precedence. Outputs pilot-angular runtime-config standard IDs.
 when_to_use: runtime config, config.json, APP_INITIALIZER, provideAppInitializer, environment.ts, build-time config, one image many environments, Docker image per environment, feature flags, container config injection, reverse proxy config, startup config fetch, config precedence
 applies_to: angular
 ---

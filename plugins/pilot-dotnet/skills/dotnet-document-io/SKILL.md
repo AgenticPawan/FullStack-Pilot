@@ -1,6 +1,6 @@
 ---
 name: dotnet-document-io
-description: Reviews Excel and PDF import/export code in ASP.NET Core APIs. Flags commercial-license-triggering libraries (EPPlus v5+, QuestPDF) used without an explicit licensing note, full-file-in-memory loads that should stream, import endpoints that abort on the first bad row instead of collecting per-row errors, in-memory export buffering for large files, missing content-type/extension validation on uploads, uploads trusted by declared content-type/extension alone instead of magic-byte sniffing, no antivirus scan before a user upload reaches durable storage, and duplicated inline PDF layout logic. Outputs findings with pilot-dotnet document-io standard IDs.
+description: Reviews Excel/PDF import-export in ASP.NET Core. Flags commercial-license libraries (EPPlus v5+, QuestPDF) with no licensing note, full-file in-memory loads that should stream, imports aborting on the first bad row instead of collecting per-row errors, uploads trusted by extension instead of magic bytes, no antivirus scan before durable storage, and duplicated PDF layout logic. Outputs pilot-dotnet document-io standard IDs.
 when_to_use: Excel import, Excel export, PDF generation, EPPlus, ClosedXML, OpenXML, QuestPDF, PdfSharp, IronPDF, file upload validation, streaming export, large file export, row validation, bulk import, document generation, report export, commercial license, antivirus scan upload, magic byte file signature, content sniffing, malware scan, file upload security
 ---
 

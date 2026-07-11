@@ -1,6 +1,6 @@
 ---
 name: architecture-decision-records
-description: Reviews whether significant architectural decisions are captured as Architecture Decision Records (ADRs) rather than living only in chat threads, PR descriptions, or the memories of whoever was in the room. Flags a significant decision made with no ADR recorded, ADRs not stored in a discoverable version-controlled location, no consistent lightweight ADR template, decisions never revisited or marked superseded once reversed, no process trigger defining when an ADR is required, and a PR that silently contradicts an existing ADR. Outputs findings with pilot-core architecture-decision-records standard IDs.
+description: Reviews whether significant architectural decisions are captured as ADRs rather than living in chat threads or PR descriptions. Flags significant decisions with no ADR, ADRs outside a discoverable version-controlled location, no lightweight template, superseded decisions never marked, no trigger defining when an ADR is required, and PRs silently contradicting an existing ADR. Outputs pilot-core architecture-decision-records standard IDs.
 when_to_use: architecture decision record, ADR, docs/adr, decision log, why did we choose, technical decision documentation, superseded decision, RFC template, decision context and consequences, architecture review, tribal knowledge, decision trigger
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: dotnet-resilience
-description: Reviews ASP.NET Core outbound HTTP call resilience — the backend counterpart to angular-http-resilience. Flags raw HttpClient instantiation instead of IHttpClientFactory/typed clients, missing Polly retry/backoff policies, no circuit breaker on failure-prone downstream dependencies, missing per-request timeouts, correlation IDs received from the Angular frontend not propagated onto outbound calls or structured logs, and EF Core's SQL connection left without EnableRetryOnFailure. Outputs findings with pilot-dotnet resilience standard IDs.
+description: Reviews outbound HTTP resilience — the backend counterpart to angular-http-resilience. Flags raw HttpClient instead of IHttpClientFactory/typed clients, missing Polly retry/backoff, no circuit breaker on failure-prone dependencies, missing per-request timeouts, correlation IDs not propagated, and EF Core without EnableRetryOnFailure. Outputs pilot-dotnet resilience standard IDs.
 when_to_use: HttpClientFactory, Polly, retry policy, circuit breaker, timeout policy, outbound HTTP call, transient fault, resilience pipeline, IHttpClientFactory, typed client, correlation id propagation, socket exhaustion, downstream dependency, EnableRetryOnFailure, EF Core connection resiliency, execution strategy, transient SQL error
 ---
 

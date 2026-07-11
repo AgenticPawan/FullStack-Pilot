@@ -1,6 +1,6 @@
 ---
 name: dotnet-messaging
-description: Reviews Azure Service Bus/Event Grid pub/sub topology and consumer design beyond the atomic-publish concern already covered by dotnet-outbox-pattern. Flags no message schema versioning/compatibility contract, competing-consumers concurrency configured in a way that breaks required ordering, a message payload embedding a full domain entity instead of a minimal versioned contract, queue vs. topic choice mismatched to the actual fan-out need, and no correlation ID/trace-context propagated in the message envelope. Outputs findings with pilot-dotnet messaging standard IDs.
+description: Reviews Service Bus/Event Grid topology and consumer design beyond dotnet-outbox-pattern's atomic publish. Flags no message schema versioning, competing-consumer concurrency breaking required ordering, payloads embedding full domain entities instead of minimal versioned contracts, queue-vs-topic mismatched to fan-out, and no correlation/trace context in envelopes. Outputs pilot-dotnet messaging standard IDs.
 when_to_use: Service Bus topology, Event Grid, message schema versioning, message contract, competing consumers, session-enabled queue, partition key ordering, topic vs queue, fan-out, message envelope, correlation ID, trace context, pub/sub design, ServiceBusProcessor prefetch
 ---
 

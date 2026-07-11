@@ -1,6 +1,6 @@
 ---
 name: dotnet-reporting-etl
-description: Reviews scheduled report generation and batch/ETL pipelines in ASP.NET Core apps — distinct from dotnet-document-io's ad-hoc on-request Excel/PDF export. Flags long-running batch jobs run inline in a web request instead of via a background job runner, full-table in-memory reads instead of streamed/chunked reads, ETL jobs with no idempotency/checkpoint strategy that duplicate work on retry, hardcoded recipients/cron schedules instead of configurable settings, no alerting for silently failing scheduled jobs, and report queries hitting the OLTP database with no read-replica separation. Outputs findings with pilot-dotnet reporting-etl standard IDs.
+description: Reviews scheduled reporting and batch/ETL pipelines — distinct from dotnet-document-io's on-request exports. Flags batch jobs run inline in web requests, full-table in-memory reads, ETL with no idempotency/checkpoints, hardcoded recipients/schedules, no alerting on silent failures, and report queries hitting OLTP with no replica separation. Outputs pilot-dotnet reporting-etl standard IDs.
 when_to_use: scheduled report, ETL pipeline, batch job, Hangfire, background job, report generation, data warehouse load, nightly job, cron job, IAsyncEnumerable streaming, chunked read, checkpoint, idempotent ETL, resumable job, reporting database, read replica, OLTP contention, report recipient list, job monitoring, silent job failure, dead job alerting
 ---
 

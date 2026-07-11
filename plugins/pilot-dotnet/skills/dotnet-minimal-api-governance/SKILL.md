@@ -1,6 +1,6 @@
 ---
 name: dotnet-minimal-api-governance
-description: Reviews when and how ASP.NET Core Minimal APIs are used versus MVC Controllers. Flags no documented team convention for which style an endpoint family should use, fat inline lambda handlers containing business logic instead of delegating to a handler/mediator, cross-cutting concerns re-implemented ad-hoc per endpoint instead of via IEndpointFilter or shared route-group configuration, missing typed results breaking OpenAPI generation, no MapGroup route-grouping strategy, and no incremental migration strategy between styles. Outputs findings with pilot-dotnet minimal-api-governance standard IDs.
+description: Reviews Minimal APIs vs MVC Controllers usage. Flags no team convention for endpoint style, fat inline lambdas holding business logic, cross-cutting concerns re-implemented per endpoint instead of IEndpointFilter/route groups, missing typed results breaking OpenAPI, no MapGroup strategy, and no migration path between styles. Outputs pilot-dotnet minimal-api-governance standard IDs.
 when_to_use: Minimal API, MapGet, MapPost, MapGroup, IEndpointFilter, TypedResults, Results<T1,T2>, Controller vs Minimal API, endpoint filter, route group, OpenAPI Minimal API, migrating to Minimal APIs, RequireAuthorization endpoint, mixing controllers and minimal apis
 ---
 

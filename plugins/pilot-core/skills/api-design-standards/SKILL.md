@@ -1,6 +1,6 @@
 ---
 name: api-design-standards
-description: Reviews the cross-cutting REST contract that ties dotnet-api-pagination, dotnet-error-handling, and dotnet-api-versioning's backend conventions to angular-api-client-codegen's generated frontend client — resource naming, pagination envelope shape, error response shape, and versioning strategy each side must agree on. Flags inconsistent resource naming across endpoints, pagination shape differing per endpoint, error bodies not consistently following ProblemDetails, no versioning strategy tied to client regeneration cadence, and misused HTTP status codes. Outputs findings with pilot-core api-design-standards standard IDs.
+description: Reviews the cross-cutting REST contract tying dotnet-api-pagination, dotnet-error-handling, and dotnet-api-versioning to angular-api-client-codegen's generated client. Flags inconsistent resource naming, pagination shape differing per endpoint, error bodies not following ProblemDetails, no versioning strategy tied to client regeneration, and misused HTTP status codes. Outputs pilot-core api-design-standards standard IDs.
 when_to_use: API contract, resource naming convention, REST endpoint naming, pagination envelope, paged response shape, ProblemDetails consistency, API versioning strategy, NSwag client regeneration, HTTP status code misuse, frontend backend contract drift, shared API convention
 ---
 

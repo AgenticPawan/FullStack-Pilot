@@ -1,6 +1,6 @@
 ---
 name: angular-lint-governance
-description: Reviews ongoing ESLint/Prettier enforcement in CI — distinct from angular-upgrade-path's one-time TSLint-to-ESLint migration event. Flags ESLint configured locally but not run as a required CI gate, missing @angular-eslint template-file linting, ESLint and Prettier fighting over stylistic rules with no eslint-config-prettier, no pre-commit hook (husky + lint-staged) catching errors before CI, blanket file-level eslint-disable comments instead of scoped justified disables, and no documented warning-vs-error severity policy. Outputs findings with pilot-angular lint-governance standard IDs.
+description: Reviews ongoing ESLint/Prettier enforcement in CI — distinct from angular-upgrade-path's one-time TSLint migration. Flags ESLint not run as a required CI gate, missing @angular-eslint template linting, ESLint/Prettier conflicts without eslint-config-prettier, no husky + lint-staged pre-commit hook, blanket eslint-disable comments, and no warning-vs-error severity policy. Outputs pilot-angular lint-governance standard IDs.
 when_to_use: ESLint, eslint config, angular-eslint, CI lint gate, required check, Prettier, eslint-config-prettier, husky, lint-staged, pre-commit hook, eslint-disable, blanket disable, lint severity, warning vs error, lint policy, template linting
 applies_to: angular
 ---

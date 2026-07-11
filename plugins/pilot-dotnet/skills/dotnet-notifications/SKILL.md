@@ -1,6 +1,6 @@
 ---
 name: dotnet-notifications
-description: Reviews SMS and push notification delivery in ASP.NET Core, distinct from dotnet-email-service's email-only scope. Flags provider SDKs called directly instead of behind an INotificationSender abstraction, synchronous send-in-request-path calls blocking on external providers instead of queuing, no retry/backoff for transient failures, per-channel opt-out logic bolted on with no shared preference store, no delivery-status tracking for compliance/debugging, and PII exposed in visible push payloads instead of a minimal fetch-on-open pattern. Outputs findings with pilot-dotnet notifications standard IDs.
+description: Reviews SMS/push notification delivery, distinct from dotnet-email-service's email scope. Flags provider SDKs called directly instead of behind INotificationSender, synchronous sends blocking the request path, no retry/backoff, per-channel opt-out with no shared preference store, no delivery-status tracking, and PII in visible push payloads. Outputs pilot-dotnet notifications standard IDs.
 when_to_use: SMS notification, push notification, Twilio, Firebase Cloud Messaging, APNs, notification preference, opt out, delivery status, notification queue, INotificationSender, notification retry, transactional SMS, push payload PII
 ---
 

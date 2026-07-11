@@ -1,6 +1,6 @@
 ---
 name: dotnet-idempotency
-description: Reviews idempotency handling for synchronous, client-facing APIs — distinct from dotnet-outbox-pattern's consumer-side idempotency for async message delivery. Flags a POST/PATCH endpoint with financial or state-changing effect that accepts no Idempotency-Key header, an idempotency store with no expiry policy causing unbounded growth, a duplicate request replayed within the key's window returning a fresh result instead of the original cached response, and concurrent duplicate requests racing past the idempotency check instead of being serialized. Outputs findings with pilot-dotnet idempotency standard IDs.
+description: Reviews idempotency for synchronous client-facing APIs — distinct from dotnet-outbox-pattern's async consumer idempotency. Flags state-changing POST/PATCH endpoints accepting no Idempotency-Key, idempotency stores with no expiry, replayed duplicates returning fresh results instead of the original response, and concurrent duplicates racing past the check. Outputs pilot-dotnet idempotency standard IDs.
 when_to_use: idempotency key, Idempotency-Key header, duplicate request, retry safety, at-least-once client retry, double submission, double charge, exactly-once semantics, idempotent POST, request deduplication
 ---
 

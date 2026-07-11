@@ -1,6 +1,6 @@
 ---
 name: angular-ssr
-description: Reviews Angular Server-Side Rendering (Angular Universal / @angular/ssr) and hydration. Flags public-facing/SEO-sensitive routes with no SSR, browser-only API calls (window, document, localStorage) with no isPlatformBrowser guard crashing the server render, missing provideClientHydration() causing SSR'd content to be destroyed and fully re-rendered client-side, data fetched twice with no TransferState bridging server and client, no distinction between build-time prerendering and full per-request SSR, and browser-only third-party libraries imported eagerly at the top level instead of lazy-loaded. Outputs findings with pilot-angular ssr standard IDs.
+description: Reviews Angular SSR (@angular/ssr) and hydration. Flags SEO-sensitive routes without SSR, browser-only APIs (window, localStorage) unguarded by isPlatformBrowser, missing provideClientHydration(), data fetched twice with no TransferState, prerendering vs per-request SSR conflated, and browser-only libraries imported eagerly. Outputs pilot-angular ssr standard IDs.
 when_to_use: SSR, server-side rendering, Angular Universal, angular ssr, hydration, provideClientHydration, isPlatformBrowser, TransferState, prerendering, SSG, static site generation, per-request rendering, window is not defined, document is not defined, ngExpressEngine, ng build ssr, angular.json prerender routes, hybrid rendering
 applies_to: angular
 ---

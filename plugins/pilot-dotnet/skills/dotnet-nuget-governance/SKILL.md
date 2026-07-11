@@ -1,6 +1,6 @@
 ---
 name: dotnet-nuget-governance
-description: Reviews .NET-specific package management hygiene distinct from the generic pilot-core dependency-supply-chain SLA/SBOM policy. Flags Central Package Management not adopted in a multi-project solution, PackageReference versions duplicated/inconsistent across .csproj files, no packages.lock.json restoring transitive dependencies deterministically, a deprecated/unlisted NuGet package with no tracked replacement plan, and a multi-targeted library referencing a package incompatible with one of its target frameworks. Outputs findings with pilot-dotnet nuget-governance standard IDs.
+description: Reviews .NET package hygiene distinct from pilot-core's dependency-supply-chain policy. Flags no Central Package Management in multi-project solutions, inconsistent PackageReference versions, no packages.lock.json for deterministic restores, deprecated packages with no replacement plan, and multi-target incompatibilities. Outputs pilot-dotnet nuget-governance standard IDs.
 when_to_use: Central Package Management, Directory.Packages.props, packages.lock.json, RestorePackagesWithLockFile, PackageReference version drift, dotnet list package deprecated, dotnet list package outdated, multi-targeting, TargetFrameworks, NuGet governance, transitive dependency drift, floating package version
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: ci-secret-scanning
-description: Reviews CI-pipeline-level secret scanning (gitleaks/trufflehog/GitHub Advanced Security) as the safety net beyond this repo's local secret-guard.js PreToolUse hook, which only inspects content Claude itself is about to write and never sees a direct human push, a merge commit, or an external contributor's forked PR. Flags no secret-scanning step in CI, scanning limited to the current diff instead of full history, no rotation runbook triggered on a confirmed leak, scanner findings that don't fail the build, and no allowlist for known false positives. Outputs findings with pilot-core ci-secret-scanning standard IDs.
+description: Reviews CI-level secret scanning (gitleaks/trufflehog/GitHub Advanced Security) — the safety net beyond the local secret-guard.js hook, which never sees direct pushes or forked PRs. Flags no CI secret-scanning step, diff-only instead of full-history scans, no leak-to-rotation runbook, findings that don't fail the build, and no false-positive allowlist. Outputs pilot-core ci-secret-scanning standard IDs.
 when_to_use: secret scanning, gitleaks, trufflehog, GitHub Advanced Security, secret detection, leaked credential, hardcoded API key, committed secret, git history scan, push protection, secret rotation, credential rotation runbook, scanner false positive, secret allowlist, baseline file
 ---
 

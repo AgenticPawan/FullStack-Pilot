@@ -1,6 +1,6 @@
 ---
 name: angular-monorepo-governance
-description: Reviews Nx/monorepo workspace boundaries once an Angular codebase splits across multiple apps or teams — the architecture layer above angular-shared-libraries' single-library extraction guidance. Flags no enforced module/library-tag boundaries (any app can import any library), shared libraries with no clear ownership or versioning story across teams, no module-federation/micro-frontend boundary for independently deployable apps, and duplicated cross-cutting concerns (auth, theming) reimplemented per app instead of consumed from a shared library. Outputs findings with pilot-angular monorepo-governance standard IDs.
+description: Reviews Nx/monorepo workspace boundaries once an Angular codebase spans multiple apps or teams — the layer above angular-shared-libraries' single-library guidance. Flags no enforced module/library-tag boundaries, shared libraries without ownership or versioning, no module-federation boundary for independently deployable apps, and cross-cutting concerns (auth, theming) reimplemented per app. Outputs pilot-angular monorepo-governance standard IDs.
 when_to_use: Nx workspace, module boundaries, project tags, module federation, micro-frontend, dependency-cruiser, cross-team library ownership, monorepo governance, shell application, remote application
 applies_to: angular>=17
 ---

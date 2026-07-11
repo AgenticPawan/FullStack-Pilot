@@ -1,6 +1,6 @@
 ---
 name: dotnet-middleware-pipeline
-description: Reviews ASP.NET Core middleware ordering in Program.cs — exception handling, HTTPS/HSTS, CORS, authentication, authorization, rate limiting, static files, and endpoint mapping. Flags exception handler/HSTS registered too late to catch upstream throws, CORS placed after auth breaking Angular preflight requests, authorization called before authentication, rate limiting placed after expensive work already ran, static files served before authentication, and no enforced/documented ordering that a future refactor can silently break. Outputs findings with pilot-dotnet middleware-pipeline standard IDs.
+description: Reviews ASP.NET Core middleware ordering in Program.cs. Flags exception handler/HSTS registered too late, CORS after auth breaking Angular preflights, authorization before authentication, rate limiting after expensive work, static files before authentication, and no enforced ordering a refactor can't silently break. Outputs pilot-dotnet middleware-pipeline standard IDs.
 when_to_use: middleware order, Program.cs pipeline, UseExceptionHandler, UseHsts, UseCors, UseAuthentication, UseAuthorization, UseRateLimiter, UseStaticFiles, middleware ordering, CORS preflight broken, pipeline misconfiguration
 ---
 

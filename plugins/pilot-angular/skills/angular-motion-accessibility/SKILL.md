@@ -1,6 +1,6 @@
 ---
 name: angular-motion-accessibility
-description: Reviews Angular animation and motion accessibility using @angular/animations, prefers-reduced-motion, and WCAG 2.2 motion success criteria (2.3.3 Animation from Interactions, 2.2.2 Pause/Stop/Hide) — complementing angular-a11y's focus/ARIA/keyboard coverage with the motion-specific dimension it doesn't address. Flags animations with no reduced-motion fallback, auto-playing carousels/parallax with no pause control, route-transition animations that move focus before the transition completes, hardcoded per-component timing/easing with no shared design token, and animations driving layout-affecting CSS instead of compositor-friendly properties. Outputs findings with pilot-angular motion-accessibility standard IDs.
+description: Reviews Angular animation/motion accessibility per WCAG 2.2 (2.3.3 Animation from Interactions, 2.2.2 Pause/Stop/Hide) — the motion dimension angular-a11y doesn't cover. Flags animations with no prefers-reduced-motion fallback, auto-playing carousels/parallax without pause controls, route transitions moving focus early, hardcoded timing/easing with no shared token, and layout-affecting animation properties instead of compositor-friendly ones. Outputs pilot-angular motion-accessibility standard IDs.
 when_to_use: prefers-reduced-motion, animation accessibility, WCAG 2.3.3, WCAG 2.2.2, auto-play carousel, parallax, pause control, route transition animation, angular animations, motion design token, transform vs top left, layout thrash, jank, easing timing
 ---
 
