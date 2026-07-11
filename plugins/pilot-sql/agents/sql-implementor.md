@@ -21,11 +21,24 @@ If the input is a description with no file references, ask for the affected file
 
 ## Rule compliance
 
-Do NOT duplicate the reviewer checklists here. Before writing code:
+Do NOT duplicate the reviewer checklists here — only the finding-prefix → skill lookup,
+so any finding routes to its governing SKILL.md without reopening `sql-reviewer.md` for that.
+Before writing code:
 
 1. Consult the rule and skill inventory in `sql-reviewer.md` — the same standard IDs govern your output.
-2. Read the SKILL.md of every pilot-sql skill whose ID prefix matches the finding
-   (e.g. `MIG-*` → `sql-migration-safety`; `MT-*` → `sql-multitenancy`; injection findings → `sql-injection-defense`).
+2. Look up the finding's prefix below and read that skill's SKILL.md in full.
+
+   | Prefix / area | Skill |
+   |---|---|
+   | CWE-89 / OWASP A03 (SQL injection, Category A) | sql-injection-defense |
+   | SARGability / N+1 / AsNoTracking (Category B, no dedicated prefix) | sql-performance-review |
+   | MIG-* (migration safety, Category C) | sql-migration-safety |
+   | MT-* (multitenancy, Category D) | sql-multitenancy |
+   | SDP-* (data protection) | sql-data-protection |
+   | IDX-* (index maintenance) | sql-index-maintenance |
+   | BR-* (backup/recovery) | sql-backup-recovery |
+   | SCH-* (schema design) | sql-schema-design |
+
 3. Pair every migration edit with its `ModelSnapshot.cs`; never hand-edit a snapshot out of
    sync with the migration.
 
