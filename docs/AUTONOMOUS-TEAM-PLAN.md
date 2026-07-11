@@ -1,10 +1,13 @@
 # FullStack Pilot — Autonomous Full-Stack Team Plan
 
-Status: **Phases 1–3 implemented** (Phase 1: model matrix, fsp-scout, token rules, CI
-enforcement; Phase 2: fsp-analyst, fsp-architect, fsp-qa agents + fullstack-support
-routing; Phase 3: /fsp-architect and /fsp-build commands + fsp-build-orchestration
-skill with deterministic QA write-scope enforcement — 2026-07-11). Phase 4
-(docs/housekeeping: README/per-plugin docs/TROUBLESHOOTING, fixture dry-runs §10) next.
+Status: **Phases 1–4 implemented — plan complete** (Phase 1: model matrix, fsp-scout,
+token rules, CI enforcement; Phase 2: fsp-analyst, fsp-architect, fsp-qa agents +
+fullstack-support routing; Phase 3: /fsp-architect and /fsp-build commands +
+fsp-build-orchestration skill; Phase 4: workflow docs across README/pilot-core.md/
+TROUBLESHOOTING/CLAUDE.md, QA write-scope check hardened against untracked files,
+§10 verification run — all 2026-07-11). Remaining follow-ups live in §10: the live
+`/fsp-build` fixture dry-run and the two token-cost spot-checks, which need a session
+with the plugin installed.
 Owner: AgenticPawan. Drafted 2026-07-11.
 
 ## 1. Goal
@@ -228,18 +231,33 @@ Modified (~20):
 9. `ci: enforce model-tier policy and description budgets in validate.mjs`
 10. `docs: document the autonomous team workflow` + `chore: bump versions`
 
-## 10. Verification
+## 10. Verification — status 2026-07-11
 
-- `node scripts/validate.mjs` exits 0; negative-test each new check.
+- `node scripts/validate.mjs` exits 0; negative-test each new check. **DONE** (every
+  phase; new checks negative-tested in Phase 1).
 - Dry-run `/fsp-architect` against `tests/fixtures/mixed-fullstack` — assessment must
   cite real fixture files and produce ≥3 plausible gaps with `/fsp-build` lines.
+  **DONE (inline)**: Assess mode executed against the fixture produced 5 gaps (auth
+  absent, SQL admin-login auth, no error contract, no health/observability, no CORS),
+  every one citing a real fixture file, each with a ready-to-run `/fsp-build` line and
+  2 ADR stubs — exceeds the ≥3 bar. Caveat: run inline by the main session, not by the
+  installed agent roster; repeat once in a live session with the plugin installed.
+- **QA write-scope enforcement mechanics — DONE (added during verification)**: scratch
+  git-repo test proved `git diff --name-only` misses files QA newly *creates*
+  (untracked); the orchestration skill was hardened to `git status --porcelain`
+  detection (revert tracked violations, delete untracked ones) plus per-step commits
+  so the QA diff is isolated from implementor changes.
 - Dry-run `/fsp-build` with a small feature against `tests/fixtures/net8-minimal-api`
   (e.g. "add a health-detail endpoint") — pipeline must produce spec, plan, branch,
-  diff, QA report; branch must build.
+  diff, QA report; branch must build. **PENDING a live session**: requires the
+  pilot-core agents loaded (plugins load at session start) and a runnable dotnet
+  toolchain against the fixture; cannot be exercised meaningfully from inside the
+  plugin repo itself.
 - Token spot-check: compare a `/fsp-build` transcript's context usage with and without
-  scout briefs (expectation: implementor turns shrink measurably).
+  scout briefs (expectation: implementor turns shrink measurably). **PENDING** (needs
+  the live `/fsp-build` run above).
 - New-session cost check: `claude plugin usage` (or token report) before/after the
-  description shrink.
+  description shrink. **PENDING a live session.**
 
 ## 11. Open questions — DECIDED 2026-07-11
 

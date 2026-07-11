@@ -3,6 +3,29 @@
 All notable changes to FullStack Pilot are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 2026-07-11 — autonomous-team Phase 4: workflow docs + QA-check hardening
+
+### Fixed
+- `/fsp-build` QA write-scope enforcement: a scratch-repo verification run proved
+  `git diff --name-only` cannot see files the QA step newly *creates* (untracked
+  files never appear in a diff), so an out-of-scope new product file would have
+  slipped through. Detection now uses `git status --porcelain` — tracked violations
+  are reverted via `git checkout <qaBaseSha> -- <path>`, untracked ones are deleted —
+  and Steps 5–7 now commit their work per item/fix/QA-run so each step's diff is
+  isolated and `--resume` gets clean boundaries.
+
+### Added
+- Autonomous-team workflow documentation: README section (delivery-team roles, the
+  two commands, safety gates), docs/pilot-core.md pipeline reference with the
+  step-by-step /fsp-build walkthrough, TROUBLESHOOTING entries (opus fallback header,
+  stale briefs/--refresh, --resume, --yes vs hard gates, QA reverted paths), and a
+  CLAUDE.md "Pipeline artifact layout" section fixing the `.claude/pilot/` paths every
+  command and agent relies on.
+- Plan §10 verification executed: inline Assess dry-run against
+  tests/fixtures/mixed-fullstack produced 5 evidence-cited gaps (≥3 required); the
+  live /fsp-build fixture dry-run and token spot-checks are recorded as pending a
+  session with the plugin installed.
+
 ## 2026-07-11 — autonomous-team Phase 3: /fsp-architect and /fsp-build commands
 
 pilot-core 0.18.0 → 0.19.0
