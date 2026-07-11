@@ -13,7 +13,7 @@
     {
       "name": "pilot-core",
       "source": "./plugins/pilot-core",
-      "description": "Shared governance: stack detection, audit/fix pipelines, MCP discovery, dependency-supply-chain policy (patch SLAs, SBOM), git branching/PR-review workflow governance, CI-level secret scanning, cross-cutting REST API design standards, SLO-gated load/performance testing, incident-response runbook/postmortem governance, open-source license compliance, safe test-data management, and commands used by every other pilot plugin",
+      "description": "Shared governance: stack detection, audit/fix pipelines, MCP discovery, dependency-supply-chain policy (patch SLAs, SBOM), git branching/PR-review workflow governance, CI-level secret scanning, cross-cutting REST API design standards, SLO-gated load/performance testing, incident-response runbook/postmortem governance, open-source license compliance, safe test-data management, and the fsp- prefixed commands (/fsp-init, /fsp-audit, /fsp-fix, /fsp-learn) used by every other pilot plugin, plus the @fullstack-support triage agent that routes any full-stack symptom to the right specialist",
       "author": { "name": "FullStack Pilot Contributors" },
       "license": "MIT",
       "keywords": ["governance", "commits", "code-health", "microsoft"]
@@ -21,7 +21,7 @@
     {
       "name": "pilot-angular",
       "source": "./plugins/pilot-angular",
-      "description": "Angular / TypeScript governance: signals, performance, accessibility, motion/reduced-motion accessibility, security (permissions-ONLY route guards/UI gating), HTTP resilience, the v15-to-v20 upgrade path, coding standards, multi-layout shells, theming, shared UI libraries, JSON-schema-driven dynamic forms, testing conventions, i18n, global error handling, PWA/offline support, frontend telemetry, Nx/module-federation monorepo governance, third-party script governance, OpenAPI/NSwag-generated API clients, a shared UI kit for dialogs/toasts/confirmation prompts, frontend feature flags, and classic NgRx state governance",
+      "description": "Angular / TypeScript governance: signals, performance, accessibility, motion/reduced-motion accessibility, security (permissions-ONLY route guards/UI gating), HTTP resilience, the v15-to-v20 upgrade path, coding standards, multi-layout shells, theming, shared UI libraries, JSON-schema-driven dynamic forms, testing conventions, i18n, global error handling, PWA/offline support, frontend telemetry, Nx/module-federation monorepo governance, third-party script governance, OpenAPI/NSwag-generated API clients, a shared UI kit for dialogs/toasts/confirmation prompts, frontend feature flags, and classic NgRx state governance — with @angular-reviewer, @angular-implementor, and @angular-support agents",
       "author": { "name": "FullStack Pilot Contributors" },
       "license": "MIT",
       "keywords": ["angular", "typescript", "signals", "standalone"]
@@ -29,7 +29,7 @@
     {
       "name": "pilot-dotnet",
       "source": "./plugins/pilot-dotnet",
-      "description": "C# / ASP.NET Core governance: Clean Architecture, SOLID/DRY, performance, caching, permissions-ONLY auth (no role checks), multitenancy, soft delete, audit fields, CORS, repository pattern, shared libraries, Excel/PDF document I/O, email templating, Guid entity keys, API versioning, modular DI, middleware pipeline ordering, Hangfire background jobs, DB-backed configuration, localization, HTTP/EF Core resilience, liveness/readiness health checks, observability, error handling, validation, testing, data protection, concurrency, rate limiting, the transactional outbox pattern, Saga orchestration, Service Bus/Event Grid messaging, gRPC, Backend-for-Frontend aggregation, feature flags, real-time/SignalR, compliance access-audit logging, financial/currency precision, secrets rotation, API contract testing, connection-pool tuning, GraphQL design, chaos engineering, DTO/entity mapping boundaries, structured logging architecture, API idempotency keys, CQRS/MediatR command-query separation, and NuGet Central Package Management governance",
+      "description": "C# / ASP.NET Core governance: Clean Architecture, SOLID/DRY, performance, caching, permissions-ONLY auth (no role checks), multitenancy, soft delete, audit fields, CORS, repository pattern, shared libraries, Excel/PDF document I/O, email templating, Guid entity keys, API versioning, modular DI, middleware pipeline ordering, Hangfire background jobs, DB-backed configuration, localization, HTTP/EF Core resilience, liveness/readiness health checks, observability, error handling, validation, testing, data protection, concurrency, rate limiting, the transactional outbox pattern, Saga orchestration, Service Bus/Event Grid messaging, gRPC, Backend-for-Frontend aggregation, feature flags, real-time/SignalR, compliance access-audit logging, financial/currency precision, secrets rotation, API contract testing, connection-pool tuning, GraphQL design, chaos engineering, DTO/entity mapping boundaries, structured logging architecture, API idempotency keys, CQRS/MediatR command-query separation, and NuGet Central Package Management governance — with @dotnet-reviewer, @dotnet-implementor, and @dotnet-support agents",
       "author": { "name": "FullStack Pilot Contributors" },
       "license": "MIT",
       "keywords": ["dotnet", "csharp", "aspnetcore", "efcore", "nuget"]
@@ -37,7 +37,7 @@
     {
       "name": "pilot-sql",
       "source": "./plugins/pilot-sql",
-      "description": "SQL Server / EF Core governance: schema design conventions, injection defense, migration safety, multitenancy isolation, performance review, PII data protection (Always Encrypted, Dynamic Data Masking, TDE), ongoing index/statistics maintenance, and backup/restore-drill verification",
+      "description": "SQL Server / EF Core governance: schema design conventions, injection defense, migration safety, multitenancy isolation, performance review, PII data protection (Always Encrypted, Dynamic Data Masking, TDE), ongoing index/statistics maintenance, and backup/restore-drill verification — with @sql-reviewer, @sql-implementor, and @sql-support agents",
       "author": { "name": "FullStack Pilot Contributors" },
       "license": "MIT",
       "keywords": ["sql-server", "efcore", "migrations", "query-review"]
@@ -45,7 +45,7 @@
     {
       "name": "pilot-azure",
       "source": "./plugins/pilot-azure",
-      "description": "Azure / Bicep governance: CAF naming, security baseline, Well-Architected Framework review, Bicep patterns, centralized observability, CI/CD deployment security, multi-region disaster recovery, cost/FinOps guardrails, AKS cluster governance, API Management gateway policy review, enterprise-scale landing-zone topology, SLO/error-budget policy, and container image security",
+      "description": "Azure / Bicep governance: CAF naming, security baseline, Well-Architected Framework review, Bicep patterns, centralized observability, CI/CD deployment security, multi-region disaster recovery, cost/FinOps guardrails, AKS cluster governance, API Management gateway policy review, enterprise-scale landing-zone topology, SLO/error-budget policy, and container image security — with @infra-reviewer, @infra-implementor, and @azure-support agents",
       "author": { "name": "FullStack Pilot Contributors" },
       "license": "MIT",
       "keywords": ["azure", "bicep", "aca", "cost", "deployment"]
