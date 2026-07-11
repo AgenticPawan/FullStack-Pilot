@@ -186,10 +186,13 @@ for (const filePath of walk(ROOT)) {
   }
   const desc = fm['description'] ?? '';
   const combined = desc.length + (fm['when_to_use'] ?? '').length;
+  // Threshold rationale: descriptions are the skill-routing signal — compressing
+  // them below ~800 trades invocation quality for marginal token savings. Above
+  // 800 the prose is redundant with the skill body. Hard cap 1024 per CLAUDE.md.
   if (combined > 1024) {
     fail(`${rel}: description+when_to_use is ${combined} chars — max is 1024`);
-  } else if (combined > 500) {
-    warn(`${rel}: description+when_to_use is ${combined} chars — target is <=500 (per-session token cost)`);
+  } else if (combined > 800) {
+    warn(`${rel}: description+when_to_use is ${combined} chars — target is <=800 (per-session token cost)`);
   } else {
     pass(`${rel}: frontmatter OK (description+when_to_use: ${combined} chars)`);
   }
