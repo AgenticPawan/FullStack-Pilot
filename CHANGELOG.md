@@ -3,6 +3,25 @@
 All notable changes to FullStack Pilot are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 2026-07-11 — pilot-core: cross-stack fullstack-reviewer/fullstack-implementor agents
+
+pilot-core 0.19.0 → 0.20.0
+
+### Added
+- `fullstack-reviewer` (sonnet, read-only) — classifies a full-stack diff by layer
+  (Angular/.NET/SQL-EF Core/Azure), delegates each file group to the owning specialist
+  reviewer with only that layer's files, and separately checks contract drift across the
+  seam (backend contract vs. generated Angular client, migration shape vs. DTO shape) that
+  no single specialist can see alone.
+- `fullstack-implementor` (model inherited per invocation) — the fixing counterpart:
+  sequences a cross-stack fix in dependency order (SQL schema → .NET → Angular → infra),
+  delegates each layer to its owning implementor, and handles only genuinely cross-layer
+  glue directly (regenerating a generated API client, aligning a Bicep output with its
+  consumer) — every stack-specific fix and hard gate still belongs to the owning
+  specialist.
+- Together with the existing `fullstack-support`, `pilot-core` now ships the full-stack
+  counterpart to every stack plugin's own reviewer/implementor/support trio.
+
 ## 2026-07-11 — autonomous-team Phase 4: workflow docs + QA-check hardening
 
 ### Fixed

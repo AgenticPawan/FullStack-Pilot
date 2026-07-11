@@ -241,7 +241,7 @@ their name in any Claude Code prompt — no command needed:
 | .NET | `@dotnet-reviewer` | `@dotnet-implementor` | `@dotnet-support` |
 | SQL Server / EF Core | `@sql-reviewer` | `@sql-implementor` | `@sql-support` |
 | Azure / Bicep | `@infra-reviewer` | `@infra-implementor` | `@azure-support` |
-| Not sure which layer? | — | — | `@fullstack-support` |
+| All layers at once | `@fullstack-reviewer` | `@fullstack-implementor` | `@fullstack-support` |
 
 ### The review → implement loop
 
@@ -286,6 +286,31 @@ servers are configured: `@azure-support` can query live Azure diagnostics
 the running app's browser console and network traffic via Playwright. Both stay
 strictly read-only — they never restart, scale, or mutate anything.
 
+### Reviewing and fixing a diff that spans layers
+
+A feature branch touching a migration, an API endpoint, and the Angular page that calls it
+is three reviewers' worth of work. `@fullstack-reviewer` and `@fullstack-implementor` do
+that as one loop instead of you juggling four @-mentions yourself:
+
+```
+> @fullstack-reviewer review this branch
+  … classifies the diff: 1 migration (SQL+.NET), 1 controller (.NET), 1 component (Angular) …
+  … delegates each file group to @sql-reviewer / @dotnet-reviewer / @angular-reviewer …
+  … also checks the seam directly: does the Angular model still match the new DTO? …
+  ## Full-Stack Review — 1 critical, 2 warnings, 0 advisory across 3 layers
+
+> @fullstack-implementor fix the findings above
+  … sequences the fix SQL → .NET → Angular, delegating each layer to its own implementor …
+  … regenerates the NSwag client itself once the backend contract is final (cross-layer glue) …
+  ## Full-Stack Implementation Summary — ready for re-review by @fullstack-reviewer
+```
+
+Like the stack-specific implementors, `@fullstack-implementor` never commits and stops for
+your sign-off before anything a specialist's own hard gate would block (auth changes,
+destructive migrations, public-API/route changes). It only edits files directly for glue
+that belongs to no single layer (e.g. regenerating a generated API client) — everything
+else is delegated to the owning specialist so that specialist's guardrails actually fire.
+
 ## The autonomous delivery team — `/fsp-architect` and `/fsp-build`
 
 Beyond the per-stack specialists, `pilot-core` ships a four-role delivery team —
@@ -313,7 +338,7 @@ the full pipeline reference.
 
 | Plugin | Status | Purpose |
 |---|---|---|
-| `pilot-core` | Implemented | 18 skills + 5 agents (the fsp-analyst/fsp-scout/fsp-architect/fsp-qa delivery team and fullstack-support triage): stack detection, scaffold, audit/fix pipelines, the one-shot build pipeline, MCP discovery, dependency-supply-chain policy (patch SLAs, SBOM), git branching/PR-review workflow governance, CI-level secret scanning, cross-cutting REST API design standards, SLO-gated load/performance testing, incident-response runbook/postmortem governance, open-source license compliance, safe test-data management, `/fsp-init` `/fsp-audit` `/fsp-fix` `/fsp-learn` `/fsp-architect` `/fsp-build` |
+| `pilot-core` | Implemented | 18 skills + 7 agents (the fsp-analyst/fsp-scout/fsp-architect/fsp-qa delivery team and the fullstack-reviewer/fullstack-implementor/fullstack-support cross-stack trio): stack detection, scaffold, audit/fix pipelines, the one-shot build pipeline, MCP discovery, dependency-supply-chain policy (patch SLAs, SBOM), git branching/PR-review workflow governance, CI-level secret scanning, cross-cutting REST API design standards, SLO-gated load/performance testing, incident-response runbook/postmortem governance, open-source license compliance, safe test-data management, `/fsp-init` `/fsp-audit` `/fsp-fix` `/fsp-learn` `/fsp-architect` `/fsp-build` |
 | `pilot-angular` | Implemented | 30 skills + reviewer, implementor & support agents: signals & state, classic NgRx governance, performance, a11y (WCAG 2.2 AA), motion/reduced-motion accessibility, security (XSS/CSP, permissions-ONLY route guards/UI gating), HTTP resilience, memory-leak detection, v15→v20 upgrade path, coding standards, multi-layout shells, theming, JSON-driven dynamic forms, testing conventions, i18n, global error handling, PWA/offline support, frontend telemetry, Nx/module-federation monorepo governance, third-party script governance, frontend feature-flag governance |
 | `pilot-sql` | Implemented | 8 skills + reviewer, implementor & support agents: schema design (naming, keys, constraints), SQL injection defense, migration safety, multitenancy isolation, performance review, PII data protection (Always Encrypted, Dynamic Data Masking, TDE), index/statistics maintenance, backup/restore-drill verification |
 | `pilot-azure` | Implemented | 13 skills + reviewer, implementor & support agents: CAF naming, security baseline, Well-Architected Framework review, Bicep patterns, centralized observability, CI/CD deployment security, multi-region disaster recovery, cost/FinOps guardrails, AKS cluster governance, API Management gateway policy review, enterprise-scale landing-zone topology, SLO/error-budget policy, container image security |

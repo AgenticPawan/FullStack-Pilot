@@ -13,7 +13,7 @@
     {
       "name": "pilot-core",
       "source": "./plugins/pilot-core",
-      "description": "Shared governance: stack detection, audit/fix pipelines, MCP discovery, dependency-supply-chain policy (patch SLAs, SBOM), git branching/PR-review workflow governance, CI-level secret scanning, cross-cutting REST API design standards, SLO-gated load/performance testing, incident-response runbook/postmortem governance, open-source license compliance, safe test-data management, and the fsp- prefixed commands (/fsp-init, /fsp-audit, /fsp-fix, /fsp-learn, /fsp-architect, /fsp-build) used by every other pilot plugin, plus the autonomous delivery-team agents (fsp-analyst, fsp-scout, fsp-architect, fsp-qa) and the @fullstack-support triage agent that routes any full-stack symptom to the right specialist",
+      "description": "Shared governance: stack detection, audit/fix pipelines, MCP discovery, dependency-supply-chain policy (patch SLAs, SBOM), git branching/PR-review workflow governance, CI-level secret scanning, cross-cutting REST API design standards, SLO-gated load/performance testing, incident-response runbook/postmortem governance, open-source license compliance, safe test-data management, and the fsp- prefixed commands (/fsp-init, /fsp-audit, /fsp-fix, /fsp-learn, /fsp-architect, /fsp-build) used by every other pilot plugin, plus the autonomous delivery-team agents (fsp-analyst, fsp-scout, fsp-architect, fsp-qa) and the cross-stack @fullstack-reviewer/@fullstack-implementor/@fullstack-support trio that orchestrates the per-stack specialists across Angular/.NET/SQL/Azure",
       "author": { "name": "FullStack Pilot Contributors" },
       "license": "MIT",
       "keywords": ["governance", "commits", "code-health", "microsoft"]

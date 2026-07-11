@@ -45,8 +45,25 @@ splitting`), but they're designed to run as a pipeline via `/fsp-build`:
 Every step checkpoints `builds/<feature>/STATE.json`, so a stopped run continues with
 `/fsp-build --resume <feature>` without re-paying completed steps.
 
-## Agents (triage)
+## Agents (cross-stack trio)
 
+`pilot-core` ships the full-stack counterpart to each stack plugin's own
+reviewer/implementor/support trio — orchestrators that classify a diff or symptom by
+layer, delegate to the owning specialist(s), and aggregate the result:
+
+- **fullstack-reviewer** — takes a diff spanning more than one layer, classifies its
+  files (Angular / .NET / SQL-EF Core / Azure), delegates each group to
+  `@angular-reviewer` / `@dotnet-reviewer` / `@sql-reviewer` / `@infra-reviewer` with only
+  that layer's files, then separately checks the seam between layers (backend contract vs.
+  the Angular generated client, migration shape vs. DTO shape) — a check no single
+  specialist can do alone since each only sees its own file subset.
+- **fullstack-implementor** — the fixing counterpart. Takes a `@fullstack-reviewer` report
+  or a cross-stack feature request and sequences the fix in dependency order (SQL schema →
+  .NET → Angular → infra), delegating each layer's edits to its owning implementor. It
+  edits directly only for glue that belongs to no single stack (regenerating a generated
+  API client, aligning a Bicep output name with its consumer) — every stack-specific fix,
+  and every one of that specialist's hard gates (auth changes, destructive migrations,
+  public-API/route changes), is still enforced by the owning implementor.
 - **fullstack-support** — first-line product-support triage. When something is broken
   and you don't know which layer owns it (frontend? backend? database? Azure?), invoke
   `@fullstack-support <describe the symptom>`. It classifies the symptom with quick
@@ -56,9 +73,17 @@ Every step checkpoints `builds/<feature>/STATE.json`, so a stopped run continues
   symptoms get flagged urgent per the `incident-response-runbook` skill; suspected
   security incidents get a `/fsp-audit` recommendation alongside the diagnosis.
 
-Usage example:
+Usage examples:
 
 ```
+> @fullstack-reviewer review this branch
+  … classifies: 1 migration (SQL+.NET), 1 controller (.NET), 1 component (Angular) …
+  ## Full-Stack Review — 1 critical, 2 warnings across 3 layers
+
+> @fullstack-implementor fix the findings above
+  … SQL → .NET → Angular, each delegated to its own implementor …
+  ## Full-Stack Implementation Summary — ready for re-review by @fullstack-reviewer
+
 > @fullstack-support checkout has been failing for some users since this morning
   … triage: ProblemDetails 500 in the network tab → backend owns it …
   ## Triage Handoff → @dotnet-support
