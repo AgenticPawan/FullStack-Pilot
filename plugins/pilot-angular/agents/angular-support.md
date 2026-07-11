@@ -70,7 +70,7 @@ guess a skill name, and do not duplicate the reviewer checklist here.
 | TEL-* | angular-telemetry | MFE-* | angular-monorepo-governance |
 | TPS-* | angular-third-party-scripts | AFF-* | angular-feature-flags |
 | NGRX-* | angular-ngrx-state | MOT-* | angular-motion-accessibility |
-| API-* | api-design-standards (pilot-core) | | |
+| API-* | api-design-standards (pilot-core) | UXC-* | angular-ui-ux-consistency |
 
 ## Step 4 — Solution proposal
 

@@ -79,7 +79,7 @@ guess a skill name, and do not duplicate the reviewer checklist here.
 | DP-* | dotnet-data-protection | RT-* | dotnet-realtime |
 | CCY-* | dotnet-concurrency | FF-* | dotnet-feature-flags |
 | RL-* | dotnet-rate-limiting | API-* | api-design-standards (pilot-core) |
-| OUT-* | dotnet-outbox-pattern | | |
+| OUT-* | dotnet-outbox-pattern | SECH-* | dotnet-security-headers |
 
 ## Step 4 — Solution proposal
 

@@ -64,6 +64,7 @@ defined in pilot-angular. You produce structured, actionable findings — no waf
 | angular-lint-governance | ESLint as a required CI gate, `@angular-eslint` template linting, `eslint-config-prettier`, husky+lint-staged pre-commit, scoped `eslint-disable` justification, warning-vs-error severity policy |
 | angular-visual-regression-testing | Storybook coverage for shared component libraries, visual regression tooling (Chromatic/Percy), non-happy-path story states, human-reviewed snapshot baselines, theme-variant coverage, hard CI gate for shared-library visual diffs |
 | api-design-standards (pilot-core) | Cross-cutting REST contract shared with the .NET backend — resource naming, pagination envelope, ProblemDetails consistency, versioning-to-client-regen linkage, status-code discipline |
+| angular-ui-ux-consistency | Spacing/typography scale discipline, mobile-first responsive layout, visual hierarchy between actions, cross-feature component visual consistency, design-to-code fidelity check |
 
 ## Review process
 
@@ -261,6 +262,14 @@ at a glance — state "no findings" explicitly if a category is clear.
 - [ ] Theme variants (light/dark/brand) not covered by visual regression snapshots (VRT-005)?
 - [ ] No hard, required CI gate blocking merge on an unreviewed visual diff for shared-library components (VRT-006)?
 
+**Category AB — UI/UX consistency**
+- [ ] Arbitrary one-off spacing values instead of a shared spacing scale (UXC-001)?
+- [ ] Ad-hoc font-size/line-height/weight per component instead of a shared type scale (UXC-002)?
+- [ ] Fixed-width/desktop-only layout with no mobile-first responsive breakpoints (UXC-003)?
+- [ ] No visual distinction between primary and secondary/tertiary actions on the same screen (UXC-004)?
+- [ ] The same UI concept (card, list row, empty state) styled differently across features (UXC-005)?
+- [ ] No design-to-code fidelity check (Figma comparison) documented before a UI PR merges (UXC-006)?
+
 ### Step 3 — Format findings
 
 Output findings in this structure:
@@ -289,8 +298,8 @@ Fix: <concrete code change or pattern reference>
 
 Severity mapping:
 - **CRITICAL** — rule severity is `block` (angular-no-innerhtml, always-no-hardcoded-secrets); also TEL-004 (PII in telemetry properties), TPS-001 (CDN script with no SRI hash), AFF-002 (flag key desync with backend), AFF-006 (client-only gating with no server enforcement), NGRX-003 (effect with no catchError), API-003 (ProblemDetails parsing broken), NGAUTH-001/NGAUTH-006 (token in localStorage / no global 401 handling), ARC-004 (secret in client-visible config), SSR-002/SSR-006 (unguarded browser API / eager browser-only import breaking SSR), VRT-006 (no CI gate on shared-library visual diffs)
-- **WARNING** — rule severity is `warn`, or a skill violation that will cause bugs (includes ATS-001/ATS-002/ATS-003, I18N-001/I18N-002/I18N-003/I18N-004, AEH-001/AEH-003, PWA-001/PWA-004, TEL-001/TEL-003, MFE-001/MFE-002, TPS-002, AFF-001/AFF-004, NGRX-002/NGRX-004, MOT-001/MOT-002/MOT-003, API-002/API-004/API-005, NGAUTH-002/NGAUTH-003/NGAUTH-004/NGAUTH-005, ACG-001/ACG-002, RTA-001/RTA-003/RTA-004/RTA-006, ARC-001/ARC-002/ARC-003/ARC-005, SUI-001/SUI-003/SUI-004, SSR-001/SSR-003/SSR-004/SSR-005, LNT-001/LNT-002/LNT-005, VRT-001/VRT-002/VRT-004)
-- **ADVISORY** — WCAG AAA items, style preferences, upgrade path items for EOL stacks, ADF-003/ADF-004 renderer/enablement suggestions, ATS-005 signal-test-flushing suggestions, I18N-005 locale-switch reload, AEH-002/AEH-004, PWA-002/PWA-003, TEL-002, MFE-003/MFE-004, TPS-003/TPS-004, AFF-003/AFF-005, NGRX-001/NGRX-005/NGRX-006, MOT-004/MOT-005, ACG-003/ACG-004, RTA-002/RTA-005, ARC-006, SUI-002, LNT-003/LNT-004/LNT-006, VRT-003/VRT-005
+- **WARNING** — rule severity is `warn`, or a skill violation that will cause bugs (includes ATS-001/ATS-002/ATS-003, I18N-001/I18N-002/I18N-003/I18N-004, AEH-001/AEH-003, PWA-001/PWA-004, TEL-001/TEL-003, MFE-001/MFE-002, TPS-002, AFF-001/AFF-004, NGRX-002/NGRX-004, MOT-001/MOT-002/MOT-003, API-002/API-004/API-005, NGAUTH-002/NGAUTH-003/NGAUTH-004/NGAUTH-005, ACG-001/ACG-002, RTA-001/RTA-003/RTA-004/RTA-006, ARC-001/ARC-002/ARC-003/ARC-005, SUI-001/SUI-003/SUI-004, SSR-001/SSR-003/SSR-004/SSR-005, LNT-001/LNT-002/LNT-005, VRT-001/VRT-002/VRT-004, UXC-003)
+- **ADVISORY** — WCAG AAA items, style preferences, upgrade path items for EOL stacks, ADF-003/ADF-004 renderer/enablement suggestions, ATS-005 signal-test-flushing suggestions, I18N-005 locale-switch reload, AEH-002/AEH-004, PWA-002/PWA-003, TEL-002, MFE-003/MFE-004, TPS-003/TPS-004, AFF-003/AFF-005, NGRX-001/NGRX-005/NGRX-006, MOT-004/MOT-005, ACG-003/ACG-004, RTA-002/RTA-005, ARC-006, SUI-002, LNT-003/LNT-004/LNT-006, VRT-003/VRT-005, UXC-001/UXC-002/UXC-004/UXC-005/UXC-006
 
 ### Step 4 — Summary line
 

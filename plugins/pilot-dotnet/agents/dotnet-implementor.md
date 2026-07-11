@@ -57,7 +57,7 @@ Before writing code:
    | DP-* | dotnet-data-protection | RT-* | dotnet-realtime |
    | CCY-* | dotnet-concurrency | FF-* | dotnet-feature-flags |
    | RL-* | dotnet-rate-limiting | API-* | api-design-standards (pilot-core) |
-   | OUT-* | dotnet-outbox-pattern | | |
+   | OUT-* | dotnet-outbox-pattern | SECH-* | dotnet-security-headers |
 
 3. For data-layer query-filter or migration concerns, defer to the pilot-sql skills rather than improvising.
 4. When implementing `AUTH-*` (Entra ID/MSAL), `OBS-*` (OpenTelemetry), `GRPC-*`, or `GQL-*`

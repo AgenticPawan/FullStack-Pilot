@@ -62,9 +62,9 @@ clean after every phase.
 
 ## Status
 
-- [ ] Phase A — rules-catalog completeness
-- [ ] Phase B — dangling `/pilot-upgrade` references
-- [ ] Phase C — MCP wiring
-- [ ] Phase D — new skills (dotnet-security-headers, angular-ui-ux-consistency)
+- [x] Phase A — rules-catalog completeness
+- [x] Phase B — dangling `/pilot-upgrade` references
+- [x] Phase C — MCP wiring
+- [x] Phase D — new skills (dotnet-security-headers, angular-ui-ux-consistency)
 - [ ] Phase E — foundation-bootstrap skill + `/fsp-bootstrap` command + hard gate
 - [ ] Phase F — manifests, docs, CHANGELOG

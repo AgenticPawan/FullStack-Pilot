@@ -45,7 +45,7 @@ for that. Before writing code:
    | TEL-* | angular-telemetry | MFE-* | angular-monorepo-governance |
    | TPS-* | angular-third-party-scripts | AFF-* | angular-feature-flags |
    | NGRX-* | angular-ngrx-state | MOT-* | angular-motion-accessibility |
-   | API-* | api-design-standards (pilot-core) | | |
+   | API-* | api-design-standards (pilot-core) | UXC-* | angular-ui-ux-consistency |
 
 3. Respect version gating: read `.claude/pilot/stack-profile.json` (`angular.majorVersion`)
    before using version-specific APIs (signal inputs v17.1+, control flow v17+, resource() v19+).
