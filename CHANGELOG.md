@@ -3,6 +3,25 @@
 All notable changes to FullStack Pilot are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 2026-07-11 — Phase 1 quality-first amendments
+
+### Changed
+- Reviewers reverted `effort: medium` → `high` — review depth is the product; token
+  savings come from scope rules (diff-only, scout briefs, quoting caps), not
+  shallower reasoning.
+- Skill description warn threshold raised 500 → 800 chars combined: descriptions are
+  the skill-routing signal, and compressing all of them to 500 would trade invocation
+  quality for marginal savings. The 32 skills over 800 were trimmed — description
+  prose only; `when_to_use` keyword lists untouched. Warnings: 116 → 0.
+- Every agent gains a quality-guard rule: budgets bound exploration, not quality —
+  on budget exhaustion, report what's missing instead of returning a degraded result.
+- `stack-detection`, `audit-orchestration`, `batched-remediation`,
+  `convention-learner` now carry `user-invocable: false` (command-internal; hidden
+  from the /-menu, Skill-tool invocation by /fsp-* commands unaffected).
+- Plan §11 open questions decided: fsp-qa write scope will be hook-enforced
+  (agent-level PreToolUse), review-loop cap stays 2, fsp-architect will print its
+  resolved model, scout write exception confirmed.
+
 ## 2026-07-11 — autonomous-team Phase 1: model matrix + token discipline
 
 pilot-core 0.16.0 → 0.17.0 (see docs/AUTONOMOUS-TEAM-PLAN.md for the full roadmap)

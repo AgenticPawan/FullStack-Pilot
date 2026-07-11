@@ -46,7 +46,7 @@ Each plugin directory MUST have:
 | Tier | Model | Agents |
 |---|---|---|
 | T1 read/understand | `haiku` | `fsp-scout` |
-| T2 analyze/review | `sonnet` (or omit) | `*-reviewer` (effort: medium), `*-support`, `fsp-analyst`, `fsp-qa` |
+| T2 analyze/review | `sonnet` (or omit) | `*-reviewer` (effort: high — review depth is the product), `*-support`, `fsp-analyst`, `fsp-qa` |
 | T3 plan/complex implement | `opus` | `fsp-architect`; implementors via per-invocation override |
 
 - `*-implementor` agents MUST NOT hardcode a `model` — orchestrating commands pass
@@ -54,16 +54,22 @@ Each plugin directory MUST have:
 
 ## Token discipline (STRICT, CI-enforced where possible)
 
-- Every agent body MUST contain a "Read budget" declaration.
+- Every agent body MUST contain a "Read budget" declaration. Budgets bound
+  exploration, NOT quality: an agent that hits its budget must say what else it needs,
+  never silently return a degraded result.
 - Pipeline artifacts are files under `.claude/pilot/` (briefs, specs, plans, reports) —
   agents hand off by file path, never by pasting content into chat.
 - No agent report quotes more than 10 lines of source per finding.
 - `plugin.json` `description` MUST be ≤600 chars (CI failure) — it loads into every
-  session. SKILL.md `description`+`when_to_use` target ≤500 chars (CI warning).
+  session. SKILL.md `description`+`when_to_use` target ≤800 chars combined (CI
+  warning; hard cap 1024). When trimming, compress description prose only — NEVER
+  remove `when_to_use` keywords; they are the skill-routing signal.
 - Do NOT set `disable-model-invocation: true` on skills that commands instruct Claude
   to run (stack-detection, pilot-scaffold, audit-orchestration, batched-remediation,
   convention-learner, mcp-discovery) — it would block the Skill tool and break
-  /fsp-init, /fsp-audit, /fsp-fix, /fsp-learn.
+  /fsp-init, /fsp-audit, /fsp-fix, /fsp-learn. Command-internal skills users should
+  not run directly carry `user-invocable: false` instead (hides the /-menu entry,
+  keeps Skill-tool invocation working).
 
 ## SKILL.md conventions
 

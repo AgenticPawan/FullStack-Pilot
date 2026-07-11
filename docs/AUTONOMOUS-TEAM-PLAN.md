@@ -238,17 +238,31 @@ Modified (~20):
 - New-session cost check: `claude plugin usage` (or token report) before/after the
   description shrink.
 
-## 11. Risks / open questions for review
+## 11. Open questions — DECIDED 2026-07-11
 
-1. **QA write scope** is enforced by prompt contract, not tooling — Claude Code has no
-   per-path tool permission in agent frontmatter. Acceptable? (Reviewer step re-checks
-   the diff, which mitigates.)
-2. **Opus availability/cost**: orgs without opus fall back to inherited model silently —
-   fine functionally, but should the architect print which model it actually ran on?
-   (Proposed: yes, one line in the assessment header.)
-3. **Review loop cap of 2** before escalation — right number?
-4. **Scout write exception**: scout writes briefs, so it can't carry
-   `disallowedTools: Write, Edit`; the validator exempts `fsp-scout` from the
-   read-only-suffix rule by name. Acceptable?
-5. Phase ordering assumes description-shrink first for immediate savings; if
-   marketplace-listing SEO matters more than tokens, we can soften §4.5.
+1. **QA write scope** — DECIDED: enforce with an **agent-level PreToolUse hook**
+   (agent frontmatter supports `hooks`), blocking Write/Edit outside `tests/**`,
+   `**/*.spec.ts`, `**/*Tests.cs` for `fsp-qa`, in addition to the prompt contract.
+   The reviewer diff re-check remains the second net. To implement in Phase 2.
+2. **Opus fallback visibility** — DECIDED: yes; `fsp-architect` prints the model it
+   actually resolved to in the assessment/plan header (one line).
+3. **Review loop cap** — DECIDED: keep 2. Findings surviving two implement-review
+   loops indicate a plan-level problem, not a code-level one; the escalation message
+   must include both the reviewer's finding and the implementor's position.
+4. **Scout write exception** — DECIDED: confirmed as implemented; `fsp-scout` writes
+   only briefs/memory, and the validator's read-only rule keys on the
+   `-reviewer`/`-support` suffixes, which scout doesn't match.
+5. **Description budget** — DECIDED (quality-first): warn threshold raised 500→800.
+   Descriptions are the skill-routing signal; compressing all 116 to 500 would trade
+   invocation quality for marginal savings. The 32 files >800 were trimmed
+   (description prose only — `when_to_use` keyword lists untouched). Reviewers were
+   also reverted `effort: medium`→`high`: review depth is the product; token savings
+   come from scope rules (diff-only, scout briefs, quoting caps), not shallower
+   reasoning. Every agent additionally carries a quality-guard rule: budgets bound
+   exploration, not quality — on budget exhaustion, report what's missing instead of
+   returning a degraded result.
+6. **Command-internal skills** — DECIDED: `stack-detection`, `audit-orchestration`,
+   `batched-remediation`, `convention-learner` now carry `user-invocable: false`
+   (hidden from the user's /-menu; Skill-tool invocation by commands unaffected).
+   `pilot-scaffold` and `mcp-discovery` stay user-invocable — their docs advertise
+   direct invocation.
