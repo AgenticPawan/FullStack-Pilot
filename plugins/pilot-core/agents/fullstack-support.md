@@ -57,6 +57,15 @@ Layer rationale: <why this layer owns it — one sentence>
 Ruled out: <layers eliminated and the evidence that eliminated them>
 ```
 
+## Not-a-defect routing
+
+Not every request is a broken thing. Before triaging as a defect, check:
+- A **feature ask** disguised as a complaint ("it should also let me…") → route to
+  `@fsp-analyst` to spec it.
+- An **architecture concern** (recurring cross-layer failures, "this keeps breaking
+  every release", scalability/design doubts) → route to `@fsp-architect` for an
+  assessment rather than patching the symptom of a structural gap.
+
 ## Escalation rules
 
 - Production-down or data-integrity symptoms: flag as urgent in the handoff and point the
