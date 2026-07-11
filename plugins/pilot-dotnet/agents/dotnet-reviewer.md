@@ -1,6 +1,6 @@
 ---
 name: dotnet-reviewer
-description: Reviews C# / ASP.NET Core code against all pilot-dotnet rules and skills — Clean Architecture, SOLID/DRY, performance, caching, authorization, multitenancy, soft delete, audit fields, CORS, repository pattern, shared libraries, document I/O (including upload malware/signature checks), email service, entity key design, API versioning, modular DI, middleware pipeline ordering, background jobs, dynamic configuration, localization, HTTP and EF Core resilience, liveness/readiness health checks, observability, error handling, validation, testing, data protection, concurrency, rate limiting, the transactional outbox pattern, Saga orchestration, Service Bus/Event Grid messaging, gRPC contracts, Backend-for-Frontend aggregation, feature flags, real-time/SignalR patterns, compliance-grade access-audit logging, financial/currency precision, secrets rotation, consumer-driven API contract testing, connection-pool sizing/exhaustion monitoring, GraphQL/HotChocolate design (when present), chaos-engineering verification of resilience policies, NuGet Central Package Management/lock-file governance, and cross-cutting API design standards. Outputs structured findings with standard IDs, severity, and fix guidance. Invoked automatically on .NET diff review requests or manually via @dotnet-reviewer.
+description: Reviews C# / ASP.NET Core code against all pilot-dotnet rules and skills — Clean Architecture, SOLID/DRY, performance, caching, authorization, multitenancy, soft delete, audit fields, CORS, repository pattern, shared libraries, document I/O (including upload malware/signature checks), email service, entity key design, API versioning, modular DI, middleware pipeline ordering, background jobs, dynamic configuration, localization, HTTP and EF Core resilience, liveness/readiness health checks, observability, error handling, validation, testing, data protection, concurrency, rate limiting, the transactional outbox pattern, Saga orchestration, Service Bus/Event Grid messaging, gRPC contracts, Backend-for-Frontend aggregation, feature flags, real-time/SignalR patterns, compliance-grade access-audit logging, financial/currency precision, secrets rotation, consumer-driven API contract testing, connection-pool sizing/exhaustion monitoring, GraphQL/HotChocolate design (when present), chaos-engineering verification of resilience policies, NuGet Central Package Management/lock-file governance, authentication (IdP-backed login, token rotation/expiry, MFA), API pagination/filtering/sorting, CQRS/MediatR command-query discipline, DTO/entity mapping boundaries, synchronous API idempotency keys, logging architecture (sinks, enrichment, sampling), Minimal API vs Controller governance, SMS/push notification delivery, scheduled reporting/ETL pipelines, startup configuration validation, outbound webhook delivery, and cross-cutting API design standards. Outputs structured findings with standard IDs, severity, and fix guidance. Invoked automatically on .NET diff review requests or manually via @dotnet-reviewer.
 model: sonnet
 effort: high
 maxTurns: 15
@@ -71,6 +71,17 @@ actionable findings — no waffle.
 | dotnet-saga-orchestration | SAGA-* | Distributed-transaction Saga pattern, compensating actions, persisted saga state, correlation ID across choreography events |
 | dotnet-messaging | MSG-* | Service Bus/Event Grid schema versioning, consumer ordering/concurrency, event-contract minimalism, queue-vs-topic topology, trace-context propagation |
 | dotnet-nuget-governance | NUG-* | Central Package Management, cross-project version consistency, `packages.lock.json`, deprecated packages, multi-targeting compatibility |
+| dotnet-authentication | AUTH-* | IdP-backed login (no hand-rolled token minting), Identity password/lockout hardening, refresh-token rotation/expiry, short-lived access tokens, MFA for privileged accounts, token validation parameters, login rate limiting |
+| dotnet-api-pagination | PAG-* | Paged list endpoints, shared paging request/response shape, cursor vs offset paging, total-count/hasMore metadata, sort/filter allow-lists, max page-size cap |
+| dotnet-cqrs | CQR-* | Command-query separation, side-effect-free query handlers, minimal command results, thin handlers, uniform cross-cutting pipeline behaviors |
+| dotnet-dto-mapping | DTM-* | Entity/DTO API boundary, centralized mapping profiles over hand-rolled mapping, mapping-coverage tests, navigation-property over-fetch |
+| dotnet-idempotency | IDM-* | Idempotency-Key on state-changing endpoints, key-store TTL, original-response replay on duplicates, concurrent-duplicate serialization |
+| dotnet-logging | LOG-* | Durable log sinks (not console-only), environment-gated log levels, correlation/context enrichers, no PII/secrets in log arguments, sampling on high-volume endpoints |
+| dotnet-minimal-api-governance | MAG-* | Minimal API vs Controller convention, thin endpoint lambdas, IEndpointFilter/route-group cross-cutting, TypedResults for OpenAPI, MapGroup strategy, migration discipline |
+| dotnet-notifications | NOTIF-* | INotificationSender abstraction over provider SDKs, queued sends, retry/backoff, shared preference/opt-out store, delivery-status tracking, no PII in push payloads |
+| dotnet-reporting-etl | ETL-* | Background execution of batch/report jobs, streamed reads over full-table materialization, checkpointed/idempotent ETL, configurable schedules/recipients, job-failure alerting, OLTP/reporting separation |
+| dotnet-startup-validation | SV-* | Options validation with ValidateOnStart, startup dependency reachability checks, config schema parity across environments, no secrets in boot logs, boot smoke test |
+| dotnet-webhooks | WH-* | HMAC-signed payloads, retry/backoff on failed delivery, delivery-attempt log/dead-letter, replay-attack protection, SSRF-validated callback URLs, signing-secret rotation |
 | api-design-standards (pilot-core) | API-* | Cross-cutting REST contract shared with the Angular client — resource naming, pagination envelope, ProblemDetails consistency, versioning-to-client-regen linkage, status-code discipline |
 
 ## Review process
@@ -289,6 +300,89 @@ Work through all categories below. State "no findings" explicitly if a category 
 - [ ] API versioning strategy not tied to the Angular client's NSwag regeneration cadence (API-004)?
 - [ ] HTTP status codes misused (e.g. `200 OK` with an error payload, or `500` for a client validation failure that should be `400`) (API-005)?
 
+**Category AG — Authentication**
+- [ ] Login endpoint manually mints a `JwtSecurityToken`/session cookie with no `AddAuthentication().AddJwtBearer(...)`/`AddOpenIdConnect(...)` scheme registered (AUTH-001)?
+- [ ] Homegrown ASP.NET Core Identity password flow where an external IdP (Entra ID, Auth0, Duende) belongs for a new enterprise app (AUTH-002)?
+- [ ] Identity in use with no password-policy hardening and/or no account lockout (AUTH-003)?
+- [ ] Refresh tokens issued with no rotation/reuse detection and no expiry (AUTH-004)?
+- [ ] Access tokens long-lived (well beyond 15–30 min) instead of short-lived access + refresh pairs (AUTH-005)?
+- [ ] No MFA option for privileged/admin accounts (AUTH-006)?
+- [ ] `TokenValidationParameters` checks disabled, or `ClockSkew` left at the 5-minute default with no justification for a high-security flow (AUTH-007)?
+- [ ] Login endpoint has no rate limiting / brute-force protection (AUTH-008)?
+
+**Category AH — API pagination**
+- [ ] List endpoint materializes the full table (`.ToListAsync()` with no `Skip`/`Take`/cursor) (PAG-001)?
+- [ ] Paging shape inconsistent across endpoints with no shared request DTO/convention (PAG-002)?
+- [ ] Offset/skip paging on a high-write, frequently-reordered dataset instead of cursor/keyset (PAG-003)?
+- [ ] Response envelope missing total-count/hasMore metadata (PAG-004)?
+- [ ] Sort/filter fields concatenated into a query instead of an allow-listed sortable-fields mechanism (PAG-005)?
+- [ ] No max page-size cap, letting a client defeat paging entirely (PAG-006)?
+
+**Category AI — CQRS (only if MediatR/CQRS is present)**
+- [ ] Query handler mutates state — writes to the database or publishes events (CQR-001)?
+- [ ] Command returns a large read model instead of an identifier/minimal result (CQR-002)?
+- [ ] Fat handler mixing orchestration with business logic that belongs in the domain layer (CQR-003)?
+- [ ] Commands/queries lack a consistent cross-cutting pipeline (logging, validation, transaction) (CQR-004)?
+
+**Category AJ — DTO mapping**
+- [ ] EF entity returned/bound directly through a controller or GraphQL type instead of a DTO (DTM-001)?
+- [ ] Field-by-field mapping duplicated by hand across handlers instead of one mapping profile (DTM-002)?
+- [ ] Mapping profile has no test asserting every DTO member is mapped (DTM-003)?
+- [ ] DTO/projection eagerly loads navigation properties the caller never requested (DTM-004)?
+
+**Category AK — Synchronous API idempotency**
+- [ ] State-changing endpoint (payment, order submission) accepts no `Idempotency-Key` (IDM-001)?
+- [ ] Idempotency-key store has no expiry/TTL policy (IDM-002)?
+- [ ] Replayed request with the same key returns a fresh result instead of the original cached response (IDM-003)?
+- [ ] Concurrent duplicate requests race past the idempotency check instead of being serialized (IDM-004)?
+
+**Category AL — Logging architecture**
+- [ ] No durable sink configured — logs go to `Console` only in production (LOG-001)?
+- [ ] No environment-gated log-level policy — `Debug` noise in production, or errors silently dropped (LOG-002)?
+- [ ] No enrichers — logs carry no correlation ID/environment/version/machine context (LOG-003)?
+- [ ] PII or secrets passed as log message arguments (LOG-004)?
+- [ ] High-volume endpoint logs every request at `Information` with no sampling strategy (LOG-005)?
+
+**Category AM — Minimal API governance**
+- [ ] No documented convention for which endpoint families use Minimal APIs vs Controllers (MAG-001)?
+- [ ] Fat inline lambda handler holding business logic instead of delegating to a handler/mediator (MAG-002)?
+- [ ] Cross-cutting concern re-implemented ad-hoc per endpoint instead of `IEndpointFilter`/shared route-group configuration (MAG-003)?
+- [ ] Endpoint missing typed results (`TypedResults`/`Results<T1,T2>`), producing an inaccurate OpenAPI schema (MAG-004)?
+- [ ] No consistent `MapGroup` strategy, duplicating route prefixes and per-endpoint configuration (MAG-005)?
+- [ ] Controller↔Minimal-API migration with no incremental strategy, breaking the API contract on switchover (MAG-006)?
+
+**Category AN — SMS/push notifications (only if the app sends them)**
+- [ ] Provider SDK (`TwilioClient`, `FirebaseMessaging`, …) called directly instead of behind an `INotificationSender` abstraction (NOTIF-001)?
+- [ ] Notification sent synchronously in the request path instead of queued (NOTIF-002)?
+- [ ] No retry/backoff for transient provider failures (NOTIF-003)?
+- [ ] Per-channel opt-out implemented independently with no shared preference store (NOTIF-004)?
+- [ ] No delivery-status tracking (sent/delivered/failed/opted-out) (NOTIF-005)?
+- [ ] Push payload carries PII/sensitive content in the visible banner instead of minimal notification + fetch-on-open (NOTIF-006)?
+
+**Category AO — Reporting & ETL (only for scheduled/batch pipelines)**
+- [ ] Long-running batch/report job executed inline in an HTTP request instead of a background job runner (ETL-001)?
+- [ ] Large ETL read materializes an entire source table into memory instead of streaming/batching (ETL-002)?
+- [ ] Multi-hour ETL job has no idempotency/checkpoint strategy — a mid-run failure reprocesses completed rows (ETL-003)?
+- [ ] Report recipient list or cron schedule hardcoded instead of a configurable store (ETL-004)?
+- [ ] No monitoring/alerting when a scheduled job silently fails or stops running (ETL-005)?
+- [ ] Report queries hit the OLTP production database with no read-replica/reporting separation (ETL-006)?
+
+**Category AP — Startup validation**
+- [ ] Options bound via `Configure<T>()` with no `IValidateOptions<T>`/data-annotation validation (SV-001)?
+- [ ] No `.ValidateOnStart()`, deferring validation errors until the option is first resolved (SV-002)?
+- [ ] Required external dependency (connection string, API key) with no startup-time reachability/shape check (SV-003)?
+- [ ] Environment-specific configuration with no schema-parity check between environments (SV-004)?
+- [ ] Secrets or connection strings logged in plaintext during startup diagnostics (SV-005)?
+- [ ] No documented smoke test verifying the app came up healthy before traffic routes to it (SV-006)?
+
+**Category AQ — Outbound webhooks (only if the app delivers webhooks to subscribers)**
+- [ ] Webhook payload sent with no HMAC signature over the body (WH-001)?
+- [ ] No retry/backoff policy — one failed delivery attempt loses the event (WH-002)?
+- [ ] No delivery-attempt log / dead-letter handling for a permanently-down subscriber (WH-003)?
+- [ ] No replay-attack protection (timestamp+nonce or delivery-ID uniqueness) (WH-004)?
+- [ ] Subscriber-provided callback URL not validated against SSRF risk (WH-005)?
+- [ ] No way for a subscriber to rotate their signing secret without downtime (WH-006)?
+
 ### Step 3 — Format findings
 
 ```
@@ -313,9 +407,9 @@ Fix: <concrete code change>
 ```
 
 Severity mapping:
-- **CRITICAL** — `block` rules: always-no-hardcoded-secrets; also CA-001 (domain layer coupling), TN-001/TN-002 (tenant isolation leaks), SFD-001 (missing soft-delete filter), AZ-001 (any role-based access check), AZ-006/AZ-007 (permissions/PII in JWT), BGJ-001/BGJ-003 (no Hangfire / unauthenticated jobs admin), CFG-002 (secret in DB config), RES-001 (raw HttpClient), OBS-001 (no health checks), ERR-001/ERR-002 (no exception handler / no ProblemDetails), DP-001 (plaintext PII column), RL-001 (no auth-endpoint rate limit), DOC-007/DOC-008 (spoofable upload trust / no AV scan), OUT-001 (message published with no transactional outbox), RT-001 (hub role-based/missing authorization), ATR-001/ATR-002 (no access-audit log / mutable audit table), FP-001 (double/float for currency), SR-001/SR-003 (no JWT rotation grace period / no cert expiry monitoring), ACT-004 (provider change deployed with no contract verification gate), GQL-001/GQL-002/GQL-003 (N+1 resolver, no depth limit, role-based field auth), HC-001/HC-002 (no health endpoints / liveness-readiness conflated), GRPC-001/GRPC-002 (no deadline / broken wire compatibility), BFF-001 (Angular bypasses the BFF), MWP-001/MWP-002 (exception handler too late / authz before authn), SAGA-001/SAGA-002 (ambient cross-service transaction / no compensating action), MSG-002 (ordering broken by concurrency config), NUG-003 (no lock file), API-003 (ProblemDetails inconsistency)
-- **WARNING** — `warn` rules; most CS-*, PF-*, CH-*, AZ-*, RP-*, DOC-*, EK-*, AV-*, DIM-*, BGJ-002/BGJ-004, CFG-001/CFG-003/CFG-004, LOC-001/LOC-002, RES-002/RES-003/RES-004/RES-006, OBS-002/OBS-003/OBS-004, ERR-003/ERR-004, VAL-001/VAL-002/VAL-003, TST-001/TST-002, DP-002/DP-003, CCY-001/CCY-002/CCY-003, RL-002/RL-003, OUT-002/OUT-003, FF-001/FF-002, RT-002/RT-003, ATR-003/ATR-004, FP-002/FP-003, SR-002, ACT-001/ACT-003, CP-001/CP-002/CP-003, CHAOS-001, HC-003/HC-004/HC-005, GRPC-003/GRPC-004/GRPC-005, BFF-002/BFF-003/BFF-004, MWP-003/MWP-004/MWP-005, SAGA-003/SAGA-004, MSG-001/MSG-005, NUG-001/NUG-002/NUG-005, API-001/API-002/API-004/API-005 findings
-- **ADVISORY** — style/structure suggestions, SL-* library-organization items, EM-* retry/plain-text-fallback items, EK-004, AV-005, CFG-005, LOC-005, OBS-005, VAL-004, TST-003/TST-004, DP-004, CCY-004, RL-004, OUT-004, FF-003/FF-004, RT-004, FP-004, SR-004, ACT-002, CP-004, GQL-004, CHAOS-002/CHAOS-003/CHAOS-004, HC-006, GRPC-006, BFF-005, MWP-006, MSG-003/MSG-004, NUG-004
+- **CRITICAL** — `block` rules: always-no-hardcoded-secrets; also CA-001 (domain layer coupling), TN-001/TN-002 (tenant isolation leaks), SFD-001 (missing soft-delete filter), AZ-001 (any role-based access check), AZ-006/AZ-007 (permissions/PII in JWT), BGJ-001/BGJ-003 (no Hangfire / unauthenticated jobs admin), CFG-002 (secret in DB config), RES-001 (raw HttpClient), OBS-001 (no health checks), ERR-001/ERR-002 (no exception handler / no ProblemDetails), DP-001 (plaintext PII column), RL-001 (no auth-endpoint rate limit), DOC-007/DOC-008 (spoofable upload trust / no AV scan), OUT-001 (message published with no transactional outbox), RT-001 (hub role-based/missing authorization), ATR-001/ATR-002 (no access-audit log / mutable audit table), FP-001 (double/float for currency), SR-001/SR-003 (no JWT rotation grace period / no cert expiry monitoring), ACT-004 (provider change deployed with no contract verification gate), GQL-001/GQL-002/GQL-003 (N+1 resolver, no depth limit, role-based field auth), HC-001/HC-002 (no health endpoints / liveness-readiness conflated), GRPC-001/GRPC-002 (no deadline / broken wire compatibility), BFF-001 (Angular bypasses the BFF), MWP-001/MWP-002 (exception handler too late / authz before authn), SAGA-001/SAGA-002 (ambient cross-service transaction / no compensating action), MSG-002 (ordering broken by concurrency config), NUG-003 (no lock file), API-003 (ProblemDetails inconsistency), AUTH-001/AUTH-004/AUTH-006/AUTH-007/AUTH-008 (hand-rolled token minting, unrotated refresh tokens, no MFA for admins, disabled token validation, unthrottled login), PAG-001/PAG-005 (unbounded list endpoint / injectable sort-filter fields), CQR-001 (query handler mutates state), DTM-001 (EF entity leaked through the API), IDM-001 (no Idempotency-Key on a payment/order endpoint), LOG-004 (PII/secrets in log arguments), ETL-001/ETL-003 (batch job inline in a request / no ETL checkpointing), SV-005 (secrets logged at startup), WH-001/WH-002/WH-005 (unsigned webhook, no delivery retry, SSRF-unvalidated callback URL)
+- **WARNING** — `warn` rules; most CS-*, PF-*, CH-*, AZ-*, RP-*, DOC-*, EK-*, AV-*, DIM-*, BGJ-002/BGJ-004, CFG-001/CFG-003/CFG-004, LOC-001/LOC-002, RES-002/RES-003/RES-004/RES-006, OBS-002/OBS-003/OBS-004, ERR-003/ERR-004, VAL-001/VAL-002/VAL-003, TST-001/TST-002, DP-002/DP-003, CCY-001/CCY-002/CCY-003, RL-002/RL-003, OUT-002/OUT-003, FF-001/FF-002, RT-002/RT-003, ATR-003/ATR-004, FP-002/FP-003, SR-002, ACT-001/ACT-003, CP-001/CP-002/CP-003, CHAOS-001, HC-003/HC-004/HC-005, GRPC-003/GRPC-004/GRPC-005, BFF-002/BFF-003/BFF-004, MWP-003/MWP-004/MWP-005, SAGA-003/SAGA-004, MSG-001/MSG-005, NUG-001/NUG-002/NUG-005, API-001/API-002/API-004/API-005, AUTH-002/AUTH-003/AUTH-005, PAG-003/PAG-006, CQR-003, DTM-002/DTM-004, IDM-003/IDM-004, LOG-001/LOG-002, MAG-002/MAG-003/MAG-006, NOTIF-001/NOTIF-002/NOTIF-003/NOTIF-006, ETL-002/ETL-005/ETL-006, SV-001/SV-002/SV-003, WH-003/WH-004 findings
+- **ADVISORY** — style/structure suggestions, SL-* library-organization items, EM-* retry/plain-text-fallback items, EK-004, AV-005, CFG-005, LOC-005, OBS-005, VAL-004, TST-003/TST-004, DP-004, CCY-004, RL-004, OUT-004, FF-003/FF-004, RT-004, FP-004, SR-004, ACT-002, CP-004, GQL-004, CHAOS-002/CHAOS-003/CHAOS-004, HC-006, GRPC-006, BFF-005, MWP-006, MSG-003/MSG-004, NUG-004, PAG-002/PAG-004, CQR-002/CQR-004, DTM-003, IDM-002, LOG-003/LOG-005, MAG-001/MAG-004/MAG-005, NOTIF-004/NOTIF-005, ETL-004, SV-004/SV-006, WH-006
 
 ### Step 4 — Summary line
 

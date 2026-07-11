@@ -20,11 +20,45 @@ If the input is a description with no file references, ask for the affected file
 
 ## Rule compliance
 
-Do NOT duplicate the reviewer checklists here. Before writing code:
+Do NOT duplicate the reviewer checklists here — only the standard-ID → skill lookup, so
+any finding routes to its governing SKILL.md without reopening `dotnet-reviewer.md` for that.
+Before writing code:
 
 1. Consult the rule and skill inventory in `dotnet-reviewer.md` — the same standard IDs govern your output.
-2. Read the SKILL.md of every pilot-dotnet skill whose ID prefix matches the finding
-   (e.g. an `OUT-*` finding → read `dotnet-outbox-pattern`; `MWP-*` → `dotnet-middleware-pipeline`).
+2. Look up the finding's standard-ID prefix below and read that skill's SKILL.md in full.
+
+   | Prefix | Skill | Prefix | Skill |
+   |---|---|---|---|
+   | CS-* | dotnet-coding-standards | LOG-* | dotnet-logging |
+   | CA-* | dotnet-clean-architecture | MAG-* | dotnet-minimal-api-governance |
+   | SD-* | dotnet-solid-dry | NOTIF-* | dotnet-notifications |
+   | PF-* | dotnet-performance | ETL-* | dotnet-reporting-etl |
+   | CH-* | dotnet-caching | SV-* | dotnet-startup-validation |
+   | AZ-* | dotnet-authorization | WH-* | dotnet-webhooks |
+   | TN-* | dotnet-multitenancy | AUTH-* | dotnet-authentication |
+   | SFD-* | dotnet-soft-delete | PAG-* | dotnet-api-pagination |
+   | AUD-* | dotnet-audit-fields | CQR-* | dotnet-cqrs |
+   | COR-* | dotnet-cors | DTM-* | dotnet-dto-mapping |
+   | RP-* | dotnet-repository-pattern | IDM-* | dotnet-idempotency |
+   | SL-* | dotnet-shared-libraries | NUG-* | dotnet-nuget-governance |
+   | DOC-* | dotnet-document-io | MSG-* | dotnet-messaging |
+   | EM-* | dotnet-email-service | SAGA-* | dotnet-saga-orchestration |
+   | EK-* | dotnet-entity-keys | MWP-* | dotnet-middleware-pipeline |
+   | AV-* | dotnet-api-versioning | BFF-* | dotnet-backend-for-frontend |
+   | DIM-* | dotnet-di-modules | GRPC-* | dotnet-grpc |
+   | BGJ-* | dotnet-background-jobs | HC-* | dotnet-health-checks |
+   | CFG-* | dotnet-dynamic-configuration | CHAOS-* | dotnet-chaos-engineering |
+   | LOC-* | dotnet-localization | GQL-* | dotnet-graphql |
+   | RES-* | dotnet-resilience | CP-* | dotnet-connection-pool-tuning |
+   | OBS-* | dotnet-observability | ACT-* | dotnet-api-contract-testing |
+   | ERR-* | dotnet-error-handling | SR-* | dotnet-secrets-rotation |
+   | VAL-* | dotnet-validation | FP-* | dotnet-financial-precision |
+   | TST-* | dotnet-testing | ATR-* | dotnet-audit-trail |
+   | DP-* | dotnet-data-protection | RT-* | dotnet-realtime |
+   | CCY-* | dotnet-concurrency | FF-* | dotnet-feature-flags |
+   | RL-* | dotnet-rate-limiting | API-* | api-design-standards (pilot-core) |
+   | OUT-* | dotnet-outbox-pattern | | |
+
 3. For data-layer query-filter or migration concerns, defer to the pilot-sql skills rather than improvising.
 
 Non-negotiable house rules that apply to every edit:
