@@ -3,6 +3,35 @@
 All notable changes to FullStack Pilot are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 2026-07-11 — autonomous-team Phase 1: model matrix + token discipline
+
+pilot-core 0.16.0 → 0.17.0 (see docs/AUTONOMOUS-TEAM-PLAN.md for the full roadmap)
+
+### Added
+- `fsp-scout` agent (pilot-core, `model: haiku`, `memory: project`) — read-budgeted
+  (80 files) context scout that writes compressed briefs to `.claude/pilot/context/`
+  for expensive agents to consume instead of re-exploring source.
+- Model matrix (CLAUDE.md, CI-enforced): T1 read = haiku (`fsp-scout`), T2
+  analyze/review = sonnet (reviewers at `effort: medium`, support), T3 plan/complex
+  implement = opus (future `fsp-architect`; implementors via per-invocation override).
+- STRICT token discipline: every agent declares a "Read budget"; scout-brief-first
+  reading; 10-line source-quoting cap; file-based handoffs under `.claude/pilot/`.
+- validate.mjs: plugin description ≤600 chars (fail), SKILL.md description+when_to_use
+  ≤1024 combined (fail; the old check measured description alone) with a ≤500 target
+  (warn), model-tier policy per agent name, and required Read-budget declarations.
+
+### Changed
+- All five plugin.json descriptions rewritten ≤600 chars (pilot-dotnet's was ~2,000) —
+  these load into every session, so this is a permanent per-session token saving.
+- Reviewers: `effort: high` → `medium`. Implementors: hardcoded `model: sonnet`
+  removed so orchestrators can pass opus/sonnet per work-item complexity.
+- `dotnet-authorization` skill description trimmed under the combined 1024 cap
+  (caught by the new combined check).
+
+### Dropped from plan
+- `disable-model-invocation: true` on orchestration skills — verified it would block
+  the Skill tool inside /fsp-* commands (skills docs: user-invocable only).
+
 ## 2026-07-11 — fsp- command prefix + implementor & support agents (all plugins)
 
 pilot-core 0.15.0 → 0.16.0, pilot-angular 0.20.0 → 0.21.0, pilot-dotnet 0.24.0 → 0.25.0,

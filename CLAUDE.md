@@ -36,10 +36,34 @@ Each plugin directory MUST have:
 
 ## Agent conventions
 
-- Agent filenames follow `<stack>-{reviewer|implementor|support}.md`.
+- Agent filenames follow `<stack>-{reviewer|implementor|support}.md` or `fsp-<role>.md`.
 - `*-reviewer` and `*-support` agents MUST declare `disallowedTools: Write, Edit`
   (they diagnose and report — never modify files). `*-implementor` agents MUST NOT.
 - Every agent MUST have `name` and `description` frontmatter.
+
+## Model matrix (CI-enforced)
+
+| Tier | Model | Agents |
+|---|---|---|
+| T1 read/understand | `haiku` | `fsp-scout` |
+| T2 analyze/review | `sonnet` (or omit) | `*-reviewer` (effort: medium), `*-support`, `fsp-analyst`, `fsp-qa` |
+| T3 plan/complex implement | `opus` | `fsp-architect`; implementors via per-invocation override |
+
+- `*-implementor` agents MUST NOT hardcode a `model` — orchestrating commands pass
+  `opus` or `sonnet` per invocation based on work-item complexity.
+
+## Token discipline (STRICT, CI-enforced where possible)
+
+- Every agent body MUST contain a "Read budget" declaration.
+- Pipeline artifacts are files under `.claude/pilot/` (briefs, specs, plans, reports) —
+  agents hand off by file path, never by pasting content into chat.
+- No agent report quotes more than 10 lines of source per finding.
+- `plugin.json` `description` MUST be ≤600 chars (CI failure) — it loads into every
+  session. SKILL.md `description`+`when_to_use` target ≤500 chars (CI warning).
+- Do NOT set `disable-model-invocation: true` on skills that commands instruct Claude
+  to run (stack-detection, pilot-scaffold, audit-orchestration, batched-remediation,
+  convention-learner, mcp-discovery) — it would block the Skill tool and break
+  /fsp-init, /fsp-audit, /fsp-fix, /fsp-learn.
 
 ## SKILL.md conventions
 
