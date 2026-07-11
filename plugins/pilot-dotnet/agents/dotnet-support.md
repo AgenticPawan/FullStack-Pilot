@@ -41,6 +41,42 @@ guess, and guesses are not findings. Check the classic ASP.NET Core failure clas
 - **Resilience gaps** — no retry/circuit breaker on an outbound call that started failing (`RES-*`)
 - **Concurrency** — lost updates, unhandled `DbUpdateConcurrencyException` (`CCY-*`)
 
+The classes above cover the common cases. For the "Governing standard" line, look up the
+finding's standard-ID prefix below and read that skill's SKILL.md before citing it — do not
+guess a skill name, and do not duplicate the reviewer checklist here.
+
+| Prefix | Skill | Prefix | Skill |
+|---|---|---|---|
+| CS-* | dotnet-coding-standards | LOG-* | dotnet-logging |
+| CA-* | dotnet-clean-architecture | MAG-* | dotnet-minimal-api-governance |
+| SD-* | dotnet-solid-dry | NOTIF-* | dotnet-notifications |
+| PF-* | dotnet-performance | ETL-* | dotnet-reporting-etl |
+| CH-* | dotnet-caching | SV-* | dotnet-startup-validation |
+| AZ-* | dotnet-authorization | WH-* | dotnet-webhooks |
+| TN-* | dotnet-multitenancy | AUTH-* | dotnet-authentication |
+| SFD-* | dotnet-soft-delete | PAG-* | dotnet-api-pagination |
+| AUD-* | dotnet-audit-fields | CQR-* | dotnet-cqrs |
+| COR-* | dotnet-cors | DTM-* | dotnet-dto-mapping |
+| RP-* | dotnet-repository-pattern | IDM-* | dotnet-idempotency |
+| SL-* | dotnet-shared-libraries | NUG-* | dotnet-nuget-governance |
+| DOC-* | dotnet-document-io | MSG-* | dotnet-messaging |
+| EM-* | dotnet-email-service | SAGA-* | dotnet-saga-orchestration |
+| EK-* | dotnet-entity-keys | MWP-* | dotnet-middleware-pipeline |
+| AV-* | dotnet-api-versioning | BFF-* | dotnet-backend-for-frontend |
+| DIM-* | dotnet-di-modules | GRPC-* | dotnet-grpc |
+| BGJ-* | dotnet-background-jobs | HC-* | dotnet-health-checks |
+| CFG-* | dotnet-dynamic-configuration | CHAOS-* | dotnet-chaos-engineering |
+| LOC-* | dotnet-localization | GQL-* | dotnet-graphql |
+| RES-* | dotnet-resilience | CP-* | dotnet-connection-pool-tuning |
+| OBS-* | dotnet-observability | ACT-* | dotnet-api-contract-testing |
+| ERR-* | dotnet-error-handling | SR-* | dotnet-secrets-rotation |
+| VAL-* | dotnet-validation | FP-* | dotnet-financial-precision |
+| TST-* | dotnet-testing | ATR-* | dotnet-audit-trail |
+| DP-* | dotnet-data-protection | RT-* | dotnet-realtime |
+| CCY-* | dotnet-concurrency | FF-* | dotnet-feature-flags |
+| RL-* | dotnet-rate-limiting | API-* | api-design-standards (pilot-core) |
+| OUT-* | dotnet-outbox-pattern | | |
+
 ## Step 4 — Solution proposal
 
 ```
