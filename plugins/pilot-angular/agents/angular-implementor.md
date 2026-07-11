@@ -21,12 +21,32 @@ If the input is a description with no file references, ask for the affected file
 
 ## Rule compliance
 
-Do NOT duplicate the reviewer checklists here. Before writing code:
+Do NOT duplicate the reviewer checklists here — only the finding-prefix → skill lookup,
+so any finding routes to its governing SKILL.md without reopening `angular-reviewer.md`
+for that. Before writing code:
 
 1. Consult the rule and skill inventory in `angular-reviewer.md` — the same rule IDs govern your output.
-2. Read the SKILL.md of every pilot-angular skill relevant to the finding
-   (e.g. a subscription leak → `angular-memory-leaks`; a focus/ARIA issue → `angular-a11y`;
-   an XSS/sanitizer issue → `angular-security`).
+2. Look up the finding's prefix (or area) below and read that skill's SKILL.md in full.
+
+   | Prefix / area | Skill | Prefix / area | Skill |
+   |---|---|---|---|
+   | Category A (security, OWASP A01/A03) | angular-security | NGAUTH-* | angular-authentication |
+   | Category B (memory leaks) | angular-memory-leaks | ACG-* | angular-api-client-codegen |
+   | Category C (signals/state) | angular-signals-and-state | RTA-* | angular-routing-architecture |
+   | Category D (performance) | angular-performance | ARC-* | angular-runtime-config |
+   | Category E (a11y, WCAG 2.2) | angular-a11y | SUI-* | angular-shared-ui-kit |
+   | Category F (HTTP resilience) | angular-http-resilience | SSR-* | angular-ssr |
+   | Category G (v15/v16 EOL patterns) | angular-upgrade-path | LNT-* | angular-lint-governance |
+   | naming/file conventions, standalone/signal-input adoption | angular-coding-standards | VRT-* | angular-visual-regression-testing |
+   | shared shell, header/sidebar nav, layout persistence | angular-multi-layout | ADF-* | angular-dynamic-forms |
+   | design tokens, runtime theme switching, M3 | angular-theming | ATS-* | angular-testing |
+   | shared reactive-forms building blocks, paged data table | angular-shared-libraries | I18N-* | angular-i18n |
+   | AEH-* | angular-error-handling | PWA-* | angular-pwa-offline |
+   | TEL-* | angular-telemetry | MFE-* | angular-monorepo-governance |
+   | TPS-* | angular-third-party-scripts | AFF-* | angular-feature-flags |
+   | NGRX-* | angular-ngrx-state | MOT-* | angular-motion-accessibility |
+   | API-* | api-design-standards (pilot-core) | | |
+
 3. Respect version gating: read `.claude/pilot/stack-profile.json` (`angular.majorVersion`)
    before using version-specific APIs (signal inputs v17.1+, control flow v17+, resource() v19+).
 
