@@ -3,7 +3,7 @@
 // Each test sends a JSON payload to a hook script via stdin and checks stdout/exit.
 
 import { spawnSync } from 'node:child_process';
-import { writeFileSync, mkdtempSync } from 'node:fs';
+import { writeFileSync, mkdtempSync, mkdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import os from 'node:os';
@@ -255,6 +255,34 @@ check('passes constant-only SQL concatenation (no variable injected)',
   runHook('dangerous-patterns.js', pre('Write', '/p/Q.cs',
     'var sql = "SELECT * FROM " + "Users";')),
   false);
+
+// V6 — ReDoS guard: a catastrophic pattern in (user-extensible) config is skipped, never run.
+// Point the hook at a throwaway plugin root whose config carries a nested-unbounded-quantifier
+// pattern. If the guard regressed, running "(a+)+$" over 50 'a's + "!" would backtrack past the
+// 8s timeout (exit != 0); with the guard it returns instantly, unblocked, with a stderr breadcrumb.
+const tmpRedos = mkdtempSync(join(os.tmpdir(), 'pilot-core-redos-'));
+mkdirSync(join(tmpRedos, 'hooks', 'config'), { recursive: true });
+writeFileSync(join(tmpRedos, 'hooks', 'config', 'dangerous-patterns.json'), JSON.stringify({
+  patterns: [{
+    name: 'catastrophic-test', pattern: '(a+)+$', fileExtensions: ['.ts'],
+    action: 'deny', message: 'should never run',
+  }],
+}));
+{
+  const r = runHook('dangerous-patterns.js', pre('Write', '/p/evil.ts', 'a'.repeat(50) + '!'),
+    { CLAUDE_PLUGIN_ROOT: tmpRedos });
+  const ok = r.exit === 0
+    && r.json?.hookSpecificOutput?.permissionDecision !== 'deny'
+    && /skipped pattern "catastrophic-test"/.test(r.stderr);
+  if (ok) {
+    console.log('    ✓ ReDoS guard skips catastrophic config pattern (no hang, breadcrumb)');
+    passed++;
+  } else {
+    console.error('    ✗ ReDoS guard skips catastrophic config pattern');
+    console.error(`      exit=${r.exit} decision=${r.json?.hookSpecificOutput?.permissionDecision || 'none'} stderr=${r.stderr.slice(0, 160)}`);
+    failed++;
+  }
+}
 
 // ── formatter tests ───────────────────────────────────────────────────────────
 

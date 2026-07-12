@@ -121,6 +121,10 @@ Every `SKILL.md` MUST begin with YAML frontmatter containing all three fields:
 - `dangerous-patterns.json` entries carry an `action`: `deny` hard-blocks (security-grade);
   `warn` surfaces a non-blocking `systemMessage` via `permissionDecision: defer` (style/
   testability). Absent `action` defaults to `deny`. Do NOT put style opinions behind `deny`.
+- `dangerous-patterns.json` regex `pattern`s MUST avoid catastrophic backtracking (no nested
+  unbounded quantifiers like `(a+)+`) and stay ≤300 chars. The hook sniffs each config pattern
+  and **skips** a risky/over-long one (leaving a stderr breadcrumb) rather than compiling it, so
+  a bad pattern can never hang a Write for the hook timeout (ReDoS).
 
 ## Commit conventions
 

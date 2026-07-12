@@ -8,6 +8,21 @@
 const fs = require('node:fs');
 const path = require('node:path');
 
+// ReDoS defense-in-depth. The pattern file is advertised as user-extensible; a
+// catastrophic-backtracking regex would hang every Write/Edit for the whole hook
+// timeout. Before compiling a config pattern, sniff it for the two shapes that cause
+// this and skip (with a breadcrumb) rather than run them. Config is local/trusted, so
+// the threat is an accidental hang, not a bypass — skip-not-fail is the safe tradeoff.
+function isRiskyRegex(src) {
+  if (typeof src !== 'string') return true;
+  // Over-long patterns are hard to reason about — don't trust them at write time.
+  if (src.length > 300) return true;
+  // Classic catastrophic backtracking: a quantified group whose body is itself
+  // unbounded-quantified — (a+)+, (a*)*, (.+)*, (?:x+)* and friends.
+  if (/\([^()]*[+*][^()]*\)[*+]/.test(src)) return true;
+  return false;
+}
+
 // CLAUDE_PLUGIN_ROOT is set by Claude Code at runtime; fall back for local dev / tests
 const PLUGIN_ROOT = process.env.CLAUDE_PLUGIN_ROOT
   || path.resolve(__dirname, '../..');
@@ -87,6 +102,16 @@ function main() {
     if (pat.requireStackProfile) {
       const req = pat.requireStackProfile;
       if (req.dotnet === '>=8' && !detectDotnetGte8(projectDir)) continue;
+    }
+
+    // ReDoS guard — skip (don't compile/run) a catastrophic or over-long config pattern,
+    // leaving a breadcrumb so the maintainer can simplify it. See isRiskyRegex above.
+    if (isRiskyRegex(pat.pattern)) {
+      try {
+        process.stderr.write(
+          `[pilot-core/dangerous-patterns] skipped pattern "${pat.name}": ReDoS-prone or over-long — simplify it in dangerous-patterns.json\n`);
+      } catch (_) { /* ignore */ }
+      continue;
     }
 
     let re;
