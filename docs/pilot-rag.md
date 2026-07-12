@@ -46,6 +46,10 @@ is red.** Five phases are governed by skills; infrastructure (Phase 1) and the A
 the live surface the phases above build — prompt injection via indexed content, `/ask` authZ +
 rate limiting + input caps, secret redaction *before* embedding and a Qdrant purge path, and
 answer/error leakage. Applied during phases 3–5 and run as a security gate before shipping.
+[`llm-cost-safety`](../plugins/pilot-rag/skills/llm-cost-safety/SKILL.md) is its cost twin —
+per-request token/output ceilings, incremental+batched embedding on ingestion, bounded
+provider-failure handling, and per-request token logging. It matters most the moment the
+Ollama↔Azure OpenAI swap points the system at a metered provider.
 
 ## The provider-swap guarantee
 
