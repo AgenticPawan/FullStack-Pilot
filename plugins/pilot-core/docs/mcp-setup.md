@@ -1,10 +1,24 @@
 # MCP Server Setup — pilot-core
 
-pilot-core bundles five MCP servers in `.mcp.json`. Each server that requires
-credentials reads them from environment variables — no secrets are ever inlined.
+pilot-core ships MCP servers in two files:
 
-Set these variables in your shell profile, `.env` file (never committed), or your
-CI/CD secret store before starting Claude Code.
+- **`.mcp.json`** (auto-loaded) — contains **only `microsoft-learn`**, a Microsoft-hosted
+  HTTP endpoint with no auth. It is the one server that earns unconditional trust, so it is
+  the only one that starts automatically.
+- **`.mcp.json.example`** (opt-in) — contains `playwright`, `github`, `azure-mcp`, and
+  `sql-mcp`, each **pinned to a specific version/image tag**. None of these auto-load. They
+  are added to your project `.mcp.json` only with explicit per-server consent — run
+  `/mcp-discover` (or `/fsp-init`) and approve the ones you want. This keeps third-party code
+  from executing in your session until you opt in, and keeps versions pinned (no `@latest`).
+
+Each server that requires credentials reads them from environment variables — no secrets are
+ever inlined. Set these variables in your shell profile, `.env` file (never committed), or
+your CI/CD secret store before starting Claude Code.
+
+> **Pinning:** the versions in `.mcp.json.example` (`@playwright/mcp@0.0.78`,
+> `@azure/mcp@3.0.0-beta.25`, `ghcr.io/github/github-mcp-server:v1.5.0`) are intentionally
+> pinned. Review the upstream changelog before bumping them. For `sql-mcp`, pin the DAB CLI
+> at install time: `dotnet tool install --global Microsoft.DataApiBuilder --version 2.0.9`.
 
 ---
 

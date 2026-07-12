@@ -49,14 +49,22 @@ Look for the following patterns to identify additional MCP server candidates:
 
 For each candidate server, determine:
 
-1. Whether it is already **registered by pilot-core** (in `.mcp.json` bundled with this plugin):
-   - `github` — registered if project has `.github/` or `azure.githubActionsAzure`
-   - `microsoft-learn` — always available (HTTP, no auth)
-   - `playwright` — registered; relevant if Playwright detected in packages
-   - `azure-mcp` — registered; relevant if `azure` non-null
-   - `sql-mcp` — registered; relevant if `sql` non-null — **requires DAB config setup**
+1. Whether it is **auto-loaded by pilot-core** (in `.mcp.json` bundled with this plugin).
+   Only one server is auto-loaded, because only a first-party HTTP endpoint earns
+   unconditional trust:
+   - `microsoft-learn` — always available (HTTP, no auth, Microsoft-hosted). Starts
+     automatically; no action needed.
 
-2. Whether it is a **third-party candidate** needing a new `.mcp.json` entry:
+2. Whether it is a **pilot-core opt-in server** shipped in `.mcp.json.example` (bundled with
+   this plugin but NOT auto-loaded — it must be copied into the project `.mcp.json` with
+   explicit consent, exactly like a third-party server):
+   - `playwright` — relevant if Playwright detected in packages
+   - `github` — relevant if project has `.github/` or `azure.githubActionsAzure`;
+     **requires `GITHUB_PERSONAL_ACCESS_TOKEN` and Docker**
+   - `azure-mcp` — relevant if `azure` non-null; **requires Azure auth (`az login` or SP)**
+   - `sql-mcp` — relevant if `sql` non-null; **requires DAB config setup**
+
+3. Whether it is a **third-party candidate** needing a new `.mcp.json` entry:
    - Redis MCP
    - RabbitMQ MCP
    - MongoDB MCP
@@ -80,16 +88,24 @@ Print:
 ## MCP Server Candidates for <project-name>
 
 The following servers were identified based on your stack profile and dependencies.
-Servers already registered by pilot-core are marked ✓ registered.
-Third-party servers require your explicit approval before being added.
+Only `microsoft-learn` auto-loads with pilot-core. Every other server — including
+pilot-core's own opt-in servers — requires your explicit approval before being added.
 
-### Already registered by pilot-core
-(These start automatically when pilot-core is enabled. No action needed unless
-noted — configure credentials as described in docs/mcp-setup.md.)
+### Auto-loaded by pilot-core
+(Starts automatically when pilot-core is enabled. No action needed.)
 
-| # | Server         | Relevant because…                        | Action needed                                |
+| # | Server         | Relevant because…                        | Action needed |
+|---|----------------|------------------------------------------|---------------|
+| — | microsoft-learn | Official Microsoft/Azure docs (HTTP)    | None          |
+
+### pilot-core opt-in servers (require your approval)
+(Shipped in `.mcp.json.example`, pinned to specific versions, but NOT auto-loaded.
+Approving one copies its pinned entry into your project `.mcp.json`. Configure
+credentials as described in docs/mcp-setup.md.)
+
+| # | Server         | Relevant because…                        | Credentials / prerequisites                  |
 |---|----------------|------------------------------------------|----------------------------------------------|
-<row per registered server that is relevant>
+<row per relevant opt-in server: playwright / github / azure-mcp / sql-mcp>
 
 ### Third-party candidates (require your approval)
 
@@ -114,7 +130,11 @@ If the user replies NONE or approves no servers, skip to Step 6.
 
 For each approved server, add an entry to `PROJECT_ROOT/.mcp.json` (create the file if absent).
 
-Use the following configuration templates:
+**For approved pilot-core opt-in servers** (`playwright`, `github`, `azure-mcp`, `sql-mcp`):
+copy their entry **verbatim** from `${CLAUDE_PLUGIN_ROOT}/.mcp.json.example` — the versions
+there are already pinned. Never substitute `@latest` or an untagged image.
+
+**For approved third-party candidates**, use the following configuration templates:
 
 **Redis MCP** (`@modelcontextprotocol/server-redis`):
 ```json
@@ -177,11 +197,11 @@ Print:
 ```
 ## MCP Discovery Complete
 
-Registered by pilot-core (auto-start):
-  <list with status — credentials needed or ready>
+Auto-loaded by pilot-core:
+  microsoft-learn (HTTP, no credentials)
 
-Added to PROJECT_ROOT/.mcp.json:
-  <list of newly added servers, or "none">
+Added to PROJECT_ROOT/.mcp.json (with your approval):
+  <list of newly added servers — pilot-core opt-in + third-party — or "none">
 
 Next steps:
   • Set the required environment variables documented in
