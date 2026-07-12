@@ -53,7 +53,7 @@
     {
       "name": "pilot-rag",
       "source": "./plugins/pilot-rag",
-      "description": "Local, self-hosted RAG scaffold for full-stack Microsoft codebases. /fsp-rag-init builds a provider-agnostic Q&A system in ./pilot-rag/ that answers questions about your own Angular/.NET/SQL/Azure code, cited to real files: Microsoft.Extensions.AI (IChatClient/IEmbeddingGenerator, zero vendor refs in the core), Roslyn/Markdown/OpenAPI chunkers with idempotent Qdrant ingestion and secret redaction, an SSE /ask endpoint with a score floor and citations, and a retrieval-hit-rate eval gate. Ollama<->Azure OpenAI by appsettings — with the @rag-implementor agent",
+      "description": "Local, self-hosted RAG scaffold for full-stack Microsoft codebases. /fsp-rag-init builds a provider-agnostic Q&A system in ./pilot-rag/ that answers questions about your own Angular/.NET/SQL/Azure code, cited to real files: Microsoft.Extensions.AI (IChatClient/IEmbeddingGenerator, zero vendor refs in the core), Roslyn/Markdown/OpenAPI chunkers with idempotent Qdrant ingestion and secret redaction, an SSE /ask endpoint with a score floor and citations, and a retrieval-hit-rate eval gate. Ollama<->Azure OpenAI by appsettings — with the @rag-implementor and read-only @rag-reviewer agents",
       "author": { "name": "FullStack Pilot Contributors" },
       "license": "MIT",
       "keywords": ["rag", "retrieval", "self-hosted", "provider-agnostic", "qdrant", "ollama"]
