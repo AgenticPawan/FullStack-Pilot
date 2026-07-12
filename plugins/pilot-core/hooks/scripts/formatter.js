@@ -53,8 +53,12 @@ function findProjectFile(startDir) {
   return null;
 }
 
+// On Windows the npx launcher is `npx.cmd`; Node's spawn cannot resolve the bare `npx`
+// shim (ENOENT), which silently disables formatting. Resolve the platform-correct binary.
+const NPX_BIN = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+
 function runPrettier(filePath) {
-  const r = spawnSync('npx', ['--no-install', 'prettier', '--write', filePath], {
+  const r = spawnSync(NPX_BIN, ['--no-install', 'prettier', '--write', filePath], {
     encoding: 'utf8',
     timeout: 8000,
     stdio: ['ignore', 'pipe', 'pipe'],

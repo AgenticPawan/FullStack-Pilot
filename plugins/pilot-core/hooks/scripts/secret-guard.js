@@ -38,6 +38,39 @@ const PATTERNS = [
     // variable name screams "secret" + long literal string (not a template/env ref)
     re: /\b(?:secret|password|passwd|pwd|token)\s*[:=]\s*["'][^"'$`{<>\s]{12,}["']/i,
   },
+  {
+    name: 'AZURE_STORAGE_OR_SB_KEY',
+    // AccountKey=<base64> (Storage) or SharedAccessKey=<base64> (Service Bus/Event Hub).
+    // Requires a real 20+ char base64 value; excludes placeholders (<, {, %, $, @).
+    re: /(?:AccountKey|SharedAccessKey)=(?![<{%$@\s])[A-Za-z0-9+/]{20,}={0,2}/i,
+  },
+  {
+    name: 'AZURE_SAS_TOKEN',
+    // SAS signature query component — sig=<url-encoded base64>, 40+ chars.
+    re: /[?&]sig=(?![<{%$@\s])[A-Za-z0-9%+/]{40,}/i,
+  },
+  {
+    name: 'AWS_ACCESS_KEY_ID',
+    // AKIA/ASIA/AGPA/AIDA + 16 uppercase alphanumerics — AWS key-id shape.
+    re: /\b(?:AKIA|ASIA|AGPA|AIDA)[0-9A-Z]{16}\b/,
+  },
+  {
+    name: 'GITHUB_TOKEN',
+    // ghp_/gho_/ghu_/ghs_/ghr_ personal/app/refresh tokens.
+    re: /\bgh[pousr]_[A-Za-z0-9]{36,}\b/,
+  },
+  {
+    name: 'GOOGLE_API_KEY',
+    re: /\bAIza[0-9A-Za-z_-]{35}\b/,
+  },
+  {
+    name: 'SLACK_TOKEN',
+    re: /\bxox[baprs]-[A-Za-z0-9-]{10,}\b/,
+  },
+  {
+    name: 'STRIPE_SECRET_KEY',
+    re: /\b[rs]k_live_[A-Za-z0-9]{20,}\b/,
+  },
 ];
 
 function main() {
@@ -64,6 +97,11 @@ function main() {
     content = String(input.content ?? '');
   } else if (toolName === 'Edit') {
     content = String(input.new_string ?? '');
+  } else if (toolName === 'MultiEdit') {
+    // MultiEdit applies an array of {old_string, new_string} — scan every new value.
+    content = Array.isArray(input.edits)
+      ? input.edits.map((e) => String((e && e.new_string) ?? '')).join('\n')
+      : '';
   } else {
     process.exit(0);
   }
@@ -88,6 +126,11 @@ function main() {
 
 try {
   main();
-} catch (_) {
-  process.exit(0); // fail open on any unexpected error
+} catch (e) {
+  // Fail open — a guard crash must never block the developer — but leave a breadcrumb on
+  // stderr so a silent non-run is observable. Does not affect the permission flow.
+  try {
+    process.stderr.write(`[pilot-core/secret-guard] internal error, failing open: ${e && e.message}\n`);
+  } catch (_) { /* ignore */ }
+  process.exit(0);
 }

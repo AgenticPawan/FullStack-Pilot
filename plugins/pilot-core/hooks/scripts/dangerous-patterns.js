@@ -66,6 +66,11 @@ function main() {
     content = String(input.content ?? '');
   } else if (toolName === 'Edit') {
     content = String(input.new_string ?? '');
+  } else if (toolName === 'MultiEdit') {
+    // MultiEdit applies an array of {old_string, new_string} — scan every new value.
+    content = Array.isArray(input.edits)
+      ? input.edits.map((e) => String((e && e.new_string) ?? '')).join('\n')
+      : '';
   } else {
     process.exit(0);
   }
@@ -133,6 +138,11 @@ function main() {
 
 try {
   main();
-} catch (_) {
+} catch (e) {
+  // Fail open — a guard crash must never block the developer — but leave a breadcrumb on
+  // stderr so a silent non-run is observable. Does not affect the permission flow.
+  try {
+    process.stderr.write(`[pilot-core/dangerous-patterns] internal error, failing open: ${e && e.message}\n`);
+  } catch (_) { /* ignore */ }
   process.exit(0);
 }

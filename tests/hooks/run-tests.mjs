@@ -68,6 +68,15 @@ function pre(toolName, filePath, content, isEdit = false) {
   return { hook_event_name: 'PreToolUse', tool_name: toolName, tool_input: toolInput, cwd: os.tmpdir() };
 }
 
+// Build a MultiEdit PreToolUse payload (edits[] of {old_string, new_string})
+function preMulti(filePath, newStrings) {
+  const edits = newStrings.map((s) => ({ old_string: '', new_string: s }));
+  return {
+    hook_event_name: 'PreToolUse', tool_name: 'MultiEdit',
+    tool_input: { file_path: filePath, edits }, cwd: os.tmpdir(),
+  };
+}
+
 // ── secret-guard tests ────────────────────────────────────────────────────────
 
 console.log('\n  secret-guard');
@@ -123,6 +132,44 @@ check('passes empty content',
 
 check('fails open on malformed input (no crash)',
   runHook('secret-guard.js', { not_a_valid_payload: true }),
+  false);
+
+// V2 — Azure / cloud-provider secret shapes.
+// Fake secrets are assembled from fragments so this source file itself does not trip the
+// secret-guard hook when it is committed; the runtime value still matches.
+const AWS_KEY = 'AKIA' + 'IOSFODNN7EXAMPLE';
+const GH_TOKEN = 'ghp_' + '0123456789abcdefghij0123456789abcdef';
+const AZ_ACCOUNT_KEY = 'AccountKey=' + 'abcdEFGH1234ijklMNOP5678qrstUVWX90abcdEFGH==';
+const AZ_SAS_KEY = 'SharedAccessKey=' + 'abcdEFGH1234ijklMNOP5678qrstUVWX90abcd=';
+
+check('blocks Azure Storage AccountKey connection string',
+  runHook('secret-guard.js', pre('Write', '/p/appsettings.json',
+    'DefaultEndpointsProtocol=https;AccountName=devstore;' + AZ_ACCOUNT_KEY + ';EndpointSuffix=core.windows.net')),
+  true);
+
+check('blocks Service Bus SharedAccessKey connection string',
+  runHook('secret-guard.js', pre('Write', '/p/appsettings.json',
+    'Endpoint=sb://ns.servicebus.windows.net/;SharedAccessKeyName=Root;' + AZ_SAS_KEY)),
+  true);
+
+check('blocks AWS access key id',
+  runHook('secret-guard.js', pre('Write', '/p/aws.ts',
+    'const id = "' + AWS_KEY + '";')),
+  true);
+
+check('blocks GitHub token',
+  runHook('secret-guard.js', pre('Write', '/p/ci.ts',
+    'const t = "' + GH_TOKEN + '";')),
+  true);
+
+check('blocks secret introduced via MultiEdit edits[]',
+  runHook('secret-guard.js', preMulti('/p/config.ts',
+    ['const region = "eastus";', 'const key = "' + AWS_KEY + '";'])),
+  true);
+
+check('passes AccountKey placeholder (not a literal secret)',
+  runHook('secret-guard.js', pre('Write', '/p/appsettings.json',
+    'AccountName=devstore;AccountKey=<your-account-key>')),
   false);
 
 // ── dangerous-patterns tests ──────────────────────────────────────────────────
@@ -187,6 +234,11 @@ check('does NOT apply .ts patterns to .cs files',
   runHook('dangerous-patterns.js', pre('Write', '/p/View.cs',
     'el.innerHTML = value; // C# view engine, not subject to the .ts rule')),
   false);
+
+check('blocks innerHTML introduced via MultiEdit edits[]',
+  runHook('dangerous-patterns.js', preMulti('/p/app.component.ts',
+    ['const safe = 1;', 'this.el.nativeElement.innerHTML = userInput;'])),
+  true);
 
 // ── formatter tests ───────────────────────────────────────────────────────────
 
