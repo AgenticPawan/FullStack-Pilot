@@ -45,7 +45,7 @@
     {
       "name": "pilot-azure",
       "source": "./plugins/pilot-azure",
-      "description": "Azure / Bicep governance: CAF naming, security baseline (including a public-network-access hook rule), Well-Architected Framework review, Bicep patterns, centralized observability, CI/CD deployment security, multi-region disaster recovery, cost/FinOps guardrails, AKS cluster governance, API Management gateway policy review, enterprise-scale landing-zone topology, SLO/error-budget policy, and container image security — with @infra-reviewer, @infra-implementor, and @azure-support agents",
+      "description": "Azure / Bicep governance: CAF naming, security baseline (including a public-network-access hook rule), Well-Architected Framework review, Bicep patterns, centralized observability, CI/CD deployment security, multi-region disaster recovery, cost/FinOps guardrails, AKS cluster governance, API Management gateway policy review, enterprise-scale landing-zone topology, SLO/error-budget policy, and container image security — with @infra-reviewer, @infra-implementor, and @infra-support agents",
       "author": { "name": "FullStack Pilot Contributors" },
       "license": "MIT",
       "keywords": ["azure", "bicep", "aca", "cost", "deployment"]

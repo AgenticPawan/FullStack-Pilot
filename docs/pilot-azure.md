@@ -15,21 +15,21 @@ and Bicep production-readiness.
   stops for your sign-off before deleting/renaming a resource, changing RBAC, or
   loosening any network/public-access setting. Never commits. Invoke with
   `@infra-implementor fix <finding>`.
-- **azure-support** — product-support diagnosis for infrastructure symptoms (failed
+- **infra-support** — product-support diagnosis for infrastructure symptoms (failed
   deployments, unreachable services, scaling problems, cost spikes, firing alerts).
   When the bundled Azure MCP tools are configured it queries live diagnostics
   read-only (`resourcehealth`, `monitor`/`kusto`, `applens`, `quota`) — it never
   creates, modifies, restarts, or scales a resource. Reports the root cause with
   cited evidence and hands off to `@infra-implementor`; for recurring incidents it
   also emits a runbook stub per pilot-core's `incident-response-runbook`. Invoke with
-  `@azure-support <describe the symptom>`.
+  `@infra-support <describe the symptom>`.
 
 Usage example:
 
 ```
 > @infra-reviewer review infra/main.bicep
 > @infra-implementor fix the ASB-003 finding in infra/storage.bicep:12
-> @azure-support the container app works locally but returns 403 to Key Vault when deployed
+> @infra-support the container app works locally but returns 403 to Key Vault when deployed
 ```
 
 ## Skills

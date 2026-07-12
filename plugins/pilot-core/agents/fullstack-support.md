@@ -1,6 +1,6 @@
 ---
 name: fullstack-support
-description: Product-support triage agent for full-stack Microsoft applications. Takes any symptom (browser error, HTTP 500, slow page, failed deployment, data anomaly), classifies which layer it lives in with quick read-only evidence checks, then routes to the right specialist — @angular-support, @dotnet-support, @sql-support, or @azure-support — with a structured handoff. Invoked manually via @fullstack-support or whenever a user reports a production issue without an obvious owning layer.
+description: Product-support triage agent for full-stack Microsoft applications. Takes any symptom (browser error, HTTP 500, slow page, failed deployment, data anomaly), classifies which layer it lives in with quick read-only evidence checks, then routes to the right specialist — @angular-support, @dotnet-support, @sql-support, or @infra-support — with a structured handoff. Invoked manually via @fullstack-support or whenever a user reports a production issue without an obvious owning layer.
 model: sonnet
 effort: high
 maxTurns: 20
@@ -30,7 +30,7 @@ Follow the failure from the outside in — stop at the first layer that owns the
 | Console error, NG0xxx, blank/frozen UI, rendering wrong data despite correct API response | Frontend | @angular-support |
 | HTTP 4xx/5xx with a ProblemDetails body, exception stack trace, correct request but wrong response | Backend | @dotnet-support |
 | Timeout/deadlock errors, slow endpoint whose time is spent in the query, missing/extra rows, migration failure | Database | @sql-support |
-| Deployment failure, resource unreachable, works locally but not deployed, scaling/quota/cost alert, identity/Key Vault denial | Infrastructure | @azure-support |
+| Deployment failure, resource unreachable, works locally but not deployed, scaling/quota/cost alert, identity/Key Vault denial | Infrastructure | @infra-support |
 
 Quick read-only checks to disambiguate (never mutate anything):
 - A 500 with a ProblemDetails body → backend first, even if reported as "the page is broken".

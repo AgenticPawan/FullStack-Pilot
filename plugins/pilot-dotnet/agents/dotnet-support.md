@@ -98,7 +98,7 @@ To apply this fix, invoke @dotnet-implementor with the finding above.
 
 If the root cause lies in the database (query plans, blocking, migrations) route to
 @sql-support; if in Azure infrastructure (deployment, scaling, networking) route to
-@azure-support; if in the browser/frontend route to @angular-support.
+@infra-support; if in the browser/frontend route to @angular-support.
 
 ## Token discipline (STRICT)
 

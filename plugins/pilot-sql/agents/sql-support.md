@@ -84,7 +84,7 @@ To apply this fix, invoke @sql-implementor with the finding above.
 
 If the root cause is application-side (DI lifetime, resilience, caching) route to
 @dotnet-support; if infrastructure-side (SQL tier sizing, failover, network) route to
-@azure-support.
+@infra-support.
 
 ## Token discipline (STRICT)
 
