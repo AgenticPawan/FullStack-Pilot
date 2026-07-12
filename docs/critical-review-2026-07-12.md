@@ -89,12 +89,14 @@ constraint and/or add a length/complexity sniff before compiling.
 
 ## 2. Resources not wired properly
 
-### W1 — `fullstack-reviewer` / `fullstack-implementor` may not be registering · P1 (verify)
+### W1 — `fullstack-reviewer` / `fullstack-implementor` may not be registering · P1 (verified — false alarm)
 Both files exist on disk and look valid, but in the review session the runtime agent registry
 surfaced `fullstack-support`, all `fsp-*`, and every per-stack trio — **not** these two. If real
 (not a stale session snapshot), the headline pilot-core feature (the cross-stack orchestrator
-trio advertised in `marketplace.json` and `plugin.json`) is dead-wired. **Action:** confirm with
-a fresh agent listing before trusting the marketing copy.
+trio advertised in `marketplace.json` and `plugin.json`) is dead-wired. **Verified:** a fresh
+session's live agent registry lists all three — `pilot-core:fullstack-reviewer`,
+`pilot-core:fullstack-implementor`, and `pilot-core:fullstack-support`. The original snapshot was
+stale; the orchestrator trio registers correctly. No fix needed.
 
 ### W2 — RAG ships an implementor with no reviewer, over real attack surface · P1
 `plugins/pilot-rag/agents/` contains only `rag-implementor.md` (full Write tools) — no
@@ -132,11 +134,21 @@ was not applied to the catalog copy. **Fixed:** extended the 600-char check to
 CLAUDE.md, and trimmed all six catalog descriptions under the cap (pilot-core, -angular,
 -dotnet, -sql, -azure, -rag) without dropping distinguishing content.
 
-### S2 — Undocumented agent frontmatter keys · P2 (verify)
+### S2 — Undocumented agent frontmatter keys · P2 (verified — keys are real)
 `plugins/pilot-core/agents/fullstack-reviewer.md:5-6` sets `effort: high` and `maxTurns: 25`.
 Neither appears in the CLAUDE.md model matrix nor is validated. Per the repo's own "re-fetch the
 live plugin docs before any schema change" rule, confirm these are real agent-schema keys — if
-not, they're silently ignored and the reviewer isn't running at the intended depth.
+not, they're silently ignored and the reviewer isn't running at the intended depth. **Verified**
+against the live subagent reference (`code.claude.com/docs/en/sub-agents.md`, "Supported
+frontmatter fields"): both are documented, supported keys — `maxTurns` ("maximum number of
+agentic turns before the subagent stops") and `effort` ("effort level when this subagent is
+active; overrides the session effort level"; options `low|medium|high|xhigh|max`). The docs list
+only `hooks`, `mcpServers`, and `permissionMode` as fields ignored for *plugin* subagents;
+`effort`/`maxTurns` are honored, so the reviewer does run at `effort: high`. Not a defect — these
+keys are used across 28 agents in the marketplace, not just this file. **Minor follow-up (not
+blocking):** the CLAUDE.md model matrix documents `effort` but not `maxTurns`; both could be
+noted there for completeness. No CI validation added — the runtime already ignores unknown keys
+harmlessly, and a whitelist validator would need maintenance against an evolving schema.
 
 ### S3 — Several CLAUDE.md "MUST" rules have no CI backstop · P1 (fixed)
 `validate.mjs` checks hook-script *existence* but not: (a) matchers are never `"*"`, (b) scripts
@@ -191,11 +203,11 @@ The catalog is deep (137 skills); these are genuine **unowned seams**, not fille
 | V5 silent fail-open | **Fixed** — stderr breadcrumb on catch |
 | V4 SQL interpolation | **Fixed** — interpolation `warn` (FromSqlInterpolated-aware) + tightened concat `deny` |
 | V6 ReDoS guard | Deferred — low severity, docs/complexity sniff |
-| W1 agent registration | **Verify** — fresh agent listing |
+| W1 agent registration | **Verified** — fresh registry lists all three; original snapshot was stale, no fix needed |
 | W2 rag-reviewer | Deferred — new agent |
 | W3 azure naming | Deferred — rename + routing update |
 | W4 MCP expectation | Deferred — copy/consent change |
 | S1 marketplace desc budget | **Fixed** — 600-char cap in validator + CLAUDE.md standard + 6 descriptions trimmed |
-| S2 effort/maxTurns keys | Verify — against live agent schema |
+| S2 effort/maxTurns keys | **Verified** — both are documented, honored plugin-subagent frontmatter fields; not ignored, no defect |
 | S3 CI backstops | **Fixed** — matcher/no-recursion/pilot-core-dep checks in validator |
 | S4 disallowedTools parse | Deferred — parser normalization |
