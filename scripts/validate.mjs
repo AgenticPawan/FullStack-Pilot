@@ -75,6 +75,16 @@ function readJSON(filePath) {
 
 // ─── YAML frontmatter parser (single-level keys, no external deps) ───────────
 
+function stripQuotes(val) {
+  if (
+    (val.startsWith('"') && val.endsWith('"')) ||
+    (val.startsWith("'") && val.endsWith("'"))
+  ) {
+    return val.slice(1, -1);
+  }
+  return val;
+}
+
 function parseFrontmatter(content) {
   // Must begin with exactly "---" on its own line
   if (!content.startsWith('---')) return null;
@@ -86,17 +96,29 @@ function parseFrontmatter(content) {
   if (!closeMatch) return null;
   const yamlBlock = body.slice(0, closeMatch.index);
   const fm = {};
-  for (const line of yamlBlock.split('\n')) {
-    const m = line.match(/^([\w-]+)\s*:\s*(.*)\s*$/);
+  const lines = yamlBlock.split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    const m = lines[i].match(/^([\w-]+)\s*:\s*(.*?)\s*$/);
     if (!m) continue;
+    const key = m[1];
     let val = m[2].trim();
-    if (
-      (val.startsWith('"') && val.endsWith('"')) ||
-      (val.startsWith("'") && val.endsWith("'"))
-    ) {
-      val = val.slice(1, -1);
+    // Inline flow list: key: [a, b, c]  → array
+    if (val.startsWith('[') && val.endsWith(']')) {
+      fm[key] = val.slice(1, -1).split(',').map(s => stripQuotes(s.trim())).filter(Boolean);
+      continue;
     }
-    fm[m[1]] = val;
+    // Block sequence: value empty, following lines are "  - item"  → array
+    if (val === '') {
+      const items = [];
+      let j = i + 1;
+      for (; j < lines.length; j++) {
+        const im = lines[j].match(/^\s*-\s+(.*?)\s*$/);
+        if (!im) break;
+        items.push(stripQuotes(im[1].trim()));
+      }
+      if (items.length) { fm[key] = items; i = j - 1; continue; }
+    }
+    fm[key] = stripQuotes(val);
   }
   return fm;
 }
@@ -251,7 +273,14 @@ for (const filePath of walk(ROOT)) {
   }
 
   const base = path.basename(filePath, '.md');
-  const disallowed = (fm['disallowedTools'] ?? '').split(',').map(s => s.trim());
+  // disallowedTools may be authored as a scalar CSV ("Write, Edit") or a YAML list
+  // ([Write, Edit] / block form). parseFrontmatter yields an array for list forms and a
+  // string for scalar — normalize both to a token list before the membership check so the
+  // read-only guarantee never evaluates wrong on authoring style (S4).
+  const rawDisallowed = fm['disallowedTools'];
+  const disallowed = Array.isArray(rawDisallowed)
+    ? rawDisallowed.map(s => String(s).trim())
+    : String(rawDisallowed ?? '').split(',').map(s => s.trim());
   const readOnly = disallowed.includes('Write') && disallowed.includes('Edit');
 
   if ((base.endsWith('-reviewer') || base.endsWith('-support')) && !readOnly) {
