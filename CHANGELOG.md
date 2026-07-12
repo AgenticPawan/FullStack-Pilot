@@ -3,6 +3,47 @@
 All notable changes to FullStack Pilot are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 2026-07-12 — critical-review remediation (security + wiring hardening)
+
+pilot-core 0.21.0 → 0.22.0, pilot-angular 0.22.0 → 0.22.1, pilot-dotnet 0.26.0 → 0.26.1,
+pilot-sql 0.14.1 → 0.14.2, pilot-azure 0.15.1 → 0.15.2, pilot-rag 0.1.0 → 0.2.0. Full findings
+in [docs/CRITICAL-REVIEW-2026-07.md](docs/CRITICAL-REVIEW-2026-07.md); tracked fixes in
+[docs/REMEDIATION-PLAN-2026-07.md](docs/REMEDIATION-PLAN-2026-07.md).
+
+### Security
+- **`.mcp.json` no longer auto-registers third-party servers.** The bundled, auto-loaded
+  `plugins/pilot-core/.mcp.json` now contains **only `microsoft-learn`** (first-party HTTP, no
+  credentials). `playwright`, `github`, `azure-mcp`, and `sql-mcp` moved to a new
+  `plugins/pilot-core/.mcp.json.example`, **version-pinned** (`@playwright/mcp@0.0.78`,
+  `@azure/mcp@3.0.0-beta.25`, `ghcr.io/github/github-mcp-server:v1.5.0`) and added to a project
+  only through `mcp-discovery`'s per-server consent gate — resolving the contradiction with the
+  plugin's own supply-chain and consent policies (no more `@latest`).
+- **`rag-security` skill added** to pilot-rag — governs the live `/ask` endpoint and Qdrant
+  store: prompt injection via indexed content, `/ask` authZ + rate limiting + `topK`/question
+  caps, secret redaction *before* embedding + a Qdrant purge path, and answer/error leakage.
+
+### Fixed
+- **Hook severity mis-calibration.** `dangerous-patterns.json` entries now carry an `action`:
+  `deny` hard-blocks (security-grade); `warn` surfaces a non-blocking `systemMessage` via
+  `permissionDecision: defer` and lets the write proceed. `DateTime.Now` (a testability
+  preference) is downgraded from a hard block to `warn`, so developers stop disabling the whole
+  hook and losing the P0 security patterns with it.
+- **innerHTML remediation no longer recommends the XSS escape hatch.** The
+  `UNSAFE_INNERHTML_ASSIGNMENT` message now points at safe `[innerHTML]` binding/interpolation
+  instead of `DomSanitizer.bypassSecurityTrustHtml()` (which the `angular-no-bypass-without-comment`
+  rule flags).
+
+### Changed
+- **Security hooks are guaranteed present.** The security hooks live only in pilot-core, so
+  every stack plugin (`pilot-angular`, `pilot-dotnet`, `pilot-sql`, `pilot-azure`, `pilot-rag`)
+  now declares `"dependencies": [{ "name": "pilot-core" }]` — Claude Code installs pilot-core
+  alongside them, closing the gap where installing a stack plugin alone left its guards inert.
+- `scripts/validate.mjs` now validates every `.mcp.json` (valid JSON + `mcpServers` object) and
+  **warns on floating references** (`@latest`, untagged / `:latest` docker image) in the
+  auto-loaded file; `.mcp.json.example` is JSON-validated but exempt from the pin check.
+
+`node scripts/validate.mjs` exits 0 (24/24 hook tests).
+
 ## 2026-07-12 — pilot-rag: self-hosted RAG scaffold plugin
 
 New plugin `pilot-rag` 0.1.0. Added to `marketplace.json`, `CODEOWNERS`, `README.md`
