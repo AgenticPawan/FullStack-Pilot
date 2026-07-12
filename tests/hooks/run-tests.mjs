@@ -240,6 +240,22 @@ check('blocks innerHTML introduced via MultiEdit edits[]',
     ['const safe = 1;', 'this.el.nativeElement.innerHTML = userInput;'])),
   true);
 
+// V4 — interpolated SQL (warn) and tightened concat (no constant-only false positive)
+checkWarn('warns (non-blocking) on interpolated SQL sink',
+  runHook('dangerous-patterns.js', pre('Write', '/p/Repo.cs',
+    'ctx.Database.ExecuteSqlRaw($"DELETE FROM Logs WHERE Id = {id}");'),
+    { CLAUDE_PROJECT_DIR: os.tmpdir() }));
+
+check('passes benign interpolated string (no SQL shape)',
+  runHook('dangerous-patterns.js', pre('Write', '/p/Log.cs',
+    'var msg = $"Loaded {count} rows from cache";')),
+  false);
+
+check('passes constant-only SQL concatenation (no variable injected)',
+  runHook('dangerous-patterns.js', pre('Write', '/p/Q.cs',
+    'var sql = "SELECT * FROM " + "Users";')),
+  false);
+
 // ── formatter tests ───────────────────────────────────────────────────────────
 
 console.log('\n  formatter');
