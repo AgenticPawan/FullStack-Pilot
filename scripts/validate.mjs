@@ -155,14 +155,26 @@ for (const filePath of walk(ROOT)) {
   const { ok, data, error } = readJSON(filePath);
   if (!ok) {
     fail(`${rel}: invalid JSON — ${error}`);
-  } else if (typeof data.name !== 'string' || !data.name.trim()) {
-    fail(`${rel}: missing required field "name" (string)`);
+    continue;
+  }
+  let pluginOk = true;
+  if (typeof data.name !== 'string' || !data.name.trim()) {
+    fail(`${rel}: missing required field "name" (string)`); pluginOk = false;
   } else if (typeof data.description === 'string' && data.description.length > 600) {
     // Token budget: plugin descriptions load into every session.
-    fail(`${rel}: "description" is ${data.description.length} chars — max is 600 (per-session token cost)`);
-  } else {
-    pass(`${rel}: name="${data.name}" version="${data.version ?? 'unset'}"`);
+    fail(`${rel}: "description" is ${data.description.length} chars — max is 600 (per-session token cost)`); pluginOk = false;
   }
+  // Every stack plugin depends on pilot-core — the security-hook enforcement floor lives
+  // ONLY there (CLAUDE.md), so pilot-core must be installed alongside it. pilot-core is the
+  // base and is exempt from depending on itself.
+  if (typeof data.name === 'string' && data.name.trim() && data.name !== 'pilot-core') {
+    const deps = Array.isArray(data.dependencies) ? data.dependencies : [];
+    const hasCore = deps.some(d => d === 'pilot-core' || (d && d.name === 'pilot-core'));
+    if (!hasCore) {
+      fail(`${rel}: stack plugin "${data.name}" must declare a dependency on pilot-core`); pluginOk = false;
+    }
+  }
+  if (pluginOk) pass(`${rel}: name="${data.name}" version="${data.version ?? 'unset'}"`);
 }
 
 if (pluginCount === 0) info('no plugin.json files found');
@@ -339,9 +351,31 @@ for (const filePath of walk(ROOT)) {
     return s;
   };
 
+  // Hook scripts MUST NOT recurse node_modules/bin/obj/dist/.git (CLAUDE.md). Concrete
+  // proxy: a readdir/readdirSync call combined with { recursive: true } in the source.
+  const scanned = new Set();
+  const scanScript = (abs) => {
+    if (!abs.endsWith('.js') || scanned.has(abs) || !fs.existsSync(abs)) return;
+    scanned.add(abs);
+    let src = '';
+    try { src = fs.readFileSync(abs, 'utf8'); } catch { return; }
+    if (/\breaddir(?:Sync)?\b/.test(src) && /recursive\s*:\s*true/.test(src)) {
+      fail(`${rel}: hook script recurses directories (readdir recursive:true): ${path.relative(pluginRoot, abs)}`);
+      localErrors++;
+    }
+  };
+
   for (const matchers of Object.values(data.hooks)) {
     if (!Array.isArray(matchers)) continue;
     for (const matcherEntry of matchers) {
+      // Matchers MUST be scoped — never the wildcard "*" (or empty). CLAUDE.md.
+      if (typeof matcherEntry.matcher === 'string') {
+        const m = matcherEntry.matcher.trim();
+        if (m === '*' || m === '') {
+          fail(`${rel}: hook matcher must be scoped, never "*" or empty (got ${JSON.stringify(matcherEntry.matcher)})`);
+          localErrors++;
+        }
+      }
       if (!Array.isArray(matcherEntry.hooks)) continue;
       for (const hook of matcherEntry.hooks) {
         if (hook.type !== 'command') continue;
@@ -353,9 +387,12 @@ for (const filePath of walk(ROOT)) {
           if (!fs.existsSync(abs)) {
             fail(`${rel}: hook script not found: ${hook.command}`);
             localErrors++;
-          } else if (!IS_WINDOWS) {
-            try { fs.accessSync(abs, fs.constants.X_OK); }
-            catch { fail(`${rel}: hook script not executable: ${hook.command}`); localErrors++; }
+          } else {
+            if (!IS_WINDOWS) {
+              try { fs.accessSync(abs, fs.constants.X_OK); }
+              catch { fail(`${rel}: hook script not executable: ${hook.command}`); localErrors++; }
+            }
+            scanScript(abs);
           }
         }
 
@@ -369,6 +406,8 @@ for (const filePath of walk(ROOT)) {
             if (!fs.existsSync(abs)) {
               fail(`${rel}: hook script not found (args): ${arg}`);
               localErrors++;
+            } else {
+              scanScript(abs);
             }
           }
         }
