@@ -1,3 +1,7 @@
+---
+description: Detect the project's Angular/.NET/SQL/Azure stack, then scaffold CLAUDE.md and governance rules from the confirmed profile.
+---
+
 # /fsp-init — Stack Detection and Scaffold
 
 Analyze the **current working repository** (the user's project, not this plugin repo), produce a technology-stack profile, then scaffold the project's Claude setup based on the confirmed profile.

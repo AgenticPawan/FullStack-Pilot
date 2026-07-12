@@ -1,3 +1,7 @@
+---
+description: Scaffold a local, provider-agnostic RAG system into ./pilot-rag/ that answers questions about your own Angular/.NET/SQL/Azure codebase.
+---
+
 # /fsp-rag-init — Scaffold a Local Self-Hosted RAG System
 
 Scaffold **pilot-rag** into the **current working repository** (the user's project, not this plugin repo): a local, provider-agnostic RAG system that answers developer questions about the project's own Angular/.NET/SQL/Azure codebase. Everything lands under `pilot-rag/` inside the project. The target application code is **read-only** — pilot-rag never modifies it.

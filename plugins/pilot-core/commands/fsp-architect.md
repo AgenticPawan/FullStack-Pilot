@@ -1,3 +1,8 @@
+---
+description: Assess the whole solution against the pilot target state and emit a ranked, buildable gap register with ready-to-run /fsp-build lines.
+argument-hint: "[--scope <area>] [--refresh]"
+---
+
 # /fsp-architect — Whole-Solution Architecture Assessment
 
 Assess the **current working repository** (the user's project, not this plugin repo) against the target state encoded in the pilot skills, and produce a ranked gap register with ready-to-run enhancement plans. This is the "find what we should build next" command — each gap it emits carries a `/fsp-build` line that feeds straight into the one-shot pipeline.

@@ -340,11 +340,26 @@ for (const filePath of walk(ROOT)) {
 
   commandCount++;
   const rel = path.relative(ROOT, filePath);
+  let cmdOk = true;
+
   if (!path.basename(filePath).startsWith('fsp-')) {
-    fail(`${rel}: command files must be named fsp-<verb>.md`);
-  } else {
-    pass(`${rel}: fsp- prefix OK`);
+    fail(`${rel}: command files must be named fsp-<verb>.md`); cmdOk = false;
   }
+
+  // Every command MUST expose a `description` in YAML frontmatter — it populates the
+  // /-menu (UX) and loads into the session (token cost), so it is both a discoverability
+  // signal and a budgeted field. `argument-hint` stays optional (no-arg commands omit it).
+  const content = fs.readFileSync(filePath, 'utf8');
+  const fm = parseFrontmatter(content);
+  if (!fm) {
+    fail(`${rel}: missing YAML frontmatter (file must begin with a --- block carrying a description)`); cmdOk = false;
+  } else if (typeof fm['description'] !== 'string' || !fm['description'].trim()) {
+    fail(`${rel}: missing required frontmatter field "description"`); cmdOk = false;
+  } else if (fm['description'].length > 250) {
+    fail(`${rel}: "description" is ${fm['description'].length} chars — max is 250 (per-session token cost)`); cmdOk = false;
+  }
+
+  if (cmdOk) pass(`${rel}: fsp- prefix + description OK`);
 }
 
 if (commandCount === 0) info('no command files found');

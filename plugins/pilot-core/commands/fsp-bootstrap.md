@@ -1,3 +1,8 @@
+---
+description: Detect and scaffold missing baseline modules (auth, authz, logging, error-handling, health-checks, CORS) before feature work begins.
+argument-hint: "[--yes]"
+---
+
 # /fsp-bootstrap — Scaffold Baseline Modules
 
 Detect which baseline modules a project already has — authentication, authorization,

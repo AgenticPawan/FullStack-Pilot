@@ -1,3 +1,7 @@
+---
+description: Run a full security audit (automated scanners plus a bounded Claude triage pass) on the current repository and write a findings report.
+---
+
 # /fsp-audit — Security Audit Pipeline
 
 Run a full security audit on the **current working repository** (the user's project, not this plugin repo). Combines automated scanners with a bounded Claude semantic pass — scanners detect, Claude triages. Never present a Claude-only scan as a complete audit.
