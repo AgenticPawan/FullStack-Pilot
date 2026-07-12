@@ -122,13 +122,15 @@ prompt for consent at first support-agent use.
 
 ## 3. Development standards not followed
 
-### S1 — Token-discipline rule has a hole exactly where tokens cost most · P1
+### S1 — Token-discipline rule has a hole exactly where tokens cost most · P1 (fixed)
 CLAUDE.md caps `plugin.json` description at 600 chars and `scripts/validate.mjs:160` enforces it
 — **but only on `plugin.json`.** The `marketplace.json` per-plugin descriptions *also* load
 (during browsing) and run 2x+ over: `pilot-dotnet`'s is ~1,400 chars, `pilot-core`'s ~1,300. The
 validator has no marketplace-description length check. The discipline the repo prides itself on
-is not applied to the catalog copy. **Recommendation:** extend the 600-char check to
-`marketplace.json` plugin entries (or reconcile the standard) and trim the descriptions.
+was not applied to the catalog copy. **Fixed:** extended the 600-char check to
+`marketplace.json` plugin entries in `validate.mjs`, documented the cap as a standard in
+CLAUDE.md, and trimmed all six catalog descriptions under the cap (pilot-core, -angular,
+-dotnet, -sql, -azure, -rag) without dropping distinguishing content.
 
 ### S2 — Undocumented agent frontmatter keys · P2 (verify)
 `plugins/pilot-core/agents/fullstack-reviewer.md:5-6` sets `effort: high` and `maxTurns: 25`.
@@ -193,7 +195,7 @@ The catalog is deep (137 skills); these are genuine **unowned seams**, not fille
 | W2 rag-reviewer | Deferred — new agent |
 | W3 azure naming | Deferred — rename + routing update |
 | W4 MCP expectation | Deferred — copy/consent change |
-| S1 marketplace desc budget | Deferred — validator + trims |
+| S1 marketplace desc budget | **Fixed** — 600-char cap in validator + CLAUDE.md standard + 6 descriptions trimmed |
 | S2 effort/maxTurns keys | Verify — against live agent schema |
 | S3 CI backstops | **Fixed** — matcher/no-recursion/pilot-core-dep checks in validator |
 | S4 disallowedTools parse | Deferred — parser normalization |
