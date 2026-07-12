@@ -3,6 +3,20 @@
 All notable changes to FullStack Pilot are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 2026-07-12 — pilot-core: distributed-tracing-correlation skill
+
+pilot-core 0.22.0 → 0.23.0.
+
+### Added
+- **`distributed-tracing-correlation`** — a cross-cutting seam skill (like
+  `api-design-standards`) over `angular-telemetry`, `dotnet-observability`, and
+  `azure-observability`, which each instrument one layer in isolation. Checks that one user
+  action yields **one correlated trace** Angular → .NET → SQL → Azure: W3C `traceparent`
+  propagated from the SPA (DTC-001), no bespoke correlation-ID header standing in for it
+  (DTC-002), trace context carried across async boundaries — messaging, background jobs —
+  (DTC-003, P0), SQL/downstream calls emitted as child spans of the request (DTC-004), and the
+  trace id surfaced to the user and enriched into logs (DTC-005). Listed in `docs/pilot-core.md`.
+
 ## 2026-07-12 — critical-review remediation (security + wiring hardening)
 
 pilot-core 0.21.0 → 0.22.0, pilot-angular 0.22.0 → 0.22.1, pilot-dotnet 0.26.0 → 0.26.1,

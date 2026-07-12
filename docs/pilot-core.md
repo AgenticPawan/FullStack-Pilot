@@ -128,6 +128,11 @@ roster and workflow examples.
   leave open if a raw prod backup is restored into a less-protected environment:
   anonymization/masking for prod-to-lower-environment refreshes, synthetic-data seeding
   as a lighter-weight alternative, and a documented policy for what's safe to copy at all.
+- **distributed-tracing-correlation** — the seam over `angular-telemetry`,
+  `dotnet-observability`, and `azure-observability`, each of which covers one side only:
+  end-to-end W3C `traceparent` correlation Angular → .NET → SQL → Azure, trace context carried
+  across async boundaries (messaging, background jobs), downstream/SQL calls joined into the
+  request trace, and one trace id surfaced to users and enriched into logs.
 
 ## Hooks
 

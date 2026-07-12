@@ -120,7 +120,8 @@ agent file — would catch future rename drift.
 Lower-urgency additions from the review §4 — tracked here so they are not lost:
 
 - **`distributed-tracing-correlation` (pilot-core)** — W3C `traceparent` propagation across
-  Angular → .NET → SQL → Azure (Skill #2).
+  Angular → .NET → SQL → Azure (Skill #2). **DONE 2026-07-12** — shipped with 5 standard IDs
+  (DTC-001..005), pilot-core 0.23.0.
 - **`zero-downtime-deployment` (pilot-sql / pilot-core)** — expand/contract migrations
   coordinated with rolling deploys (Skill #3).
 - **`llm-cost-safety` (pilot-rag)** — token/cost ceilings, context limits, output validation
