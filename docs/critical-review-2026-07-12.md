@@ -136,12 +136,13 @@ Neither appears in the CLAUDE.md model matrix nor is validated. Per the repo's o
 live plugin docs before any schema change" rule, confirm these are real agent-schema keys — if
 not, they're silently ignored and the reviewer isn't running at the intended depth.
 
-### S3 — Several CLAUDE.md "MUST" rules have no CI backstop · P1
+### S3 — Several CLAUDE.md "MUST" rules have no CI backstop · P1 (fixed)
 `validate.mjs` checks hook-script *existence* but not: (a) matchers are never `"*"`, (b) scripts
 avoid recursing `node_modules/bin/obj`, (c) every stack plugin declares the `pilot-core`
 dependency. All hold today by hand — nothing prevents regression. For a governance product,
-"enforced by discipline" is the anti-pattern it sells against. **Recommendation:** add the three
-checks to the validator.
+"enforced by discipline" is the anti-pattern it sells against. **Fixed:** all three checks added
+to `validate.mjs` and verified end-to-end (each fails the build on a crafted violation; the clean
+repo still exits 0).
 
 ### S4 — Brittle `disallowedTools` parsing · P2
 `validate.mjs:237` splits on comma; `parseFrontmatter` handles only scalar keys, so a YAML-list
@@ -194,5 +195,5 @@ The catalog is deep (137 skills); these are genuine **unowned seams**, not fille
 | W4 MCP expectation | Deferred — copy/consent change |
 | S1 marketplace desc budget | Deferred — validator + trims |
 | S2 effort/maxTurns keys | Verify — against live agent schema |
-| S3 CI backstops | Deferred — 3 validator checks |
+| S3 CI backstops | **Fixed** — matcher/no-recursion/pilot-core-dep checks in validator |
 | S4 disallowedTools parse | Deferred — parser normalization |
