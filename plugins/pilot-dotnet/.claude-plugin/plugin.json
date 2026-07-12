@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "pilot-dotnet",
   "displayName": "Pilot .NET",
-  "version": "0.26.1",
+  "version": "0.26.2",
   "dependencies": [{ "name": "pilot-core" }],
   "description": "C# / ASP.NET Core governance: Clean Architecture, SOLID/DRY, permissions-only authorization, authentication, security headers (HSTS/CSP/anti-forgery/safe deserialization), multitenancy, EF Core patterns, API versioning/pagination/idempotency, resilience (Polly), observability, ProblemDetails error handling, caching, messaging (outbox, saga, Service Bus), background jobs, feature flags, SignalR, gRPC, BFF, testing, data protection, and NuGet governance. Ships @dotnet-reviewer, @dotnet-implementor, and @dotnet-support",
   "author": {
