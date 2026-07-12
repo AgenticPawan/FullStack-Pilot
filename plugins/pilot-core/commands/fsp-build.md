@@ -1,3 +1,8 @@
+---
+description: Build a feature end to end — spec, plan, implement, review, test — on a reviewable branch in one command.
+argument-hint: "<feature | spec-file | GAP-id> [--resume <slug>] [--yes]"
+---
+
 # /fsp-build — One-Shot Feature Pipeline
 
 Build a feature, module, or assessment gap in the **current working repository** end to end — spec → scout → plan → implement → review → test → report — with one command. Work lands on branch `pilot/build-<feature-slug>`, never merged automatically. The whole delivery team runs: fsp-analyst (BA), fsp-scout (context), fsp-architect (plan), the stack implementors, the paired stack reviewers, and fsp-qa.

@@ -1,3 +1,8 @@
+---
+description: Apply /fsp-audit findings for one severity tier on a safe, reviewable git branch.
+argument-hint: "--batch <P0|P1|P2|P3> [--max-files <n>]"
+---
+
 # /fsp-fix — Batched Security Remediation
 
 Apply fixes for findings produced by `/fsp-audit`. Creates a reviewable git branch

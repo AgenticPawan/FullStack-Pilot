@@ -1,3 +1,8 @@
+---
+description: Distil durable, project-specific knowledge from the current session into reviewable knowledge files. Never commits.
+argument-hint: "[--conventions] [--lessons] [--diff-only]"
+---
+
 # /fsp-learn — Session Knowledge Distillation
 
 Distil durable, project-specific knowledge from the current session into versioned
