@@ -75,6 +75,16 @@ function readJSON(filePath) {
 
 // ─── YAML frontmatter parser (single-level keys, no external deps) ───────────
 
+function stripQuotes(val) {
+  if (
+    (val.startsWith('"') && val.endsWith('"')) ||
+    (val.startsWith("'") && val.endsWith("'"))
+  ) {
+    return val.slice(1, -1);
+  }
+  return val;
+}
+
 function parseFrontmatter(content) {
   // Must begin with exactly "---" on its own line
   if (!content.startsWith('---')) return null;
@@ -86,17 +96,29 @@ function parseFrontmatter(content) {
   if (!closeMatch) return null;
   const yamlBlock = body.slice(0, closeMatch.index);
   const fm = {};
-  for (const line of yamlBlock.split('\n')) {
-    const m = line.match(/^([\w-]+)\s*:\s*(.*)\s*$/);
+  const lines = yamlBlock.split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    const m = lines[i].match(/^([\w-]+)\s*:\s*(.*?)\s*$/);
     if (!m) continue;
+    const key = m[1];
     let val = m[2].trim();
-    if (
-      (val.startsWith('"') && val.endsWith('"')) ||
-      (val.startsWith("'") && val.endsWith("'"))
-    ) {
-      val = val.slice(1, -1);
+    // Inline flow list: key: [a, b, c]  → array
+    if (val.startsWith('[') && val.endsWith(']')) {
+      fm[key] = val.slice(1, -1).split(',').map(s => stripQuotes(s.trim())).filter(Boolean);
+      continue;
     }
-    fm[m[1]] = val;
+    // Block sequence: value empty, following lines are "  - item"  → array
+    if (val === '') {
+      const items = [];
+      let j = i + 1;
+      for (; j < lines.length; j++) {
+        const im = lines[j].match(/^\s*-\s+(.*?)\s*$/);
+        if (!im) break;
+        items.push(stripQuotes(im[1].trim()));
+      }
+      if (items.length) { fm[key] = items; i = j - 1; continue; }
+    }
+    fm[key] = stripQuotes(val);
   }
   return fm;
 }
@@ -132,6 +154,11 @@ if (!fs.existsSync(mktPath)) {
         if (!p.source || (typeof p.source !== 'string' && typeof p.source !== 'object')) {
           fail(`.claude-plugin/marketplace.json plugins[${i}] ("${p.name}"): missing "source"`); mktOk = false;
         }
+        // Token budget: catalog descriptions load on the marketplace browse surface —
+        // same 600-char cap as plugin.json for parity (CLAUDE.md token discipline).
+        if (typeof p.description === 'string' && p.description.length > 600) {
+          fail(`.claude-plugin/marketplace.json plugins[${i}] ("${p.name}"): "description" is ${p.description.length} chars — max is 600 (catalog token cost)`); mktOk = false;
+        }
       }
       if (mktOk) pass(`.claude-plugin/marketplace.json: valid — ${data.plugins.length} plugin(s)`);
     }
@@ -155,14 +182,26 @@ for (const filePath of walk(ROOT)) {
   const { ok, data, error } = readJSON(filePath);
   if (!ok) {
     fail(`${rel}: invalid JSON — ${error}`);
-  } else if (typeof data.name !== 'string' || !data.name.trim()) {
-    fail(`${rel}: missing required field "name" (string)`);
+    continue;
+  }
+  let pluginOk = true;
+  if (typeof data.name !== 'string' || !data.name.trim()) {
+    fail(`${rel}: missing required field "name" (string)`); pluginOk = false;
   } else if (typeof data.description === 'string' && data.description.length > 600) {
     // Token budget: plugin descriptions load into every session.
-    fail(`${rel}: "description" is ${data.description.length} chars — max is 600 (per-session token cost)`);
-  } else {
-    pass(`${rel}: name="${data.name}" version="${data.version ?? 'unset'}"`);
+    fail(`${rel}: "description" is ${data.description.length} chars — max is 600 (per-session token cost)`); pluginOk = false;
   }
+  // Every stack plugin depends on pilot-core — the security-hook enforcement floor lives
+  // ONLY there (CLAUDE.md), so pilot-core must be installed alongside it. pilot-core is the
+  // base and is exempt from depending on itself.
+  if (typeof data.name === 'string' && data.name.trim() && data.name !== 'pilot-core') {
+    const deps = Array.isArray(data.dependencies) ? data.dependencies : [];
+    const hasCore = deps.some(d => d === 'pilot-core' || (d && d.name === 'pilot-core'));
+    if (!hasCore) {
+      fail(`${rel}: stack plugin "${data.name}" must declare a dependency on pilot-core`); pluginOk = false;
+    }
+  }
+  if (pluginOk) pass(`${rel}: name="${data.name}" version="${data.version ?? 'unset'}"`);
 }
 
 if (pluginCount === 0) info('no plugin.json files found');
@@ -234,7 +273,14 @@ for (const filePath of walk(ROOT)) {
   }
 
   const base = path.basename(filePath, '.md');
-  const disallowed = (fm['disallowedTools'] ?? '').split(',').map(s => s.trim());
+  // disallowedTools may be authored as a scalar CSV ("Write, Edit") or a YAML list
+  // ([Write, Edit] / block form). parseFrontmatter yields an array for list forms and a
+  // string for scalar — normalize both to a token list before the membership check so the
+  // read-only guarantee never evaluates wrong on authoring style (S4).
+  const rawDisallowed = fm['disallowedTools'];
+  const disallowed = Array.isArray(rawDisallowed)
+    ? rawDisallowed.map(s => String(s).trim())
+    : String(rawDisallowed ?? '').split(',').map(s => s.trim());
   const readOnly = disallowed.includes('Write') && disallowed.includes('Edit');
 
   if ((base.endsWith('-reviewer') || base.endsWith('-support')) && !readOnly) {
@@ -339,9 +385,31 @@ for (const filePath of walk(ROOT)) {
     return s;
   };
 
+  // Hook scripts MUST NOT recurse node_modules/bin/obj/dist/.git (CLAUDE.md). Concrete
+  // proxy: a readdir/readdirSync call combined with { recursive: true } in the source.
+  const scanned = new Set();
+  const scanScript = (abs) => {
+    if (!abs.endsWith('.js') || scanned.has(abs) || !fs.existsSync(abs)) return;
+    scanned.add(abs);
+    let src = '';
+    try { src = fs.readFileSync(abs, 'utf8'); } catch { return; }
+    if (/\breaddir(?:Sync)?\b/.test(src) && /recursive\s*:\s*true/.test(src)) {
+      fail(`${rel}: hook script recurses directories (readdir recursive:true): ${path.relative(pluginRoot, abs)}`);
+      localErrors++;
+    }
+  };
+
   for (const matchers of Object.values(data.hooks)) {
     if (!Array.isArray(matchers)) continue;
     for (const matcherEntry of matchers) {
+      // Matchers MUST be scoped — never the wildcard "*" (or empty). CLAUDE.md.
+      if (typeof matcherEntry.matcher === 'string') {
+        const m = matcherEntry.matcher.trim();
+        if (m === '*' || m === '') {
+          fail(`${rel}: hook matcher must be scoped, never "*" or empty (got ${JSON.stringify(matcherEntry.matcher)})`);
+          localErrors++;
+        }
+      }
       if (!Array.isArray(matcherEntry.hooks)) continue;
       for (const hook of matcherEntry.hooks) {
         if (hook.type !== 'command') continue;
@@ -353,9 +421,12 @@ for (const filePath of walk(ROOT)) {
           if (!fs.existsSync(abs)) {
             fail(`${rel}: hook script not found: ${hook.command}`);
             localErrors++;
-          } else if (!IS_WINDOWS) {
-            try { fs.accessSync(abs, fs.constants.X_OK); }
-            catch { fail(`${rel}: hook script not executable: ${hook.command}`); localErrors++; }
+          } else {
+            if (!IS_WINDOWS) {
+              try { fs.accessSync(abs, fs.constants.X_OK); }
+              catch { fail(`${rel}: hook script not executable: ${hook.command}`); localErrors++; }
+            }
+            scanScript(abs);
           }
         }
 
@@ -369,6 +440,8 @@ for (const filePath of walk(ROOT)) {
             if (!fs.existsSync(abs)) {
               fail(`${rel}: hook script not found (args): ${arg}`);
               localErrors++;
+            } else {
+              scanScript(abs);
             }
           }
         }

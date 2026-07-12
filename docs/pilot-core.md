@@ -75,7 +75,7 @@ layer, delegate to the owning specialist(s), and aggregate the result:
   and you don't know which layer owns it (frontend? backend? database? Azure?), invoke
   `@fullstack-support <describe the symptom>`. It classifies the symptom with quick
   read-only evidence checks, rules layers out, and hands off to the right specialist —
-  `@angular-support`, `@dotnet-support`, `@sql-support`, or `@azure-support` — with a
+  `@angular-support`, `@dotnet-support`, `@sql-support`, or `@infra-support` — with a
   structured handoff so you don't repeat yourself. Production-down or data-integrity
   symptoms get flagged urgent per the `incident-response-runbook` skill; suspected
   security incidents get a `/fsp-audit` recommendation alongside the diagnosis.

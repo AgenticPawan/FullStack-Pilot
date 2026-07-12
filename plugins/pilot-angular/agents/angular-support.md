@@ -88,7 +88,7 @@ To apply this fix, invoke @angular-implementor with the finding above.
 ```
 
 If the root cause is server-side route to @dotnet-support; database → @sql-support;
-hosting/CDN/deployment → @azure-support.
+hosting/CDN/deployment → @infra-support.
 
 ## Token discipline (STRICT)
 

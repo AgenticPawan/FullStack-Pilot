@@ -78,6 +78,17 @@ Create a standalone Angular app in `pilot-rag/ui` (**do not touch the target app
 
 Run the `rag-eval` skill. It generates `pilot-rag/eval/questions.json` (20 questions from the manifest, each with `expectedFilePath`), the xUnit `Eval`-category hit-rate runner, and the network-free provider-swap test, and writes `README.md` (quickstart ≤5 commands, Mermaid architecture diagram, provider-swap appsettings diff, Known blind spots copied from the manifest). **Gate:** eval ≥ 80% retrieval hit-rate (tune chunking/topK/filters if below — **never lower the bar**); provider-swap test green.
 
+### Final gate — Security & scaffold review
+
+`rag-security` is applied while building phases 3–5; now run it as a review across the whole
+scaffold. Invoke **`@rag-reviewer`** on `pilot-rag/` — it checks the generated code against every
+pilot-rag skill (security, provider abstraction, chunking, retrieval, eval, cost safety) and emits
+findings with `RAG-*` IDs. **Gate:** the reviewer's three `rag-security` hard gates all pass
+(injection probe returns a cited on-corpus/not-found answer; `/ask` authenticated off loopback,
+rate-limited, and clamps oversized `topK`/question; a seeded secret appears nowhere in the Qdrant
+payload or an answer, and the purge path works). Route any CRITICAL/HIGH finding back to
+`@rag-implementor` and re-review — do not ship the scaffold with a failing security gate.
+
 ## Reporting
 
 After each phase, print: **phase name, gate result, files created/modified, and any deviation from this pipeline with justification.** Deviations without justification are defects. After Phase 6, print the deliverables recap: `docker-compose.yml`, setup scripts, `RagPilot.sln` (4 projects), Angular UI, `INGESTION_MANIFEST.md`, `eval/questions.json`, `README.md`.

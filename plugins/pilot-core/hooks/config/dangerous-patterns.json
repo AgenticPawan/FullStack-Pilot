@@ -14,10 +14,19 @@
       "id": "no-sql-concat",
       "name": "SQL_STRING_CONCATENATION",
       "action": "deny",
-      "description": "SQL query built by string concatenation opens SQL-injection surface",
+      "description": "SQL query built by string concatenation with a variable opens SQL-injection surface",
       "fileExtensions": [".cs"],
-      "pattern": "\\b(?:SELECT|INSERT|UPDATE|DELETE)\\b[^\\n]*\"\\s*\\+|\\+\\s*\"[^\\n]*\\b(?:SELECT|INSERT|UPDATE|DELETE)\\b",
+      "pattern": "\\b(?:SELECT|INSERT|UPDATE|DELETE)\\b[^\\n]*\"\\s*\\+\\s*(?=[A-Za-z_(])|\\+\\s*\"[^\\n]*\\b(?:SELECT|INSERT|UPDATE|DELETE)\\b",
       "message": "Use parameterized queries: EF Core, Dapper, or SqlCommand.Parameters"
+    },
+    {
+      "id": "no-sql-interpolation",
+      "name": "SQL_STRING_INTERPOLATION",
+      "action": "warn",
+      "description": "Interpolated SQL string — a sink unless routed through a parameterizing API",
+      "fileExtensions": [".cs"],
+      "pattern": "\\$@?\"[^\"\\n]*(?:\\bSELECT\\b[^\"\\n]*\\bFROM\\b|\\bINSERT\\s+INTO\\b|\\bUPDATE\\b[^\"\\n]*\\bSET\\b|\\bDELETE\\s+FROM\\b)[^\"\\n]*\\{[^}\\n]*\\}",
+      "message": "Interpolated SQL detected. Safe ONLY via EF Core FromSqlInterpolated/ExecuteSqlInterpolated (holes become parameters). If this is FromSqlRaw/ExecuteSqlRaw or assigned into raw command text, it is a SQL-injection sink — parameterize it. Advisory — not blocked."
     },
     {
       "id": "no-datetime-now",

@@ -133,10 +133,10 @@ implementor: `@dotnet-implementor fix the <ID> finding in <file>:<line>`. The
 implementor edits your working tree but never commits — review and commit the diff
 yourself.
 
-### `@azure-support` / `@angular-support` can't run live diagnostics
+### `@infra-support` / `@angular-support` can't run live diagnostics
 
 Live inspection is optional and depends on the bundled MCP servers being configured
-(Azure credentials for `azure-support`; a running app for `angular-support`'s
+(Azure credentials for `infra-support`; a running app for `angular-support`'s
 Playwright inspection). Without them the agents still work — they fall back to
 reading source, config, and the logs you paste.
 

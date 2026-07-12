@@ -242,7 +242,7 @@ their name in any Claude Code prompt — no command needed:
 | Angular | `@angular-reviewer` | `@angular-implementor` | `@angular-support` |
 | .NET | `@dotnet-reviewer` | `@dotnet-implementor` | `@dotnet-support` |
 | SQL Server / EF Core | `@sql-reviewer` | `@sql-implementor` | `@sql-support` |
-| Azure / Bicep | `@infra-reviewer` | `@infra-implementor` | `@azure-support` |
+| Azure / Bicep | `@infra-reviewer` | `@infra-implementor` | `@infra-support` |
 | All layers at once | `@fullstack-reviewer` | `@fullstack-implementor` | `@fullstack-support` |
 
 ### The review → implement loop
@@ -283,7 +283,7 @@ triages the symptom (browser error? 500? slow query? deploy failure?), rules lay
 out with quick evidence checks, and hands off to the right specialist for you.
 
 Two of the support agents can go beyond reading source code when the bundled MCP
-servers are configured: `@azure-support` can query live Azure diagnostics
+servers are configured: `@infra-support` can query live Azure diagnostics
 (resource health, metrics, App Lens, log queries), and `@angular-support` can inspect
 the running app's browser console and network traffic via Playwright. Both stay
 strictly read-only — they never restart, scale, or mutate anything.

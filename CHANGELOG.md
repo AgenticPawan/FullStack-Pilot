@@ -3,6 +3,65 @@
 All notable changes to FullStack Pilot are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 2026-07-12 — critical-review-2026-07-12 remediation (security floor + wiring + CI backstops)
+
+pilot-core 0.24.0 → 0.25.0, pilot-rag 0.3.0 → 0.4.0, pilot-azure 0.15.2 → 0.16.0,
+pilot-angular 0.22.1 → 0.22.2, pilot-dotnet 0.26.1 → 0.26.2, pilot-sql 0.14.2 → 0.14.3.
+Closes every finding in [docs/critical-review-2026-07-12.md](docs/critical-review-2026-07-12.md)
+— all Fixed or Verified.
+
+### Security (pilot-core hooks — the enforcement floor)
+- **secret-guard now detects the secrets an Azure shop actually leaks (V2).** Added seven
+  high-signal, placeholder-aware patterns: Azure Storage `AccountKey`, Service Bus/Event Hub
+  `SharedAccessKey`, SAS `sig`, AWS `AKIA…`, GitHub `ghp_/ghs_/gho_`, Google `AIza…`, and Stripe
+  `sk_live_`. The flagship pre-commit barrier previously missed Azure storage keys and Service Bus
+  connection strings entirely.
+- **MultiEdit no longer bypasses the floor (V3).** Both PreToolUse hooks match `Write|Edit|MultiEdit`
+  and extract the `edits[]` array, so a secret or dangerous pattern introduced via MultiEdit is seen.
+- **ReDoS guard on user-extensible config (V6).** `dangerous-patterns.js` sniffs each config regex
+  before compiling and skips an over-long (>300 char) or nested-unbounded-quantifier pattern
+  (`(a+)+` and friends) with a stderr breadcrumb, so a bad pattern can never hang a write.
+
+### Fixed
+- **Formatter silently no-op'd on Windows, the target OS (V1).** `formatter.js` now invokes
+  `npx.cmd` on win32, so Prettier actually runs instead of `ENOENT`-failing with zero signal.
+- **Silent fail-open is now observable (V5).** Each hook's top-level catch emits a one-line stderr
+  breadcrumb, so "the guard did not run" is visible rather than indistinguishable from "clean".
+- **SQL-injection rule caught up to the EF-Core era (V4).** Added an interpolated-SQL `warn`
+  (`FromSqlInterpolated`/`ExecuteSqlInterpolated`-aware, so the safe parameterizing APIs aren't
+  false-flagged) and tightened the concat `deny` so constant-only concatenation no longer trips it
+  while variable injection still does.
+
+### Added
+- **`rag-reviewer` (pilot-rag) — the missing reviewer over real attack surface (W2).** pilot-rag
+  was the only plugin generating production code (a live `/ask` SSE endpoint + Qdrant store) yet
+  shipped an implementor with no reviewer. Added a read-only `rag-reviewer` (`disallowedTools:
+  Write, Edit`) with a `RAG-*` standard-ID catalog spanning all six pilot-rag skills and the three
+  `rag-security` hard gates, wired into `/fsp-rag-init` as a final review gate.
+
+### Changed
+- **Azure trio shares one prefix (W3).** Renamed `azure-support` → `infra-support` to match
+  `infra-reviewer`/`infra-implementor`, updating every reference across the support agents' routing,
+  `fullstack-support`, manifests, `README`, and docs. Removes the routing special-case.
+- **Live-diagnostic capability sets honest expectations (W4).** The `infra-support` description and
+  the pilot-azure `plugin.json` now state that live Azure MCP diagnostics are opt-in via
+  `.mcp.json.example` (only `microsoft-learn` auto-loads), matching the agent body's "when
+  available" hedge.
+
+### CI (scripts/validate.mjs)
+- **Marketplace description budget (S1).** The 600-char cap that governed `plugin.json` now also
+  covers `marketplace.json` per-plugin descriptions (they load on the catalog browse surface). Six
+  descriptions trimmed under the cap (pilot-core/-dotnet ran 2x+ over); standard documented in CLAUDE.md.
+- **CLAUDE.md "MUST" rules gained CI backstops (S3).** The validator now enforces: hook matchers are
+  never `"*"`, hook scripts don't recurse `node_modules/bin/obj`, and every stack plugin declares the
+  `pilot-core` dependency.
+- **`disallowedTools` parsing normalized (S4).** `parseFrontmatter` understands scalar, inline-flow
+  (`[Write, Edit]`), and block-sequence list forms, so the read-only guarantee evaluates correctly
+  regardless of authoring style.
+- **Verified, no change needed:** the `fullstack-*` orchestrator trio registers correctly (W1 — the
+  review's registry snapshot was stale); `effort` and `maxTurns` are documented, honored plugin-
+  subagent frontmatter fields, so the reviewers run at intended depth (S2).
+
 ## 2026-07-12 — backlog skills: zero-downtime-deployment + llm-cost-safety
 
 pilot-core 0.23.0 → 0.24.0, pilot-rag 0.2.0 → 0.3.0. Completes the skill backlog from

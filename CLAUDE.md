@@ -62,9 +62,10 @@ Each plugin directory MUST have:
   agents hand off by file path, never by pasting content into chat.
 - No agent report quotes more than 10 lines of source per finding.
 - `plugin.json` `description` MUST be ≤600 chars (CI failure) — it loads into every
-  session. SKILL.md `description`+`when_to_use` target ≤800 chars combined (CI
-  warning; hard cap 1024). When trimming, compress description prose only — NEVER
-  remove `when_to_use` keywords; they are the skill-routing signal.
+  session. Each `marketplace.json` plugin `description` carries the same ≤600 cap (CI
+  failure) — it loads on the catalog browse surface. SKILL.md `description`+`when_to_use`
+  target ≤800 chars combined (CI warning; hard cap 1024). When trimming, compress
+  description prose only — NEVER remove `when_to_use` keywords; they are the skill-routing signal.
 - Do NOT set `disable-model-invocation: true` on skills that commands instruct Claude
   to run (stack-detection, pilot-scaffold, audit-orchestration, batched-remediation,
   convention-learner, mcp-discovery, fsp-build-orchestration, foundation-bootstrap, and
@@ -120,6 +121,10 @@ Every `SKILL.md` MUST begin with YAML frontmatter containing all three fields:
 - `dangerous-patterns.json` entries carry an `action`: `deny` hard-blocks (security-grade);
   `warn` surfaces a non-blocking `systemMessage` via `permissionDecision: defer` (style/
   testability). Absent `action` defaults to `deny`. Do NOT put style opinions behind `deny`.
+- `dangerous-patterns.json` regex `pattern`s MUST avoid catastrophic backtracking (no nested
+  unbounded quantifiers like `(a+)+`) and stay ≤300 chars. The hook sniffs each config pattern
+  and **skips** a risky/over-long one (leaving a stderr breadcrumb) rather than compiling it, so
+  a bad pattern can never hang a Write for the hook timeout (ReDoS).
 
 ## Commit conventions
 

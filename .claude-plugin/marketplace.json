@@ -13,7 +13,7 @@
     {
       "name": "pilot-core",
       "source": "./plugins/pilot-core",
-      "description": "Shared governance: stack detection, /fsp-bootstrap baseline-module scaffolding (auth/authz/logging/error-handling/health-checks/CORS) gated ahead of feature work, audit/fix pipelines, MCP discovery, dependency-supply-chain policy (patch SLAs, SBOM), git branching/PR-review workflow governance, CI-level secret scanning, cross-cutting REST API design standards, SLO-gated load/performance testing, incident-response runbook/postmortem governance, open-source license compliance, safe test-data management, and the fsp- prefixed commands (/fsp-init, /fsp-audit, /fsp-fix, /fsp-learn, /fsp-architect, /fsp-build, /fsp-bootstrap) used by every other pilot plugin, plus the autonomous delivery-team agents (fsp-analyst, fsp-scout, fsp-architect, fsp-qa) and the cross-stack @fullstack-reviewer/@fullstack-implementor/@fullstack-support trio that orchestrates the per-stack specialists across Angular/.NET/SQL/Azure",
+      "description": "Shared governance for full-stack Microsoft shops: stack detection, /fsp-bootstrap baseline-module scaffolding (auth/authz/logging/error-handling/health-checks/CORS), and the fsp- pipelines (init, audit, fix, learn, architect, build) every other pilot plugin builds on. Adds MCP discovery, supply-chain/license policy, CI secret scanning, REST API standards, SLO load testing, and incident-response governance, plus the autonomous delivery team (fsp-analyst/scout/architect/qa) and the cross-stack @fullstack-reviewer/@fullstack-implementor/@fullstack-support trio.",
       "author": { "name": "FullStack Pilot Contributors" },
       "license": "MIT",
       "keywords": ["governance", "commits", "code-health", "microsoft"]
@@ -21,7 +21,7 @@
     {
       "name": "pilot-angular",
       "source": "./plugins/pilot-angular",
-      "description": "Angular / TypeScript governance: signals, performance, accessibility, UI/UX visual consistency (spacing/type scale, responsive layout, visual hierarchy, design-to-code fidelity), motion/reduced-motion accessibility, security (permissions-ONLY route guards/UI gating), HTTP resilience, the v15-to-v20 upgrade path, coding standards, multi-layout shells, theming, shared UI libraries, JSON-schema-driven dynamic forms, testing conventions, i18n, global error handling, PWA/offline support, frontend telemetry, Nx/module-federation monorepo governance, third-party script governance, OpenAPI/NSwag-generated API clients, a shared UI kit for dialogs/toasts/confirmation prompts, frontend feature flags, and classic NgRx state governance — with @angular-reviewer, @angular-implementor, and @angular-support agents",
+      "description": "Angular / TypeScript governance for v15-20: signals and state, performance, WCAG 2.2 AA accessibility, UI/UX visual consistency, motion/reduced-motion, permissions-only route guards, OIDC/PKCE authentication, HTTP resilience, routing, SSR, coding standards, theming, shared UI libraries and JSON-schema dynamic forms, testing, i18n, global error handling, PWA/offline, telemetry, Nx/module-federation monorepo and lint governance, OpenAPI/NSwag clients, third-party scripts, feature flags, and NgRx — with @angular-reviewer, @angular-implementor, and @angular-support agents",
       "author": { "name": "FullStack Pilot Contributors" },
       "license": "MIT",
       "keywords": ["angular", "typescript", "signals", "standalone", "ui-ux", "design-system"]
@@ -29,7 +29,7 @@
     {
       "name": "pilot-dotnet",
       "source": "./plugins/pilot-dotnet",
-      "description": "C# / ASP.NET Core governance: Clean Architecture, SOLID/DRY, performance, caching, permissions-ONLY auth (no role checks), security headers (HSTS/CSP/anti-forgery/safe JSON deserialization), multitenancy, soft delete, audit fields, CORS, repository pattern, shared libraries, Excel/PDF document I/O, email templating, Guid entity keys, API versioning, modular DI, middleware pipeline ordering, Hangfire background jobs, DB-backed configuration, localization, HTTP/EF Core resilience, liveness/readiness health checks, observability, error handling, validation, testing, data protection, concurrency, rate limiting, the transactional outbox pattern, Saga orchestration, Service Bus/Event Grid messaging, gRPC, Backend-for-Frontend aggregation, feature flags, real-time/SignalR, compliance access-audit logging, financial/currency precision, secrets rotation, API contract testing, connection-pool tuning, GraphQL design, chaos engineering, DTO/entity mapping boundaries, structured logging architecture, API idempotency keys, CQRS/MediatR command-query separation, and NuGet Central Package Management governance — with @dotnet-reviewer, @dotnet-implementor, and @dotnet-support agents",
+      "description": "C# / ASP.NET Core governance: Clean Architecture, SOLID/DRY, performance, caching, permissions-only auth, authentication, security headers, multitenancy, soft delete, audit fields/trail, repository pattern, EF Core patterns, API versioning/pagination/idempotency, Polly resilience, observability, ProblemDetails error handling, validation, messaging (outbox/saga/Service Bus), background jobs, feature flags, SignalR, gRPC, BFF, CQRS/MediatR, testing, data protection, and NuGet governance — with @dotnet-reviewer, @dotnet-implementor, and @dotnet-support agents",
       "author": { "name": "FullStack Pilot Contributors" },
       "license": "MIT",
       "keywords": ["dotnet", "csharp", "aspnetcore", "efcore", "nuget", "security-headers"]
@@ -45,7 +45,7 @@
     {
       "name": "pilot-azure",
       "source": "./plugins/pilot-azure",
-      "description": "Azure / Bicep governance: CAF naming, security baseline (including a public-network-access hook rule), Well-Architected Framework review, Bicep patterns, centralized observability, CI/CD deployment security, multi-region disaster recovery, cost/FinOps guardrails, AKS cluster governance, API Management gateway policy review, enterprise-scale landing-zone topology, SLO/error-budget policy, and container image security — with @infra-reviewer, @infra-implementor, and @azure-support agents",
+      "description": "Azure / Bicep governance: CAF naming, security baseline (including a public-network-access hook rule), Well-Architected Framework review, Bicep patterns, centralized observability, CI/CD deployment security, multi-region disaster recovery, cost/FinOps guardrails, AKS cluster governance, API Management gateway policy review, enterprise-scale landing-zone topology, SLO/error-budget policy, and container image security — with @infra-reviewer, @infra-implementor, and @infra-support agents",
       "author": { "name": "FullStack Pilot Contributors" },
       "license": "MIT",
       "keywords": ["azure", "bicep", "aca", "cost", "deployment"]
@@ -53,7 +53,7 @@
     {
       "name": "pilot-rag",
       "source": "./plugins/pilot-rag",
-      "description": "Local, self-hosted RAG scaffold for full-stack Microsoft codebases. /fsp-rag-init builds a provider-agnostic question-answering system in ./pilot-rag/ within your project so Claude Code can answer questions about your own Angular/.NET/SQL/Azure code, cited to real files: Microsoft.Extensions.AI (IChatClient/IEmbeddingGenerator) with an architecture test proving zero vendor refs in the core, Roslyn/regex/Markdown/OpenAPI/config chunkers with idempotent Qdrant ingestion and secret redaction, an SSE /ask endpoint with a cosine score floor and source citation, an Angular Signals chat UI, and a retrieval hit-rate eval gate — swap Ollama<->Azure OpenAI by appsettings only, .NET-only orchestration (no Python/LangChain/Semantic Kernel), read-only against your app — with the @rag-implementor scaffold agent",
+      "description": "Local, self-hosted RAG scaffold for full-stack Microsoft codebases. /fsp-rag-init builds a provider-agnostic Q&A system in ./pilot-rag/ that answers questions about your own Angular/.NET/SQL/Azure code, cited to real files: Microsoft.Extensions.AI (IChatClient/IEmbeddingGenerator, zero vendor refs in the core), Roslyn/Markdown/OpenAPI chunkers with idempotent Qdrant ingestion and secret redaction, an SSE /ask endpoint with a score floor and citations, and a retrieval-hit-rate eval gate. Ollama<->Azure OpenAI by appsettings — with the @rag-implementor and read-only @rag-reviewer agents",
       "author": { "name": "FullStack Pilot Contributors" },
       "license": "MIT",
       "keywords": ["rag", "retrieval", "self-hosted", "provider-agnostic", "qdrant", "ollama"]

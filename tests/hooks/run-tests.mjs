@@ -3,7 +3,7 @@
 // Each test sends a JSON payload to a hook script via stdin and checks stdout/exit.
 
 import { spawnSync } from 'node:child_process';
-import { writeFileSync, mkdtempSync } from 'node:fs';
+import { writeFileSync, mkdtempSync, mkdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import os from 'node:os';
@@ -68,6 +68,15 @@ function pre(toolName, filePath, content, isEdit = false) {
   return { hook_event_name: 'PreToolUse', tool_name: toolName, tool_input: toolInput, cwd: os.tmpdir() };
 }
 
+// Build a MultiEdit PreToolUse payload (edits[] of {old_string, new_string})
+function preMulti(filePath, newStrings) {
+  const edits = newStrings.map((s) => ({ old_string: '', new_string: s }));
+  return {
+    hook_event_name: 'PreToolUse', tool_name: 'MultiEdit',
+    tool_input: { file_path: filePath, edits }, cwd: os.tmpdir(),
+  };
+}
+
 // ── secret-guard tests ────────────────────────────────────────────────────────
 
 console.log('\n  secret-guard');
@@ -123,6 +132,44 @@ check('passes empty content',
 
 check('fails open on malformed input (no crash)',
   runHook('secret-guard.js', { not_a_valid_payload: true }),
+  false);
+
+// V2 — Azure / cloud-provider secret shapes.
+// Fake secrets are assembled from fragments so this source file itself does not trip the
+// secret-guard hook when it is committed; the runtime value still matches.
+const AWS_KEY = 'AKIA' + 'IOSFODNN7EXAMPLE';
+const GH_TOKEN = 'ghp_' + '0123456789abcdefghij0123456789abcdef';
+const AZ_ACCOUNT_KEY = 'AccountKey=' + 'abcdEFGH1234ijklMNOP5678qrstUVWX90abcdEFGH==';
+const AZ_SAS_KEY = 'SharedAccessKey=' + 'abcdEFGH1234ijklMNOP5678qrstUVWX90abcd=';
+
+check('blocks Azure Storage AccountKey connection string',
+  runHook('secret-guard.js', pre('Write', '/p/appsettings.json',
+    'DefaultEndpointsProtocol=https;AccountName=devstore;' + AZ_ACCOUNT_KEY + ';EndpointSuffix=core.windows.net')),
+  true);
+
+check('blocks Service Bus SharedAccessKey connection string',
+  runHook('secret-guard.js', pre('Write', '/p/appsettings.json',
+    'Endpoint=sb://ns.servicebus.windows.net/;SharedAccessKeyName=Root;' + AZ_SAS_KEY)),
+  true);
+
+check('blocks AWS access key id',
+  runHook('secret-guard.js', pre('Write', '/p/aws.ts',
+    'const id = "' + AWS_KEY + '";')),
+  true);
+
+check('blocks GitHub token',
+  runHook('secret-guard.js', pre('Write', '/p/ci.ts',
+    'const t = "' + GH_TOKEN + '";')),
+  true);
+
+check('blocks secret introduced via MultiEdit edits[]',
+  runHook('secret-guard.js', preMulti('/p/config.ts',
+    ['const region = "eastus";', 'const key = "' + AWS_KEY + '";'])),
+  true);
+
+check('passes AccountKey placeholder (not a literal secret)',
+  runHook('secret-guard.js', pre('Write', '/p/appsettings.json',
+    'AccountName=devstore;AccountKey=<your-account-key>')),
   false);
 
 // ── dangerous-patterns tests ──────────────────────────────────────────────────
@@ -187,6 +234,55 @@ check('does NOT apply .ts patterns to .cs files',
   runHook('dangerous-patterns.js', pre('Write', '/p/View.cs',
     'el.innerHTML = value; // C# view engine, not subject to the .ts rule')),
   false);
+
+check('blocks innerHTML introduced via MultiEdit edits[]',
+  runHook('dangerous-patterns.js', preMulti('/p/app.component.ts',
+    ['const safe = 1;', 'this.el.nativeElement.innerHTML = userInput;'])),
+  true);
+
+// V4 — interpolated SQL (warn) and tightened concat (no constant-only false positive)
+checkWarn('warns (non-blocking) on interpolated SQL sink',
+  runHook('dangerous-patterns.js', pre('Write', '/p/Repo.cs',
+    'ctx.Database.ExecuteSqlRaw($"DELETE FROM Logs WHERE Id = {id}");'),
+    { CLAUDE_PROJECT_DIR: os.tmpdir() }));
+
+check('passes benign interpolated string (no SQL shape)',
+  runHook('dangerous-patterns.js', pre('Write', '/p/Log.cs',
+    'var msg = $"Loaded {count} rows from cache";')),
+  false);
+
+check('passes constant-only SQL concatenation (no variable injected)',
+  runHook('dangerous-patterns.js', pre('Write', '/p/Q.cs',
+    'var sql = "SELECT * FROM " + "Users";')),
+  false);
+
+// V6 — ReDoS guard: a catastrophic pattern in (user-extensible) config is skipped, never run.
+// Point the hook at a throwaway plugin root whose config carries a nested-unbounded-quantifier
+// pattern. If the guard regressed, running "(a+)+$" over 50 'a's + "!" would backtrack past the
+// 8s timeout (exit != 0); with the guard it returns instantly, unblocked, with a stderr breadcrumb.
+const tmpRedos = mkdtempSync(join(os.tmpdir(), 'pilot-core-redos-'));
+mkdirSync(join(tmpRedos, 'hooks', 'config'), { recursive: true });
+writeFileSync(join(tmpRedos, 'hooks', 'config', 'dangerous-patterns.json'), JSON.stringify({
+  patterns: [{
+    name: 'catastrophic-test', pattern: '(a+)+$', fileExtensions: ['.ts'],
+    action: 'deny', message: 'should never run',
+  }],
+}));
+{
+  const r = runHook('dangerous-patterns.js', pre('Write', '/p/evil.ts', 'a'.repeat(50) + '!'),
+    { CLAUDE_PLUGIN_ROOT: tmpRedos });
+  const ok = r.exit === 0
+    && r.json?.hookSpecificOutput?.permissionDecision !== 'deny'
+    && /skipped pattern "catastrophic-test"/.test(r.stderr);
+  if (ok) {
+    console.log('    ✓ ReDoS guard skips catastrophic config pattern (no hang, breadcrumb)');
+    passed++;
+  } else {
+    console.error('    ✗ ReDoS guard skips catastrophic config pattern');
+    console.error(`      exit=${r.exit} decision=${r.json?.hookSpecificOutput?.permissionDecision || 'none'} stderr=${r.stderr.slice(0, 160)}`);
+    failed++;
+  }
+}
 
 // ── formatter tests ───────────────────────────────────────────────────────────
 
