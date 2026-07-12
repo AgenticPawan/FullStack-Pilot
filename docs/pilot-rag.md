@@ -42,6 +42,15 @@ is red.** Five phases are governed by skills; infrastructure (Phase 1) and the A
 | 5 Angular UI | *(inline)* | `ng build` clean; 3-question smoke passes |
 | 6 Eval & swap proof | `rag-eval` | hit-rate ≥ 80%; provider-swap test green |
 
+**Cross-cutting:** [`rag-security`](../plugins/pilot-rag/skills/rag-security/SKILL.md) hardens
+the live surface the phases above build — prompt injection via indexed content, `/ask` authZ +
+rate limiting + input caps, secret redaction *before* embedding and a Qdrant purge path, and
+answer/error leakage. Applied during phases 3–5 and run as a security gate before shipping.
+[`llm-cost-safety`](../plugins/pilot-rag/skills/llm-cost-safety/SKILL.md) is its cost twin —
+per-request token/output ceilings, incremental+batched embedding on ingestion, bounded
+provider-failure handling, and per-request token logging. It matters most the moment the
+Ollama↔Azure OpenAI swap points the system at a metered provider.
+
 ## The provider-swap guarantee
 
 pilot-rag's core design constraint: **switching the LLM/embedding provider is an

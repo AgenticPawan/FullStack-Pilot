@@ -44,6 +44,22 @@ function check(label, result, expectBlock) {
   }
 }
 
+// Assert a NON-BLOCKING advisory: exit 0, permissionDecision 'defer' (not deny),
+// and a systemMessage present so the developer actually sees the warning.
+function checkWarn(label, result) {
+  const decision = result.json?.hookSpecificOutput?.permissionDecision;
+  const ok = result.exit === 0 && decision === 'defer'
+    && typeof result.json?.systemMessage === 'string' && result.json.systemMessage.length > 0;
+  if (ok) {
+    console.log(`    ✓ ${label}`);
+    passed++;
+  } else {
+    console.error(`    ✗ ${label}`);
+    console.error(`      exit=${result.exit} decision=${decision || 'none'} systemMessage=${result.json?.systemMessage ? 'yes' : 'no'} stderr=${result.stderr.slice(0, 120)}`);
+    failed++;
+  }
+}
+
 // Build a Write or Edit PreToolUse payload
 function pre(toolName, filePath, content, isEdit = false) {
   const toolInput = isEdit
@@ -146,9 +162,14 @@ writeFileSync(join(tmpDotnet8, 'MyApp.csproj'),
   '<TargetFramework>net8.0</TargetFramework>' +
   '</PropertyGroup></Project>');
 
-check('blocks DateTime.Now in .cs when dotnet>=8 .csproj detected',
+checkWarn('warns (non-blocking, defer) on DateTime.Now when dotnet>=8 .csproj detected',
   runHook('dangerous-patterns.js', pre('Write', join(tmpDotnet8, 'Service.cs'),
     'var now = DateTime.Now;'),
+    { CLAUDE_PROJECT_DIR: tmpDotnet8 }));
+
+check('deny wins over warn: SQL concat + DateTime.Now in same net8 .cs file blocks',
+  runHook('dangerous-patterns.js', pre('Write', join(tmpDotnet8, 'Repo.cs'),
+    'var t = DateTime.Now; var sql = "SELECT * FROM Users WHERE Id = " + id;'),
     { CLAUDE_PROJECT_DIR: tmpDotnet8 }),
   true);
 

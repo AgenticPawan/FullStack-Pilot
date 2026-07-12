@@ -112,6 +112,14 @@ Every `SKILL.md` MUST begin with YAML frontmatter containing all three fields:
 - Hook scripts MUST exist at the declared path and be executable (`chmod +x`).
 - Hook scripts MUST NOT recurse `node_modules/`, `bin/`, `obj/`, `dist/`, or `.git/`.
 - Hooks belong in `<plugin>/hooks/hooks.json`, not in `plugin.json` inline.
+- The security hooks (secret-guard, dangerous-patterns, formatter) live ONLY in pilot-core,
+  and their pattern config covers every stack (Angular/.NET/SQL/Azure). Because those hooks
+  are the enforcement floor, every stack plugin declares `"dependencies": [{ "name":
+  "pilot-core" }]` in its `plugin.json` so pilot-core is always installed alongside it —
+  never duplicate the hook scripts into a stack plugin.
+- `dangerous-patterns.json` entries carry an `action`: `deny` hard-blocks (security-grade);
+  `warn` surfaces a non-blocking `systemMessage` via `permissionDecision: defer` (style/
+  testability). Absent `action` defaults to `deny`. Do NOT put style opinions behind `deny`.
 
 ## Commit conventions
 

@@ -2,7 +2,8 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "pilot-rag",
   "displayName": "Pilot RAG",
-  "version": "0.1.0",
+  "version": "0.3.0",
+  "dependencies": [{ "name": "pilot-core" }],
   "description": "Local, self-hosted RAG scaffold for full-stack Microsoft codebases. /fsp-rag-init builds a provider-agnostic Q&A system in ./pilot-rag/ within your project: Microsoft.Extensions.AI (IChatClient/IEmbeddingGenerator) with an architecture test proving zero vendor refs in the core, Roslyn/regex/Markdown/OpenAPI/config chunkers with idempotent Qdrant ingestion, an SSE /ask endpoint with a cosine score floor and source citation, an Angular Signals chat UI, and a retrieval hit-rate eval gate. Swap Ollama<->Azure OpenAI by appsettings only. .NET-only orchestration, no Python/LangChain/Semantic Kernel.",
   "author": {
     "name": "AgenticPawan",
