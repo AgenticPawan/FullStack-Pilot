@@ -57,15 +57,18 @@ Both PreToolUse hooks match only `"Write|Edit"` (`hooks/hooks.json:5`). If the h
 via MultiEdit passes the floor unseen. Fixed by adding `MultiEdit` to the matcher and an
 `edits[]` extraction path in both scripts + tests.
 
-### V4 — SQL-injection deny rule misses the modern .NET vector and over-blocks · P1 (deferred)
+### V4 — SQL-injection deny rule misses the modern .NET vector and over-blocks · P1 (fixed)
 `hooks/config/dangerous-patterns.json:19` keys on `SELECT|INSERT|… "+` on a single line
 (`[^\n]*`). It does **not** catch C# interpolated strings — an interpolated SQL string with a
 `{id}` placeholder — the dominant EF-Core-era injection sink, which has no `+` at all. It also
 hard-`deny`s benign concatenation near a SQL keyword (a log line containing "DELETE", a constant
 fragment builder). A `deny` this blunt trains users to disable the hook, while missing
-interpolation gives false confidence. **Recommendation:** downgrade to `warn`, add an
-interpolation pattern, and keep string-concat as a separate `warn`. Deferred because it changes
-deny→warn semantics and warrants a deliberate decision, not a drive-by edit.
+interpolation gives false confidence. **Fixed:** added an interpolated-SQL `warn` pattern
+(kept as `warn`, not `deny`, because EF Core `FromSqlInterpolated`/`ExecuteSqlInterpolated`
+parameterize interpolation holes and are safe — a `deny` would false-positive on the
+recommended API), and tightened the concat `deny` so the `+` must be followed by an
+identifier/call expression (constant-only concatenation no longer trips it, variable injection
+still does).
 
 ### V5 — Fail-open is total and silent · P2
 All three hooks end in `catch(_) { process.exit(0) }`. Fail-open is a defensible productivity
@@ -183,7 +186,7 @@ The catalog is deep (137 skills); these are genuine **unowned seams**, not fille
 | V2 Azure/cloud secrets | **Fixed** — 7 patterns + tests added |
 | V3 MultiEdit bypass | **Fixed** — matcher + `edits[]` extraction + tests |
 | V5 silent fail-open | **Fixed** — stderr breadcrumb on catch |
-| V4 SQL interpolation | Deferred — deny→warn semantics; needs a decision |
+| V4 SQL interpolation | **Fixed** — interpolation `warn` (FromSqlInterpolated-aware) + tightened concat `deny` |
 | V6 ReDoS guard | Deferred — low severity, docs/complexity sniff |
 | W1 agent registration | **Verify** — fresh agent listing |
 | W2 rag-reviewer | Deferred — new agent |
