@@ -1,16 +1,19 @@
 {
+  "_comment": "action: 'deny' hard-blocks the write (security-grade); 'warn' surfaces a non-blocking systemMessage and lets the write proceed under normal permissions (style/testability). Absent action defaults to 'deny'.",
   "patterns": [
     {
       "id": "no-innerhtml",
       "name": "UNSAFE_INNERHTML_ASSIGNMENT",
+      "action": "deny",
       "description": "Direct .innerHTML = assignment bypasses Angular's XSS sanitisation",
       "fileExtensions": [".ts", ".html"],
       "pattern": "\\.innerHTML\\s*=",
-      "message": "Use Angular [innerHTML] binding or DomSanitizer.bypassSecurityTrustHtml() to prevent XSS"
+      "message": "Bind with Angular's [innerHTML] (auto-sanitised) or render via textContent/interpolation. Do NOT reach for DomSanitizer.bypassSecurityTrustHtml() — that reintroduces the XSS sink."
     },
     {
       "id": "no-sql-concat",
       "name": "SQL_STRING_CONCATENATION",
+      "action": "deny",
       "description": "SQL query built by string concatenation opens SQL-injection surface",
       "fileExtensions": [".cs"],
       "pattern": "\\b(?:SELECT|INSERT|UPDATE|DELETE)\\b[^\\n]*\"\\s*\\+|\\+\\s*\"[^\\n]*\\b(?:SELECT|INSERT|UPDATE|DELETE)\\b",
@@ -19,15 +22,17 @@
     {
       "id": "no-datetime-now",
       "name": "DATETIME_NOW_INSTEAD_OF_TIMEPROVIDER",
+      "action": "warn",
       "description": "DateTime.Now is non-deterministic and untestable; dotnet>=8 ships TimeProvider",
       "fileExtensions": [".cs"],
       "requireStackProfile": { "dotnet": ">=8" },
       "pattern": "\\bDateTime\\.Now\\b",
-      "message": "Inject TimeProvider (Microsoft.Extensions.Time.Testing) instead of DateTime.Now for testability"
+      "message": "Prefer injecting TimeProvider (Microsoft.Extensions.Time.Testing) over DateTime.Now for testability. Advisory — not blocked."
     },
     {
       "id": "no-public-blob-access",
       "name": "AZURE_PUBLIC_BLOB_ACCESS",
+      "action": "deny",
       "description": "Public blob access exposes storage data without authentication — ASB-NS-1 P0",
       "fileExtensions": [".bicep"],
       "pattern": "allowBlobPublicAccess\\s*:\\s*true",
@@ -36,6 +41,7 @@
     {
       "id": "no-public-container-access",
       "name": "AZURE_PUBLIC_CONTAINER_ACCESS",
+      "action": "deny",
       "description": "Container-level public access allows anonymous blob read — ASB-NS-1 P0",
       "fileExtensions": [".bicep"],
       "pattern": "publicAccess\\s*:\\s*'(?:Blob|Container)'",
@@ -44,6 +50,7 @@
     {
       "id": "no-storage-key-output",
       "name": "AZURE_STORAGE_KEY_IN_OUTPUT",
+      "action": "deny",
       "description": "Exporting storage account key in outputs leaks credentials — ASB-IM-1 P0",
       "fileExtensions": [".bicep"],
       "pattern": "\\.listKeys\\(\\)",

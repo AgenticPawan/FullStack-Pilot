@@ -73,6 +73,9 @@ function main() {
   const projectDir = process.env.CLAUDE_PROJECT_DIR || payload.cwd || process.cwd();
   const patterns = loadPatterns();
 
+  // Collect non-blocking warnings; a hard 'deny' short-circuits and wins immediately.
+  const warnings = [];
+
   for (const pat of patterns) {
     if (!Array.isArray(pat.fileExtensions) || !pat.fileExtensions.includes(ext)) continue;
 
@@ -88,7 +91,13 @@ function main() {
       continue; // bad pattern in config — skip, don't crash
     }
 
-    if (re.test(content)) {
+    if (!re.test(content)) continue;
+
+    // Absent action defaults to 'deny' (security-safe default).
+    const action = pat.action === 'warn' ? 'warn' : 'deny';
+
+    if (action === 'deny') {
+      // Deny wins — block immediately, ignore any collected warnings.
       process.stdout.write(JSON.stringify({
         hookSpecificOutput: {
           hookEventName: 'PreToolUse',
@@ -99,6 +108,24 @@ function main() {
       }));
       process.exit(0);
     }
+
+    warnings.push(`${pat.name}: ${pat.message}`);
+  }
+
+  // Only non-blocking warnings matched — surface them and let the write proceed
+  // through the normal permission flow (defer = "no decision").
+  if (warnings.length > 0) {
+    process.stdout.write(JSON.stringify({
+      hookSpecificOutput: {
+        hookEventName: 'PreToolUse',
+        permissionDecision: 'defer',
+        permissionDecisionReason: '[pilot-core/dangerous-patterns] Advisory only — not blocked.',
+      },
+      systemMessage:
+        `[pilot-core/dangerous-patterns] ${warnings.length} advisory finding(s):\n  - ` +
+        warnings.join('\n  - '),
+    }));
+    process.exit(0);
   }
 
   process.exit(0);
