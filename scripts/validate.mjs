@@ -381,6 +381,70 @@ for (const filePath of walk(ROOT)) {
 
 if (hooksCount === 0) info('no hooks.json files found (OK for phase 1)');
 
+// ─── 4b. .mcp.json files ─────────────────────────────────────────────────────
+// Convention (CLAUDE.md / remediation R1+R6): a tracked `.mcp.json` auto-loads, so it
+// must be valid, expose an mcpServers object, and pin every third-party reference —
+// no floating `@latest` npm tag and no untagged / `:latest` docker image. `.mcp.json.example`
+// (opt-in, copied only with consent) is JSON-validated but exempt from the pin check.
+
+console.log('\n── .mcp.json files ───────────────────────────────────────');
+let mcpCount = 0;
+
+// Flag a floating npm spec (@latest or an unpinned scoped package) or an untagged/:latest image.
+function floatingRefs(server) {
+  const out = [];
+  const cmd = server && server.command;
+  const args = Array.isArray(server && server.args) ? server.args : [];
+  for (const a of args) {
+    if (typeof a !== 'string' || a.startsWith('-')) continue;
+    if (cmd === 'npx') {
+      if (/@latest\b/.test(a)) out.push(`npm "${a}" uses @latest`);
+      else if (/^@?[\w.-]+\/[\w.-]+$/.test(a) && !/@[\w.-]+$/.test(a)) out.push(`npm "${a}" has no pinned version`);
+    } else if (cmd === 'docker') {
+      // image ref = has a registry/path slash and is not an env/flag token
+      if (/^[\w][\w.-]*\/[\w./-]+/.test(a) && !a.startsWith('@')) {
+        if (!/:[\w.-]+$/.test(a)) out.push(`docker image "${a}" is untagged`);
+        else if (/:latest$/.test(a)) out.push(`docker image "${a}" uses :latest`);
+      }
+    }
+  }
+  return out;
+}
+
+for (const filePath of walk(ROOT)) {
+  const base = path.basename(filePath);
+  if (base !== '.mcp.json' && base !== '.mcp.json.example') continue;
+
+  mcpCount++;
+  const rel = path.relative(ROOT, filePath);
+  const { ok, data, error } = readJSON(filePath);
+  if (!ok) {
+    fail(`${rel}: invalid JSON — ${error}`);
+    continue;
+  }
+  if (!data.mcpServers || typeof data.mcpServers !== 'object' || Array.isArray(data.mcpServers)) {
+    fail(`${rel}: missing top-level "mcpServers" object`);
+    continue;
+  }
+
+  // Pin check only for the auto-loaded file, not the consent-gated .example.
+  if (base === '.mcp.json') {
+    const floats = [];
+    for (const [name, server] of Object.entries(data.mcpServers)) {
+      for (const msg of floatingRefs(server)) floats.push(`${name}: ${msg}`);
+    }
+    if (floats.length) {
+      for (const f of floats) warn(`${rel}: unpinned reference — ${f}`);
+    } else {
+      pass(`${rel}: valid — ${Object.keys(data.mcpServers).length} server(s), all references pinned`);
+    }
+  } else {
+    pass(`${rel}: valid — ${Object.keys(data.mcpServers).length} server(s) (opt-in, consent-gated)`);
+  }
+}
+
+if (mcpCount === 0) info('no .mcp.json files found');
+
 // ─── 5. Hook tests ────────────────────────────────────────────────────────────
 
 console.log('\n── hook tests ────────────────────────────────────────────');
