@@ -133,6 +133,11 @@ roster and workflow examples.
   end-to-end W3C `traceparent` correlation Angular → .NET → SQL → Azure, trace context carried
   across async boundaries (messaging, background jobs), downstream/SQL calls joined into the
   request trace, and one trace id surfaced to users and enriched into logs.
+- **zero-downtime-deployment** — the seam between `sql-migration-safety` (per-migration
+  mechanics) and `azure-cicd-security` (the pipeline): whether a schema change is safe while
+  N-1 and N app versions run against one database during a rolling/blue-green deploy —
+  expand/contract instead of destructive-change-with-its-code, N-1 backward compatibility,
+  non-locking migrations, and migration/rollout ordering gated in CI.
 
 ## Hooks
 
