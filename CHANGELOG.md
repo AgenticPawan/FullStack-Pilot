@@ -3,6 +3,25 @@
 All notable changes to FullStack Pilot are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 2026-07-12 — backlog skills: zero-downtime-deployment + llm-cost-safety
+
+pilot-core 0.23.0 → 0.24.0, pilot-rag 0.2.0 → 0.3.0. Completes the skill backlog from
+[docs/CRITICAL-REVIEW-2026-07.md](docs/CRITICAL-REVIEW-2026-07.md) §4.
+
+### Added
+- **`zero-downtime-deployment`** (pilot-core) — the seam between `sql-migration-safety` and
+  `azure-cicd-security`: is a schema change safe while N-1 and N app versions run against one
+  database during a rolling/blue-green deploy? Checks destructive-change-with-its-code vs.
+  expand/contract (ZDD-001), parallel-change discipline (ZDD-002), N-1 backward compatibility
+  (ZDD-003, P0), non-locking migrations (ZDD-004), and migration/rollout ordering gated in CI
+  (ZDD-005). Listed in `docs/pilot-core.md`.
+- **`llm-cost-safety`** (pilot-rag) — the cost twin of `rag-security` for the generation path:
+  per-request token/output ceilings and context-budget enforcement, incremental + batched
+  embedding on ingestion (never re-embed unchanged chunks), output validation with bounded
+  provider-failure handling (timeout + finite retries), and per-request token/cost logging.
+  Matters most once the Ollama↔Azure OpenAI swap points the system at a metered provider.
+  Listed in `docs/pilot-rag.md`.
+
 ## 2026-07-12 — pilot-core: distributed-tracing-correlation skill
 
 pilot-core 0.22.0 → 0.23.0.
