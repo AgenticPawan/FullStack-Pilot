@@ -132,6 +132,11 @@ if (!fs.existsSync(mktPath)) {
         if (!p.source || (typeof p.source !== 'string' && typeof p.source !== 'object')) {
           fail(`.claude-plugin/marketplace.json plugins[${i}] ("${p.name}"): missing "source"`); mktOk = false;
         }
+        // Token budget: catalog descriptions load on the marketplace browse surface —
+        // same 600-char cap as plugin.json for parity (CLAUDE.md token discipline).
+        if (typeof p.description === 'string' && p.description.length > 600) {
+          fail(`.claude-plugin/marketplace.json plugins[${i}] ("${p.name}"): "description" is ${p.description.length} chars — max is 600 (catalog token cost)`); mktOk = false;
+        }
       }
       if (mktOk) pass(`.claude-plugin/marketplace.json: valid — ${data.plugins.length} plugin(s)`);
     }
