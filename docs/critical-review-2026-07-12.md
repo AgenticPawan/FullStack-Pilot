@@ -79,11 +79,14 @@ set on `input.content`; a very large generated file that blows the 5s hook timeo
 "the guard did not run" is observable. A governance tool that can't tell you it didn't run is a
 governance smell. Breadcrumb added in this remediation; size-cap deferred.
 
-### V6 — ReDoS via user-extensible config · P2 (deferred)
+### V6 — ReDoS via user-extensible config · P2 (fixed)
 `dangerous-patterns.js:89` compiles `new RegExp(pat.pattern)` from a config advertised as
 user-extensible, with no complexity guard; a catastrophic-backtracking pattern hangs each Write
-for the full 5s timeout. Local/trusted config → low severity. **Recommendation:** document the
-constraint and/or add a length/complexity sniff before compiling.
+for the full 5s timeout. Local/trusted config → low severity. **Fixed:** an `isRiskyRegex` sniff
+runs before compile — a pattern over 300 chars or containing a nested unbounded quantifier
+(`(a+)+` and friends) is skipped with a stderr breadcrumb rather than compiled, so a bad pattern
+can never hang a write. Constraint documented in CLAUDE.md; a hook test proves a catastrophic
+pattern is skipped without hanging. Config stays local/trusted, so skip-not-fail is the safe path.
 
 ---
 
@@ -98,27 +101,35 @@ session's live agent registry lists all three — `pilot-core:fullstack-reviewer
 `pilot-core:fullstack-implementor`, and `pilot-core:fullstack-support`. The original snapshot was
 stale; the orchestrator trio registers correctly. No fix needed.
 
-### W2 — RAG ships an implementor with no reviewer, over real attack surface · P1
+### W2 — RAG ships an implementor with no reviewer, over real attack surface · P1 (fixed)
 `plugins/pilot-rag/agents/` contains only `rag-implementor.md` (full Write tools) — no
 `rag-reviewer`/`rag-support` sibling, breaking the trio convention every other stack follows.
 Yet per `rag-security/SKILL.md` this scaffold emits a live `POST /ask` SSE endpoint and a Qdrant
 store — genuine runtime attack surface. The one plugin that generates production code is the one
-with no reviewer to check its output. **Recommendation:** add `rag-reviewer` (read-only) that
-runs the `rag-security` gate against generated output.
+with no reviewer to check its output. **Fixed:** added `rag-reviewer` (read-only,
+`disallowedTools: Write, Edit`) with a `RAG-*` standard-ID catalog spanning all six pilot-rag
+skills and the three `rag-security` hard gates, wired into `/fsp-rag-init` as a final review gate
+that routes findings back to `@rag-implementor`.
 
-### W3 — Azure trio naming breaks the stack convention · P2
+### W3 — Azure trio naming breaks the stack convention · P2 (fixed)
 `pilot-azure` ships `infra-reviewer`, `infra-implementor`, **`azure-support`** — stack is "infra"
 for two and "azure" for the third. CLAUDE.md mandates `<stack>-{reviewer|implementor|support}`.
-Any routing table must special-case it, and it is drift that quietly rots. **Recommendation:**
-pick one prefix (`infra-support` or rename all to `azure-*`) and update routing/docs.
+Any routing table must special-case it, and it is drift that quietly rots. **Fixed:** renamed
+`azure-support` → `infra-support` (the lower-risk of the two offered options — one agent, not two,
+and the trio now shares the `infra-` prefix), updating the agent file/name plus every reference
+across the support agents' routing, `fullstack-support`, `plugin.json`, `marketplace.json`,
+`README`, and docs. CHANGELOG history keeps the old name as the record.
 
-### W4 — Advertised live-diagnostic capability isn't wired out of the box · P2
+### W4 — Advertised live-diagnostic capability isn't wired out of the box · P2 (fixed)
 `.mcp.json` auto-loads only `microsoft-learn`. But `azure-support` sells "live diagnostics via
 the bundled Azure MCP tools" and `angular-support` sells "live browser inspection via bundled
 Playwright" — both live in `.mcp.json.example` (opt-in only). Agent bodies hedge with "when
 available"; the marketplace copy does not. A fresh install gets support agents whose signature
-feature is dark until manual opt-in. **Recommendation:** set expectation in the description or
-prompt for consent at first support-agent use.
+feature is dark until manual opt-in. **Fixed:** the `infra-support` description and the
+`pilot-azure` `plugin.json` now state that live Azure MCP diagnostics are opt-in via
+`.mcp.json.example`, matching the agent body's "when available" hedge and the existing
+TROUBLESHOOTING entry. (`angular-support`'s marketplace copy never claimed Playwright, so no
+change was needed there.)
 
 ---
 
@@ -158,11 +169,14 @@ dependency. All hold today by hand — nothing prevents regression. For a govern
 to `validate.mjs` and verified end-to-end (each fails the build on a crafted violation; the clean
 repo still exits 0).
 
-### S4 — Brittle `disallowedTools` parsing · P2
+### S4 — Brittle `disallowedTools` parsing · P2 (fixed)
 `validate.mjs:237` splits on comma; `parseFrontmatter` handles only scalar keys, so a YAML-list
 form (`disallowedTools: [Write, Edit]`) passes the `includes('Write')` check only by accident.
-One reviewer authored in list style and the read-only guarantee evaluates wrong. **Recommendation:**
-normalize both scalar and list forms before the membership check.
+One reviewer authored in list style and the read-only guarantee evaluates wrong. **Fixed:**
+`parseFrontmatter` now parses inline flow lists (`[Write, Edit]`) and block sequences (`- Write`)
+into arrays with quote-stripping, and the `disallowedTools` check normalizes scalar-or-array to a
+token list before the membership test. Verified end-to-end: scalar, inline-list, and block-list
+forms all pass; an incomplete list (`[Write]` only) still fails as it must.
 
 ---
 
@@ -202,12 +216,12 @@ The catalog is deep (137 skills); these are genuine **unowned seams**, not fille
 | V3 MultiEdit bypass | **Fixed** — matcher + `edits[]` extraction + tests |
 | V5 silent fail-open | **Fixed** — stderr breadcrumb on catch |
 | V4 SQL interpolation | **Fixed** — interpolation `warn` (FromSqlInterpolated-aware) + tightened concat `deny` |
-| V6 ReDoS guard | Deferred — low severity, docs/complexity sniff |
+| V6 ReDoS guard | **Fixed** — pattern complexity/length sniff skips risky config regexes + breadcrumb + test |
 | W1 agent registration | **Verified** — fresh registry lists all three; original snapshot was stale, no fix needed |
-| W2 rag-reviewer | Deferred — new agent |
-| W3 azure naming | Deferred — rename + routing update |
-| W4 MCP expectation | Deferred — copy/consent change |
+| W2 rag-reviewer | **Fixed** — read-only rag-reviewer added, wired into /fsp-rag-init as a review gate |
+| W3 azure naming | **Fixed** — azure-support renamed to infra-support across agents/docs; trio shares one prefix |
+| W4 MCP expectation | **Fixed** — infra-support/pilot-azure copy states live MCP diagnostics are opt-in |
 | S1 marketplace desc budget | **Fixed** — 600-char cap in validator + CLAUDE.md standard + 6 descriptions trimmed |
 | S2 effort/maxTurns keys | **Verified** — both are documented, honored plugin-subagent frontmatter fields; not ignored, no defect |
 | S3 CI backstops | **Fixed** — matcher/no-recursion/pilot-core-dep checks in validator |
-| S4 disallowedTools parse | Deferred — parser normalization |
+| S4 disallowedTools parse | **Fixed** — parser handles scalar + inline/block list forms; verified all three |
