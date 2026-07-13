@@ -330,6 +330,7 @@ if (agentCount === 0) info('no agent files found');
 
 console.log('\n── command files ─────────────────────────────────────────');
 let commandCount = 0;
+const validCommands = new Set();
 
 for (const filePath of walk(ROOT)) {
   if (
@@ -339,6 +340,7 @@ for (const filePath of walk(ROOT)) {
   ) continue;
 
   commandCount++;
+  validCommands.add(path.basename(filePath, '.md'));
   const rel = path.relative(ROOT, filePath);
   let cmdOk = true;
 
@@ -363,6 +365,47 @@ for (const filePath of walk(ROOT)) {
 }
 
 if (commandCount === 0) info('no command files found');
+
+// ─── 3d. command-reference integrity ─────────────────────────────────────────
+// Shipped command/skill/agent markdown must not tell users to run a slash command that
+// doesn't exist. Catches the dangling-reference class (e.g. a stale "/fix-critical" left
+// after the command was renamed to /fsp-fix) that no other check sees. Only real command
+// INVOCATIONS are inspected: a "/" preceded by start-of-line, whitespace, backtick or "("
+// and followed by "fsp-"/"fix-" + an alpha — so path segments (".../pilot/fix-<tier>") and
+// generic placeholders ("/fsp-<verb>") are excluded by construction.
+
+console.log('\n── command references ─────────────────────────────────────');
+// Legacy prefixes that never map to a real command — any slash-invocation using one is stale.
+const LEGACY_CMD_PREFIXES = ['fix-'];
+const CMD_REF_RE = /(?:^|[\s`(])\/((?:fsp|fix)-[a-z][a-z0-9-]*)/gm;
+let cmdRefErrors = 0;
+let cmdRefFiles = 0;
+
+for (const filePath of walk(ROOT)) {
+  if (!filePath.endsWith('.md') || !filePath.includes(`${SEP}plugins${SEP}`)) continue;
+  const dir = path.basename(path.dirname(filePath));
+  const inCommands = dir === 'commands';
+  const isSkill = path.basename(filePath) === 'SKILL.md';
+  const inAgents = dir === 'agents';
+  if (!inCommands && !isSkill && !inAgents) continue;
+
+  cmdRefFiles++;
+  const rel = path.relative(ROOT, filePath);
+  const content = fs.readFileSync(filePath, 'utf8');
+  for (const m of content.matchAll(CMD_REF_RE)) {
+    const ref = m[1].replace(/-+$/, ''); // strip any trailing hyphen
+    const isLegacy = LEGACY_CMD_PREFIXES.some(p => ref.startsWith(p));
+    if (isLegacy || !validCommands.has(ref)) {
+      const upToMatch = content.slice(0, m.index);
+      const line = upToMatch.split('\n').length;
+      fail(`${rel}:${line}: references /${ref} — no such command (valid: ${[...validCommands].map(c => '/' + c).join(', ')})`);
+      cmdRefErrors++;
+    }
+  }
+}
+
+if (cmdRefFiles === 0) info('no command/skill/agent markdown found');
+else if (cmdRefErrors === 0) pass(`command references: all /fsp- invocations resolve (${cmdRefFiles} file(s) scanned)`);
 
 // ─── 4. hooks.json files ─────────────────────────────────────────────────────
 
