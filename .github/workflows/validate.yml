@@ -20,7 +20,15 @@ jobs:
 
       - name: Run validator
         run: node scripts/validate.mjs
-        # Fails the build if:
-        #   - marketplace.json or any plugin.json is invalid JSON or missing required fields
-        #   - any SKILL.md is missing YAML frontmatter or has description > 1024 chars
-        #   - any hooks.json references a script that does not exist or is not executable
+        # Fails the build if (see scripts/validate.mjs for the authoritative list):
+        #   - marketplace.json or any plugin.json is invalid JSON, missing a required field,
+        #     or carries a description over its char budget (600 for plugin/catalog entries)
+        #   - any SKILL.md is missing YAML frontmatter or a description, or the combined
+        #     description + when_to_use exceeds 1024 chars
+        #   - any agent violates the model matrix, read-only convention, or read-budget rule
+        #   - any command file is not fsp-<verb>.md, lacks a description, or references a
+        #     slash-command that does not exist (dangling-reference check)
+        #   - any auto-loaded .mcp.json has an unpinned third-party npm/docker reference
+        #   - any hooks.json uses a "*" matcher, or references a script that does not exist,
+        #     is not executable, or recurses excluded directories
+        #   - the hook unit-test suite (tests/hooks/run-tests.mjs) fails

@@ -224,6 +224,12 @@ for (const filePath of walk(ROOT)) {
     continue;
   }
   const desc = fm['description'] ?? '';
+  // Omitting `description` is a CI failure (CLAUDE.md SKILL.md conventions): it is the
+  // primary skill-routing signal. An empty/whitespace-only value counts as omitted.
+  if (typeof fm['description'] !== 'string' || !fm['description'].trim()) {
+    fail(`${rel}: missing required frontmatter field "description"`);
+    continue;
+  }
   const combined = desc.length + (fm['when_to_use'] ?? '').length;
   // Threshold rationale: descriptions are the skill-routing signal — compressing
   // them below ~800 trades invocation quality for marginal token savings. Above
