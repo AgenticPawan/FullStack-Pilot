@@ -4,6 +4,10 @@ description: Applies the Azure Well-Architected Framework five-pillar checklist 
 when_to_use: Well-Architected Framework, WAF review, Azure reliability, Azure security pillar, cost optimization, operational excellence, performance efficiency, Bicep review, Azure architecture review, WAF assessment
 ---
 
+> **"WAF" here means Well-Architected Framework, not Web Application Firewall.** The edge
+> firewall (Front Door / App Gateway WAF policy) is a different skill — `azure-edge-waf`
+> (`AFW-*` IDs). This skill's `WAF-*` IDs are the five architecture pillars below.
+
 ## WAF pillar IDs
 
 | Prefix | Pillar |

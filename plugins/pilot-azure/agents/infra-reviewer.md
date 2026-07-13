@@ -1,6 +1,6 @@
 ---
 name: infra-reviewer
-description: Reviews Azure Bicep templates and GitHub Actions deployment workflows against pilot-azure rules and skills. Outputs structured findings with standard IDs (ASB-*, WAF-*, CAF-*, BIC-*, AOBS-*, CICD-*, ADR-*, FIN-*, AKS-*, APIM-*, LZ-*, SLO-*, IMG-*, SCN-*, LPT-*, SRS-*, STG-*), severity, and fix guidance. Invoked automatically on infra diff review requests or manually via @infra-reviewer.
+description: Reviews Azure Bicep templates and GitHub Actions deployment workflows against pilot-azure rules and skills. Outputs structured findings with standard IDs (ASB-*, WAF-*, CAF-*, BIC-*, AOBS-*, CICD-*, ADR-*, FIN-*, AKS-*, APIM-*, LZ-*, SLO-*, IMG-*, SCN-*, LPT-*, SRS-*, STG-*, ACA-*, AFW-*, DRC-*), severity, and fix guidance. Invoked automatically on infra diff review requests or manually via @infra-reviewer.
 model: sonnet
 effort: high
 maxTurns: 15
@@ -40,8 +40,11 @@ the rules and skills defined in pilot-azure. Produce structured, actionable find
 | azure-container-image-security | Base-image vulnerability scanning, non-root container user, distroless/minimal runtime images, image-signing/provenance verification |
 | azure-signalr-scaleout | Scaled-out SignalR backplane resource (Azure SignalR Service/Redis), service-mode vs upstream config, managed identity over access key, capacity/SKU sizing, private endpoint |
 | azure-storage-dataplane | User-delegation SAS over account-key, short SAS expiry, data-plane private endpoint, lifecycle-management policy, blob soft-delete/versioning, immutability where retention is required |
+| azure-container-apps | ACA/App Service compute host: external-ingress auth/IP restriction, secretRef over plaintext env, scale floor/ceiling, liveness/readiness probes, managed identity, resource limits (the non-AKS compute target) |
+| azure-edge-waf | Edge Web Application Firewall (Front Door / App Gateway): WAF present, Prevention mode, managed OWASP rule set, edge rate limiting, origin lockdown, TLS 1.2 — distinct from azure-waf-review's Well-Architected pillars |
 | ci-secret-scanning (pilot-core) | CI-pipeline secret scanning (gitleaks/trufflehog) covering full git history, build-blocking findings, leak-to-rotation runbook linkage, false-positive baseline |
 | load-performance-testing (pilot-core) | Load-test gating in CI/CD, SLO-derived thresholds, representative test environments, retry-storm/thundering-herd scenarios |
+| data-residency-compliance (pilot-core) | Where regulated data is legally allowed to live/move: region-boundary pinning, replication kept in-geography, backups/logs residency, classification mapping, third-party residency guarantees |
 
 ## Review process
 
@@ -175,6 +178,29 @@ Work through all categories. State "no findings" explicitly if a category is cle
 - [ ] Blob soft-delete and versioning disabled — no recovery from accidental delete/overwrite (STG-005)?
 - [ ] Retention/compliance context but no immutability (WORM)/legal-hold policy (STG-006)?
 
+**Category R — Container Apps / App Service compute (only if the template provisions ACA/App Service)**
+- [ ] External ingress (`external: true`) with no authentication or `ipSecurityRestrictions` allow-list (ACA-001)?
+- [ ] Secret injected as a plaintext env `value` instead of `secretRef`/Key Vault reference (ACA-002)?
+- [ ] `minReplicas: 0` on a latency-sensitive API, or no `maxReplicas` cap (ACA-003)?
+- [ ] No liveness/readiness probe on the container (ACA-004)?
+- [ ] No managed identity — registry pulls / backing-service calls use passwords or keys (ACA-005)?
+- [ ] Container has no CPU/memory limits, or runs as root (ACA-006)?
+
+**Category S — Edge Web Application Firewall (only if the app is public-facing)**
+- [ ] Public API/SPA with no edge WAF (Front Door or App Gateway WAF policy) in front (AFW-001)?
+- [ ] WAF policy left in `Detection` mode, never switched to `Prevention` (AFW-002)?
+- [ ] No managed OWASP/Microsoft default rule set attached to the WAF policy (AFW-003)?
+- [ ] No per-client rate-limit rule at the edge (AFW-004)?
+- [ ] Origin reachable directly, bypassing the edge WAF (AFW-005)?
+- [ ] TLS below 1.2 at the edge, or no HTTP→HTTPS redirect (AFW-006)?
+
+**Category T — Data residency (only if the workload holds regulated/personal data)**
+- [ ] A data-holding resource deployed to a region outside the required residency boundary (DRC-001)?
+- [ ] Cross-region replication/failover (GRS, failover group) copies regulated data out of geography (DRC-002)?
+- [ ] Backups/diagnostic logs/telemetry shipped to a region/workspace outside the boundary (DRC-003)?
+- [ ] No documented residency requirement mapped per data classification (DRC-004)?
+- [ ] Personal data sent to a third-party/SaaS with no residency guarantee (DRC-005)?
+
 ### Step 3 — Format findings
 
 ```
@@ -192,16 +218,16 @@ Work through all categories. State "no findings" explicitly if a category is cle
 ---
 Finding format:
 
-[SEVERITY] Rule/Skill: <rule-id or skill-id> | Standard: <ASB-XX / WAF-XXX / CAF-NAME-XXX / BIC-XXX / AOBS-XXX / CICD-XXX / ADR-XXX / FIN-XXX / AKS-XXX / APIM-XXX / LZ-XXX / SLO-XXX / IMG-XXX / SRS-XXX / STG-XXX / InternalPolicy>
+[SEVERITY] Rule/Skill: <rule-id or skill-id> | Standard: <ASB-XX / WAF-XXX / CAF-NAME-XXX / BIC-XXX / AOBS-XXX / CICD-XXX / ADR-XXX / FIN-XXX / AKS-XXX / APIM-XXX / LZ-XXX / SLO-XXX / IMG-XXX / SRS-XXX / STG-XXX / ACA-XXX / AFW-XXX / DRC-XXX / InternalPolicy>
 Location: <file>:<line>
 Issue: <one sentence — what is wrong>
 Fix: <concrete Bicep or YAML change>
 ```
 
 Severity mapping:
-- **CRITICAL** — ASB-NS-1 (public blob), ASB-IM-1 (key export), always-no-hardcoded-secrets, CICD-001 (long-lived secret instead of OIDC), AKS-001 (no Pod Security Standards), AKS-003 (no NetworkPolicy), AKS-004 (client secret instead of Workload Identity), LZ-002 (prod/non-prod sharing one subscription), IMG-001/IMG-002 (no image scan gate / container runs as root), SCN-001 (no CI secret scanning), SCN-003 (no leak-rotation runbook), SRS-001 (scaled-out SignalR with no backplane), STG-001 (account-key SAS), STG-002 (long/no SAS expiry)
-- **WARNING** — ASB-NS-2, ASB-PA-1, WAF-SEC-*, WAF-OPS-001/002, BIC-003, BIC-004, AOBS-001/003/004, CICD-002/003/004, ADR-001/002/004, AKS-002, APIM-001/002, LZ-001/LZ-003, SLO-001/SLO-002, IMG-004, SCN-002/SCN-004, LPT-001/LPT-002/LPT-004, SRS-002/SRS-003/SRS-004, STG-003/STG-004/STG-005
-- **ADVISORY** — WAF-COST-*, WAF-PERF-*, CAF naming/tagging, BIC-007 (AVM), AOBS-002, ADR-003, FIN-001/002/003/004, APIM-003/004, LZ-004, SLO-003/SLO-004, IMG-003, SCN-005, LPT-003/LPT-005, SRS-005, STG-006
+- **CRITICAL** — ASB-NS-1 (public blob), ASB-IM-1 (key export), always-no-hardcoded-secrets, CICD-001 (long-lived secret instead of OIDC), AKS-001 (no Pod Security Standards), AKS-003 (no NetworkPolicy), AKS-004 (client secret instead of Workload Identity), LZ-002 (prod/non-prod sharing one subscription), IMG-001/IMG-002 (no image scan gate / container runs as root), SCN-001 (no CI secret scanning), SCN-003 (no leak-rotation runbook), SRS-001 (scaled-out SignalR with no backplane), STG-001 (account-key SAS), STG-002 (long/no SAS expiry), ACA-001 (anonymous external ingress), ACA-002 (plaintext secret env), ACA-005 (no managed identity), AFW-001 (no edge WAF), AFW-002 (WAF in Detection only), AFW-005 (origin bypasses edge), DRC-001 (data outside residency boundary), DRC-002 (replication out of geography)
+- **WARNING** — ASB-NS-2, ASB-PA-1, WAF-SEC-*, WAF-OPS-001/002, BIC-003, BIC-004, AOBS-001/003/004, CICD-002/003/004, ADR-001/002/004, AKS-002, APIM-001/002, LZ-001/LZ-003, SLO-001/SLO-002, IMG-004, SCN-002/SCN-004, LPT-001/LPT-002/LPT-004, SRS-002/SRS-003/SRS-004, STG-003/STG-004/STG-005, ACA-003/ACA-004, AFW-003/AFW-004, DRC-003/DRC-004/DRC-005
+- **ADVISORY** — WAF-COST-*, WAF-PERF-*, CAF naming/tagging, BIC-007 (AVM), AOBS-002, ADR-003, FIN-001/002/003/004, APIM-003/004, LZ-004, SLO-003/SLO-004, IMG-003, SCN-005, LPT-003/LPT-005, SRS-005, STG-006, ACA-006, AFW-006
 
 ### Step 4 — Summary line
 
