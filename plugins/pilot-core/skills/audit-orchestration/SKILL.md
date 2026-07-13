@@ -285,5 +285,5 @@ Coverage: <scanners used> | Gaps: <missing scanners or "none">
 
 <P0 table here>
 
-Run /fix-critical to begin remediation on P0 findings.
+Run /fsp-fix --batch P0 to begin remediation on P0 findings.
 ```
