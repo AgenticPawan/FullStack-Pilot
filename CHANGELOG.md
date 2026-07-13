@@ -3,6 +3,42 @@
 All notable changes to FullStack Pilot are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 2026-07-13 — audit-plugin remediation (MultiEdit hook gap + four skill-gap skills)
+
+pilot-core 0.27.0 → 0.28.0, pilot-azure 0.18.0 → 0.19.0. Closes the Vulnerability, Standards,
+and Skill-gap findings from the second pre-submission `/audit-plugin` pass.
+
+### Fixed
+- **MultiEdit bypassed the security hooks (Medium vuln).** `hooks/hooks.json` scoped both the
+  PreToolUse (secret-guard, dangerous-patterns) and PostToolUse (formatter) matchers to
+  `Write|Edit`, while the scripts themselves handle a `MultiEdit` payload and are tested for it.
+  A real `MultiEdit` write therefore never triggered the guards — a live secret introduced via
+  MultiEdit was not blocked. Both matchers are now `Write|Edit|MultiEdit`, aligning the
+  enforcement floor with the script capability the tests already assert.
+- **Stale submission pointer (Standards).** `SUBMISSION.json` pinned a commit 46 revisions
+  behind HEAD; re-stamped to current HEAD. Re-stamp again to the final commit before submitting.
+
+### Added
+- **`azure-container-apps` (pilot-azure) — the compute host `azure-aks-governance` doesn't cover.**
+  External-ingress auth/IP restriction (ACA-001), secretRef over plaintext env (ACA-002), scale
+  floor/ceiling (ACA-003), liveness/readiness probes (ACA-004), managed identity (ACA-005),
+  resource limits/non-root (ACA-006). ACA/App Service is where most .NET APIs in this stack land.
+- **`azure-edge-waf` (pilot-azure) — the edge Web Application Firewall (Front Door/App Gateway).**
+  WAF present (AFW-001), Prevention mode (AFW-002), managed OWASP rule set (AFW-003), edge rate
+  limiting (AFW-004), origin lockdown (AFW-005), TLS 1.2/HTTPS redirect (AFW-006). Explicitly
+  disambiguated from `azure-waf-review` (Well-Architected Framework), which now carries a note.
+- **`fullstack-e2e-testing` (pilot-core) — the tier the per-layer testing skills each half-cover.**
+  A real-browser critical-journey suite (E2E-001), no-mock-the-backend (E2E-002), seeded/isolated
+  data (E2E-003), CI deploy-gate (E2E-004), flakiness fixed not masked (E2E-005).
+- **`data-residency-compliance` (pilot-core) — where regulated data is legally allowed to live.**
+  Region-boundary pinning (DRC-001), replication kept in-geography (DRC-002), backups/logs
+  residency (DRC-003), classification mapping (DRC-004), third-party residency guarantees (DRC-005).
+
+### Changed
+- **`infra-reviewer` wiring.** Added ACA-*, AFW-*, DRC-* to the standard-ID list, skill inventory,
+  review categories R/S/T, severity mapping, and finding format. **`fullstack-reviewer`** now cites
+  `fullstack-e2e-testing` (E2E-001/002) for cross-layer journeys with no end-to-end coverage.
+
 ## 2026-07-12 — audit-plugin remediation (dangling-ref fix + CI backstop + four seam skills)
 
 pilot-core 0.25.0 → 0.26.0, pilot-angular 0.22.2 → 0.23.0, pilot-azure 0.16.0 → 0.17.0,

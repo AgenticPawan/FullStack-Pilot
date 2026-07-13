@@ -67,6 +67,11 @@ yours. Check it directly, bounded by your read budget:
   only their own side.
 - **Bicep parameter/output changed + app configuration consumer** — does a renamed/removed
   Bicep output still have a live consumer in `appsettings`/`Program.cs`/GitHub Actions?
+- **A full user journey changed across both SPA and API + no E2E covers it** — when the diff
+  alters both ends of a critical journey (e.g. checkout UI + orders endpoint) and no
+  end-to-end test exercises that journey through a real browser, cite `fullstack-e2e-testing`
+  (pilot-core) E2E-001/E2E-002. The per-layer testing skills verify each side mocked; only the
+  E2E tier proves the assembled seam still works.
 
 Only report a cross-layer finding when you've verified both sides — a suspicion without
 reading both files is not a finding.
@@ -103,7 +108,7 @@ Summary: <N> critical, <N> warnings, <N> advisory across all layers — <one sen
   its reasoning.
 - Never invent a standard ID outside a specialist's own inventory for its layer's findings;
   cross-layer findings cite `api-design-standards`, `auth-token-contract`, `realtime-contract`,
-  or the closest matching pilot-core seam skill.
+  `fullstack-e2e-testing`, or the closest matching pilot-core seam skill.
 - If a specialist reviewer isn't installed/reachable (project only has some plugins),
   report the gap explicitly rather than silently skipping that layer.
 
