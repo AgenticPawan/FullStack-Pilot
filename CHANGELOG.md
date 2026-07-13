@@ -3,6 +3,49 @@
 All notable changes to FullStack Pilot are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 2026-07-12 — audit-plugin remediation (dangling-ref fix + CI backstop + four seam skills)
+
+pilot-core 0.25.0 → 0.26.0, pilot-angular 0.22.2 → 0.23.0, pilot-azure 0.16.0 → 0.17.0,
+pilot-sql 0.14.3 → 0.15.0. Closes every Vulnerability, Wiring, Standards, and Skill-gap
+finding from the pre-submission `/audit-plugin` pass.
+
+### Fixed
+- **Dangling `/fix-critical` command references (W1, W2).** `commands/fsp-audit.md` and
+  `skills/audit-orchestration/SKILL.md` told users to run `/fix-critical`, a command that
+  never existed (the real one is `/fsp-fix`). Both now point at `/fsp-fix --batch P0`.
+
+### Added
+- **CI command-reference integrity check (`scripts/validate.mjs`).** New section scans every
+  shipped command/skill/agent markdown for slash-command *invocations* and fails the build on
+  any `/fsp-*` reference that doesn't resolve to a real command file, plus any legacy `/fix-*`.
+  Path segments (`.../pilot/fix-<tier>`) and `/fsp-<verb>` placeholders are excluded by
+  construction (invocation must be preceded by whitespace/backtick and followed by an alpha).
+  This is the backstop for the dangling-reference class above, which no prior check caught.
+- **`angular-realtime` (pilot-angular) — SignalR client, the missing half of `dotnet-realtime`.**
+  Typed connection service (ART-001), automatic reconnect + group re-join (ART-002),
+  `accessTokenFactory` reading the live token (ART-003), typed hub method contract (ART-004),
+  and teardown on destroy (ART-005). The server hub was governed; the browser half wasn't.
+- **`azure-keyvault-appconfig` (pilot-azure) — the store the .NET config/secrets skills consume.**
+  Key Vault references over inline secrets (KVA-001), managed-identity over keys (KVA-002),
+  soft-delete/purge-protection (KVA-003), the App Configuration feature-flag store (KVA-004),
+  and locked-down public network access (KVA-005). Complements ASB-IM-2 with the Bicep wiring.
+- **`sql-hadr-failover` (pilot-sql) — database-tier HA the app/backup skills don't cover.**
+  HA topology vs SLA (HA-001), listener/failover-group connection strings (HA-002),
+  read-secondary routing (HA-003), RPO/RTO-driven commit mode (HA-004), and tested failover
+  (HA-005). Covers Always On AGs and Azure SQL failover groups.
+- **`auth-token-contract` (pilot-core) — the OIDC seam between `angular-authentication` and
+  `dotnet-authentication`.** Audience/issuer/scope agreement (ATC-001), claim-name drift
+  (ATC-002), token-lifetime vs renew alignment (ATC-003), client-gate-without-server-gate
+  (ATC-004), and a single documented contract (ATC-005). Enforces permissions-only on both ends.
+
+### Notes
+- **pilot-core breadth (S1) — reviewed, kept intentionally.** The pre-submission audit flagged
+  pilot-core bundling the pipeline engine with standalone cross-cutting review skills. These are
+  genuinely cross-stack (they belong in no single stack plugin) and pilot-core is the shared base
+  every plugin already depends on; splitting it would permanently fragment that dependency graph
+  over a Low, defensible finding. Decision recorded in
+  [docs/SPLIT-ELIGIBILITY-AUDIT-2026-07.md](docs/SPLIT-ELIGIBILITY-AUDIT-2026-07.md).
+
 ## 2026-07-12 — critical-review-2026-07-12 remediation (security floor + wiring + CI backstops)
 
 pilot-core 0.24.0 → 0.25.0, pilot-rag 0.3.0 → 0.4.0, pilot-azure 0.15.2 → 0.16.0,

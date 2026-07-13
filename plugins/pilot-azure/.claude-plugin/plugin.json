@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "pilot-azure",
   "displayName": "Pilot Azure",
-  "version": "0.16.0",
+  "version": "0.17.0",
   "dependencies": [{ "name": "pilot-core" }],
   "description": "Azure / Bicep / ACA governance: CAF naming, security baseline, Well-Architected review, Bicep patterns, observability, CI/CD security (OIDC), multi-region DR, cost/FinOps, AKS, API Management, landing zones, SLO/error budgets, and container image security. Ships @infra-reviewer (finds violations), @infra-implementor (fixes them), and @infra-support (diagnoses live infrastructure issues; live Azure MCP diagnostics are opt-in via .mcp.json.example)",
   "author": {

@@ -1,5 +1,15 @@
 # Plugin split-eligibility audit — 2026-07-12
 
+> **Re-affirmed 2026-07-12 (`/audit-plugin` pre-submission pass).** That pass re-raised
+> pilot-core's breadth (pipeline engine + standalone cross-cutting review skills) as a Low
+> single-responsibility finding (S1). The KEEP-AS-IS verdict below stands: those skills are
+> genuinely cross-stack and pilot-core is the shared base every other plugin depends on, so
+> a split would permanently fragment the dependency graph for no proportional gain. The four
+> seam skills added in that pass (`auth-token-contract` in pilot-core, `angular-realtime`,
+> `azure-keyvault-appconfig`, `sql-hadr-failover`) are each cross-references *into* existing
+> siblings — they reinforce the "glue, not bundle" reasoning, not weaken it. Counts below
+> updated accordingly.
+
 Submission-readiness review ahead of proposing FullStack Pilot to
 `anthropics/claude-plugins-official`. Question answered, **per plugin**: should it be
 split into multiple plugins before submission?
@@ -23,15 +33,15 @@ not a file move); (5) verdict; (6) for any split, name the seam and flag what br
 
 | Plugin | Skills | Domain clusters found | Cross-dependency | Verdict | Proposed split |
 |---|---|---|---|---|---|
-| pilot-core | 19 | Pipeline engine; cross-stack governance | Very high — foundation for all four other plugins | **KEEP AS-IS** | None |
-| pilot-angular | 31 | a11y/motion; UI-UX & design system; state; platform (SSR/PWA/config); data/contract; workspace | High — one trio, dense cross-refs | **KEEP AS-IS** | None |
+| pilot-core | 22 | Pipeline engine; cross-stack governance | Very high — foundation for all four other plugins | **KEEP AS-IS** | None |
+| pilot-angular | 32 | a11y/motion; UI-UX & design system; state; platform (SSR/PWA/config); data/contract; real-time; workspace | High — one trio, dense cross-refs | **KEEP AS-IS** | None |
 | pilot-dotnet | 57 | architecture; data/EF; API contract; auth/security; async/messaging; resilience; observability; feature tail | Very high — clean-arch base + single reviewer trio | **KEEP AS-IS** (closest call) | None recommended |
-| pilot-sql | 8 | schema / query / migration / security — one domain | High | **KEEP AS-IS** | None |
-| pilot-azure | 13 | IaC/naming; security & WAF; ops/observability; cost — one domain | High | **KEEP AS-IS** | None |
+| pilot-sql | 9 | schema / query / migration / security / HA — one domain | High | **KEEP AS-IS** | None |
+| pilot-azure | 14 | IaC/naming; security & WAF; ops/observability; cost — one domain | High | **KEEP AS-IS** | None |
 
 ## Per-plugin reasoning
 
-### pilot-core (19 skills) — KEEP AS-IS
+### pilot-core (22 skills) — KEEP AS-IS
 Two visible clusters: the **pipeline engine** (`stack-detection`, `pilot-scaffold`,
 `foundation-bootstrap`, `fsp-build-orchestration`, `audit-orchestration`,
 `batched-remediation`, `convention-learner`, `mcp-discovery`) that *is* the `/fsp-*`
@@ -39,7 +49,7 @@ command runtime and the delivery-team agents; and **cross-stack governance**
 (`api-design-standards`, `architecture-decision-records`, `ci-secret-scanning`,
 `dependency-supply-chain`, `dependency-license-compliance`, `git-workflow-governance`,
 `incident-response-runbook`, `load-performance-testing`, `local-dev-onboarding`,
-`search-integration`, `test-data-management`).
+`search-integration`, `test-data-management`, `auth-token-contract`).
 
 The governance skills exist *because* they glue the other plugins together —
 `dependency-supply-chain` layers on `audit-orchestration`; `api-design-standards` ties
@@ -49,7 +59,7 @@ ties to `azure-slo-error-budget`; `incident-response-runbook` sits on
 commands, agents, and the marketplace's only `hooks.json`. This is the foundation, not a
 bundle — unsplittable.
 
-### pilot-angular (31 skills) — KEEP AS-IS
+### pilot-angular (32 skills) — KEEP AS-IS
 Several sub-domains (a11y/motion, UI-UX & design system, signals vs NgRx state, SSR/PWA/
 runtime-config platform, HTTP/contract, Nx/monorepo workspace), but **all govern one
 artifact: the Angular/TypeScript frontend**. They share one trio
@@ -77,12 +87,12 @@ dotnet-X" references dangle; a new `marketplace.json` entry + `plugin.json` mani
 required; and pilot-core skills that name dotnet skills by ID (`api-design-standards`,
 orchestration) need path updates. Not justified.
 
-### pilot-sql (8 skills) — KEEP AS-IS
+### pilot-sql (9 skills) — KEEP AS-IS
 Schema design, injection defense, migration safety, multitenancy, performance review,
-PII data protection, index maintenance, backup/recovery — a single SQL Server / EF Core
-domain with one trio. No split axis.
+PII data protection, index maintenance, backup/recovery, database-tier HA/failover — a
+single SQL Server / EF Core domain with one trio. No split axis.
 
-### pilot-azure (13 skills) — KEEP AS-IS
+### pilot-azure (14 skills) — KEEP AS-IS
 CAF naming, security baseline, WAF review, Bicep patterns, observability, CI/CD security,
 DR/multi-region, cost/FinOps, AKS, API Management, landing zone, SLO/error-budget,
 container-image security — a single Azure/IaC domain with one trio. No split axis.
