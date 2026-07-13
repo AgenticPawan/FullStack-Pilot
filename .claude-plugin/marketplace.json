@@ -4,7 +4,7 @@
   "description": "Codebase governance for full-stack Microsoft shops (Angular, .NET, SQL Server, Azure)",
   "owner": {
     "name": "AgenticPawan",
-    "email": "maintainers@fullstack-pilot.dev"
+    "url": "https://github.com/AgenticPawan"
   },
   "metadata": {
     "pluginRoot": "./plugins"
