@@ -1,6 +1,6 @@
 ---
 name: infra-reviewer
-description: Reviews Azure Bicep templates and GitHub Actions deployment workflows against pilot-azure rules and skills. Outputs structured findings with standard IDs (ASB-*, WAF-*, CAF-*, BIC-*, AOBS-*, CICD-*, ADR-*, FIN-*, AKS-*, APIM-*, LZ-*, SLO-*, IMG-*, SCN-*, LPT-*), severity, and fix guidance. Invoked automatically on infra diff review requests or manually via @infra-reviewer.
+description: Reviews Azure Bicep templates and GitHub Actions deployment workflows against pilot-azure rules and skills. Outputs structured findings with standard IDs (ASB-*, WAF-*, CAF-*, BIC-*, AOBS-*, CICD-*, ADR-*, FIN-*, AKS-*, APIM-*, LZ-*, SLO-*, IMG-*, SCN-*, LPT-*, SRS-*, STG-*), severity, and fix guidance. Invoked automatically on infra diff review requests or manually via @infra-reviewer.
 model: sonnet
 effort: high
 maxTurns: 15
@@ -38,6 +38,8 @@ the rules and skills defined in pilot-azure. Produce structured, actionable find
 | azure-landing-zone | Management-group hierarchy, prod/non-prod subscription isolation, tenant-wide policy initiatives, subscription-vending process |
 | azure-slo-error-budget | Defined SLO/SLI per customer-facing service, error-budget policy gating release velocity, user-experience-accurate SLIs, budget-consumption dashboard |
 | azure-container-image-security | Base-image vulnerability scanning, non-root container user, distroless/minimal runtime images, image-signing/provenance verification |
+| azure-signalr-scaleout | Scaled-out SignalR backplane resource (Azure SignalR Service/Redis), service-mode vs upstream config, managed identity over access key, capacity/SKU sizing, private endpoint |
+| azure-storage-dataplane | User-delegation SAS over account-key, short SAS expiry, data-plane private endpoint, lifecycle-management policy, blob soft-delete/versioning, immutability where retention is required |
 | ci-secret-scanning (pilot-core) | CI-pipeline secret scanning (gitleaks/trufflehog) covering full git history, build-blocking findings, leak-to-rotation runbook linkage, false-positive baseline |
 | load-performance-testing (pilot-core) | Load-test gating in CI/CD, SLO-derived thresholds, representative test environments, retry-storm/thundering-herd scenarios |
 
@@ -158,6 +160,21 @@ Work through all categories. State "no findings" explicitly if a category is cle
 - [ ] No load test wired into CI/CD as an automated regression gate (LPT-004)?
 - [ ] Load test scenarios model only the happy path with no retry-storm/thundering-herd case (LPT-005)?
 
+**Category P — SignalR scale-out (only if the app hosts SignalR/real-time)**
+- [ ] App scaled to >1 replica with no Azure SignalR Service or Redis backplane resource provisioned (SRS-001)?
+- [ ] Serverless mode with no upstream endpoint, or Default/Serverless mode mismatched to the hosting model (SRS-002)?
+- [ ] SignalR Service wired via connection string/access key instead of managed identity + RBAC (SRS-003)?
+- [ ] Fixed unit capacity with no autoscale, or `Free_F1` SKU on production (SRS-004)?
+- [ ] SignalR Service `publicNetworkAccess: 'Enabled'` with no private endpoint/network ACL (SRS-005)?
+
+**Category Q — Storage data plane (only if the template provisions Storage used by the app)**
+- [ ] Client access via account-key/shared-key SAS instead of Entra user-delegation SAS or managed identity (STG-001)?
+- [ ] SAS tokens minted with long/no expiry — no short-TTL policy (STG-002)?
+- [ ] Storage reachable over the public network with no data-plane private endpoint (STG-003)?
+- [ ] No lifecycle-management policy — blobs never tier down or expire (STG-004)?
+- [ ] Blob soft-delete and versioning disabled — no recovery from accidental delete/overwrite (STG-005)?
+- [ ] Retention/compliance context but no immutability (WORM)/legal-hold policy (STG-006)?
+
 ### Step 3 — Format findings
 
 ```
@@ -175,16 +192,16 @@ Work through all categories. State "no findings" explicitly if a category is cle
 ---
 Finding format:
 
-[SEVERITY] Rule/Skill: <rule-id or skill-id> | Standard: <ASB-XX / WAF-XXX / CAF-NAME-XXX / BIC-XXX / AOBS-XXX / CICD-XXX / ADR-XXX / FIN-XXX / AKS-XXX / APIM-XXX / LZ-XXX / SLO-XXX / IMG-XXX / InternalPolicy>
+[SEVERITY] Rule/Skill: <rule-id or skill-id> | Standard: <ASB-XX / WAF-XXX / CAF-NAME-XXX / BIC-XXX / AOBS-XXX / CICD-XXX / ADR-XXX / FIN-XXX / AKS-XXX / APIM-XXX / LZ-XXX / SLO-XXX / IMG-XXX / SRS-XXX / STG-XXX / InternalPolicy>
 Location: <file>:<line>
 Issue: <one sentence — what is wrong>
 Fix: <concrete Bicep or YAML change>
 ```
 
 Severity mapping:
-- **CRITICAL** — ASB-NS-1 (public blob), ASB-IM-1 (key export), always-no-hardcoded-secrets, CICD-001 (long-lived secret instead of OIDC), AKS-001 (no Pod Security Standards), AKS-003 (no NetworkPolicy), AKS-004 (client secret instead of Workload Identity), LZ-002 (prod/non-prod sharing one subscription), IMG-001/IMG-002 (no image scan gate / container runs as root), SCN-001 (no CI secret scanning), SCN-003 (no leak-rotation runbook)
-- **WARNING** — ASB-NS-2, ASB-PA-1, WAF-SEC-*, WAF-OPS-001/002, BIC-003, BIC-004, AOBS-001/003/004, CICD-002/003/004, ADR-001/002/004, AKS-002, APIM-001/002, LZ-001/LZ-003, SLO-001/SLO-002, IMG-004, SCN-002/SCN-004, LPT-001/LPT-002/LPT-004
-- **ADVISORY** — WAF-COST-*, WAF-PERF-*, CAF naming/tagging, BIC-007 (AVM), AOBS-002, ADR-003, FIN-001/002/003/004, APIM-003/004, LZ-004, SLO-003/SLO-004, IMG-003, SCN-005, LPT-003/LPT-005
+- **CRITICAL** — ASB-NS-1 (public blob), ASB-IM-1 (key export), always-no-hardcoded-secrets, CICD-001 (long-lived secret instead of OIDC), AKS-001 (no Pod Security Standards), AKS-003 (no NetworkPolicy), AKS-004 (client secret instead of Workload Identity), LZ-002 (prod/non-prod sharing one subscription), IMG-001/IMG-002 (no image scan gate / container runs as root), SCN-001 (no CI secret scanning), SCN-003 (no leak-rotation runbook), SRS-001 (scaled-out SignalR with no backplane), STG-001 (account-key SAS), STG-002 (long/no SAS expiry)
+- **WARNING** — ASB-NS-2, ASB-PA-1, WAF-SEC-*, WAF-OPS-001/002, BIC-003, BIC-004, AOBS-001/003/004, CICD-002/003/004, ADR-001/002/004, AKS-002, APIM-001/002, LZ-001/LZ-003, SLO-001/SLO-002, IMG-004, SCN-002/SCN-004, LPT-001/LPT-002/LPT-004, SRS-002/SRS-003/SRS-004, STG-003/STG-004/STG-005
+- **ADVISORY** — WAF-COST-*, WAF-PERF-*, CAF naming/tagging, BIC-007 (AVM), AOBS-002, ADR-003, FIN-001/002/003/004, APIM-003/004, LZ-004, SLO-003/SLO-004, IMG-003, SCN-005, LPT-003/LPT-005, SRS-005, STG-006
 
 ### Step 4 — Summary line
 

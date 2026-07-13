@@ -1,0 +1,27 @@
+# Line-ending policy for FullStack Pilot
+#
+# The repository is entirely text (markdown skills, JSON manifests, JS/MJS tooling,
+# C#/TS/SQL/Bicep fixtures) and is installed cross-platform (macOS, Linux, Windows).
+# Pin LF everywhere so line endings are deterministic and independent of each
+# contributor's core.autocrlf setting — the plugin scaffold and hook scripts must
+# read identically on every platform.
+
+# Normalize every text file to LF in the repo AND in the working tree on all platforms.
+* text=auto eol=lf
+
+# Windows-native script types keep CRLF if they are ever added (cmd.exe/PowerShell hosts).
+*.bat  text eol=crlf
+*.cmd  text eol=crlf
+*.ps1  text eol=crlf
+
+# Common binary asset types — never touch their bytes (none tracked today; future-proofing).
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.pdf  binary
+*.zip  binary
+*.woff  binary
+*.woff2 binary
+*.ttf  binary

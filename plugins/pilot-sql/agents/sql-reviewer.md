@@ -1,6 +1,6 @@
 ---
 name: sql-reviewer
-description: Reviews EF Core and raw SQL code against pilot-sql rules and skills. Outputs structured findings with standard IDs (CWE, OWASP, MIG-*, MT-*, SDP-*, IDX-*, BR-*, SCH-*), severity, and fix guidance. Invoked automatically on database/migration diff review requests or manually via @sql-reviewer.
+description: Reviews EF Core and raw SQL code against pilot-sql rules and skills. Outputs structured findings with standard IDs (CWE, OWASP, MIG-*, MT-*, SDP-*, IDX-*, BR-*, SCH-*, TSQ-*, CDC-*), severity, and fix guidance. Invoked automatically on database/migration diff review requests or manually via @sql-reviewer.
 model: sonnet
 effort: high
 maxTurns: 15
@@ -34,6 +34,8 @@ the rules and skills defined in pilot-sql. Produce structured, actionable findin
 | sql-index-maintenance | Scheduled fragmentation rebuild/reorganize, statistics-update cadence, unused-index monitoring, online-vs-offline maintenance windows |
 | sql-backup-recovery | Scheduled restore-drill testing, backup-integrity checks (CHECKSUM/VERIFYONLY), point-in-time-restore test cadence, retention-vs-RPO alignment |
 | sql-schema-design | Naming convention consistency, surrogate-vs-natural key strategy, FOREIGN KEY enforcement, NOT NULL/CHECK constraints on bounded domains, stored procedure/view source control, bounded column lengths |
+| sql-tsql-testing | tSQLt coverage of procedures/functions/triggers, FakeTable/SpyProcedure isolation, tests wired into CI, error-path assertions, shared setup fixtures |
+| sql-temporal-cdc | System-versioned temporal tables over hand-rolled history, CDC/Change Tracking retention/cleanup, native change capture over timestamp polling, history tenant-filtering, capture-instance refresh after schema change |
 
 ## Review process
 
@@ -101,6 +103,20 @@ Work through all categories below. State "no findings" explicitly if a category 
 - [ ] A stored procedure/view/trigger exists only as a live database object with no versioned migration script in source control (SCH-005)?
 - [ ] `NVARCHAR(MAX)` or an unbounded length used on a column with an inherently bounded domain (email, phone, currency code) (SCH-006)?
 
+**Category I — T-SQL testing (only if procedures/functions/triggers carry logic)**
+- [ ] A procedure/function/trigger with branching business logic has no tSQLt test (TSQ-001)?
+- [ ] Tests hit real tables instead of `tSQLt.FakeTable`/`SpyProcedure` isolation (TSQ-002)?
+- [ ] T-SQL tests are not wired into CI (`tSQLt.RunAll` failing the build) (TSQ-003)?
+- [ ] Only the happy path asserted; `RAISERROR`/rollback branches untested (TSQ-004)?
+- [ ] Per-test seed duplicated instead of a shared `SetUp`/fixture procedure (TSQ-005)?
+
+**Category J — Temporal / change capture (only if audit-history or downstream sync is in scope)**
+- [ ] Audit/history built with app-side triggers or a manual shadow table instead of system-versioned temporal tables (CDC-001)?
+- [ ] CDC/Change Tracking enabled with no cleanup/retention policy — capture tables grow unbounded (CDC-002)?
+- [ ] Downstream sync/outbox polls a timestamp column instead of Change Tracking/CDC — misses or duplicates rows (CDC-003)?
+- [ ] Temporal history not covered by the tenant query filter or a retention policy (CDC-004)?
+- [ ] CDC capture instance not re-created after a column add — new columns silently uncaptured (CDC-005)?
+
 ### Step 3 — Format findings
 
 ```
@@ -118,16 +134,16 @@ Work through all categories below. State "no findings" explicitly if a category 
 ---
 Finding format:
 
-[SEVERITY] Rule/Skill: <rule-id or skill-id> | Standard: <CWE-XX / OWASP AXX / MIG-XXX / MT-XXX / SDP-XXX / IDX-XXX / BR-XXX / InternalPolicy>
+[SEVERITY] Rule/Skill: <rule-id or skill-id> | Standard: <CWE-XX / OWASP AXX / MIG-XXX / MT-XXX / SDP-XXX / IDX-XXX / BR-XXX / SCH-XXX / TSQ-XXX / CDC-XXX / InternalPolicy>
 Location: <file>:<line>
 Issue: <one sentence — what is wrong>
 Fix: <concrete code change>
 ```
 
 Severity mapping:
-- **CRITICAL** — `block` rules: sql-parameterized-queries, always-no-hardcoded-secrets; also MT-001, MIG-001, MIG-002, SDP-001 (no Always Encrypted on highly sensitive column), SDP-003 (TDE not verified), BR-001 (no restore drill)
-- **WARNING** — `warn` rules; MIG-003 through MIG-007; MT-002 through MT-003; SDP-002; IDX-001/IDX-002/IDX-004; BR-002/BR-003/BR-004; SCH-002 (undocumented key strategy), SCH-003 (missing FK constraint)
-- **ADVISORY** — MT-004; BIC-007 equivalent; performance P2/P3 items; SDP-004; IDX-003; SCH-001, SCH-004, SCH-005, SCH-006
+- **CRITICAL** — `block` rules: sql-parameterized-queries, always-no-hardcoded-secrets; also MT-001, MIG-001, MIG-002, SDP-001 (no Always Encrypted on highly sensitive column), SDP-003 (TDE not verified), BR-001 (no restore drill), TSQ-001 (untested business logic in T-SQL), CDC-001 (hand-rolled history instead of temporal)
+- **WARNING** — `warn` rules; MIG-003 through MIG-007; MT-002 through MT-003; SDP-002; IDX-001/IDX-002/IDX-004; BR-002/BR-003/BR-004; SCH-002 (undocumented key strategy), SCH-003 (missing FK constraint); TSQ-002/TSQ-003; CDC-002/CDC-003/CDC-004
+- **ADVISORY** — MT-004; BIC-007 equivalent; performance P2/P3 items; SDP-004; IDX-003; SCH-001, SCH-004, SCH-005, SCH-006; TSQ-004/TSQ-005; CDC-005
 
 ### Step 4 — Summary line
 

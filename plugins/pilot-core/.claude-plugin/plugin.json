@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "pilot-core",
   "displayName": "Pilot Core",
-  "version": "0.25.0",
+  "version": "0.27.0",
   "description": "Shared governance for full-stack Microsoft projects: stack detection and scaffolding, /fsp-bootstrap baseline-module scaffolding (auth/authz/logging/error-handling/health-checks/CORS) gated ahead of feature work, security audit/fix pipelines (/fsp-init, /fsp-audit, /fsp-fix, /fsp-learn), the autonomous delivery team (/fsp-architect assessment, /fsp-build one-shot pipeline), MCP discovery, dependency supply-chain and license policy, CI secret scanning, REST API design standards, and the cross-stack @fullstack-reviewer/@fullstack-implementor/@fullstack-support trio",
   "author": {
     "name": "AgenticPawan",
@@ -11,5 +11,5 @@
   "homepage": "https://github.com/AgenticPawan/FullStack-Pilot#pilot-core",
   "repository": "https://github.com/AgenticPawan/FullStack-Pilot",
   "license": "MIT",
-  "keywords": ["governance", "commits", "code-health", "microsoft", "fullstack", "supply-chain", "sbom", "incident-response", "postmortem", "license-compliance", "test-data", "adr", "decision-records", "onboarding", "search-integration", "git-workflow", "secret-scanning", "api-design", "load-testing", "fsp-commands", "support-agent", "triage"]
+  "keywords": ["governance", "commits", "code-health", "microsoft", "fullstack", "supply-chain", "sbom", "incident-response", "postmortem", "license-compliance", "test-data", "adr", "decision-records", "onboarding", "search-integration", "git-workflow", "secret-scanning", "api-design", "load-testing", "realtime-contract", "signalr-seam", "fsp-commands", "support-agent", "triage"]
 }

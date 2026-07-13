@@ -51,8 +51,8 @@ Run the `rag-discovery` skill against `PROJECT_ROOT`. It writes `pilot-rag/INGES
 
 Create `pilot-rag/docker-compose.yml`:
 
-- `qdrant` service: image `qdrant/qdrant`, ports 6333/6334, named volume, healthcheck on `/readyz`.
-- **Do not containerize Ollama by default** (GPU passthrough friction). Instead write `pilot-rag/scripts/setup-ollama.sh` and `setup-ollama.ps1` that verify the Ollama CLI, pull **both** models (`qwen2.5:7b-instruct`, `nomic-embed-text`), and **fail loudly with install instructions** if missing. Include a **commented-out** `ollama` compose service for teams that want it containerized.
+- `qdrant` service: image **pinned to an explicit stable tag** (e.g. `qdrant/qdrant:v1.12.4`) — never `qdrant/qdrant` untagged or `:latest`, so an upstream re-tag can't silently change the vector store or pull a compromised layer into the user's repo. Ports 6333/6334, named volume, healthcheck on `/readyz`.
+- **Do not containerize Ollama by default** (GPU passthrough friction). Instead write `pilot-rag/scripts/setup-ollama.sh` and `setup-ollama.ps1` that verify the Ollama CLI, pull **both** models **by an explicit version tag** (`qwen2.5:7b-instruct`, `nomic-embed-text` — record the exact tags pulled in the generated README so a re-pull is reproducible), and **fail loudly with install instructions** if missing. Include a **commented-out** `ollama` compose service (also pinned by tag) for teams that want it containerized.
 
 **Gate:** `docker compose up -d` → Qdrant healthy; the setup script exits 0 with both models present. Do not proceed while red.
 

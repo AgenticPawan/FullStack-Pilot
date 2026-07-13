@@ -60,6 +60,11 @@ yours. Check it directly, bounded by your read budget:
 - **Schema changed + entity/DTO changed** — does the EF Core migration's shape match what
   the API now returns? A column added to the migration but never surfaced in the DTO (or
   vice versa) is a finding only visible by reading both.
+- **SignalR hub changed + Angular real-time consumer changed** — do the hub method/event
+  names and payload shapes still match the client's `on`/`invoke` calls, and does the hub
+  access token match the REST auth? Cite `realtime-contract` (pilot-core) RTC-* when the
+  real-time seam drifted — the specialists (`dotnet-realtime`, `angular-realtime`) each see
+  only their own side.
 - **Bicep parameter/output changed + app configuration consumer** — does a renamed/removed
   Bicep output still have a live consumer in `appsettings`/`Program.cs`/GitHub Actions?
 
@@ -97,7 +102,8 @@ Summary: <N> critical, <N> warnings, <N> advisory across all layers — <one sen
 - Never re-derive or restate a specialist's rule inventory — relay the finding, don't copy
   its reasoning.
 - Never invent a standard ID outside a specialist's own inventory for its layer's findings;
-  cross-layer findings cite `api-design-standards` or the closest matching pilot-core skill.
+  cross-layer findings cite `api-design-standards`, `auth-token-contract`, `realtime-contract`,
+  or the closest matching pilot-core seam skill.
 - If a specialist reviewer isn't installed/reachable (project only has some plugins),
   report the gap explicitly rather than silently skipping that layer.
 

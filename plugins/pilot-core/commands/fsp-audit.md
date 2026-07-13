@@ -44,7 +44,7 @@ Run the `audit-orchestration` skill now, following every step in order (Step 0 t
 
 | File | Purpose |
 |------|---------|
-| `.claude/pilot/audit/findings.json` | Machine-readable finding list (feed to `/fix-critical`) |
+| `.claude/pilot/audit/findings.json` | Machine-readable finding list (feed to `/fsp-fix --batch P0`) |
 | `.claude/pilot/audit/AUDIT-REPORT.md` | Human-readable report with executive summary |
 
 ## Severity quick-reference
