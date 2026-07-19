@@ -108,7 +108,7 @@ Every `SKILL.md` MUST begin with YAML frontmatter containing all three fields:
 
 ## Hooks conventions
 
-- Hooks MUST be **matcher-scoped** (e.g. `"matcher": "Edit|Write"`). Never use `"*"`.
+- Hooks MUST be **matcher-scoped** for tool events (e.g. `"matcher": "Edit|Write"` for `PreToolUse`/`PostToolUse`). Never use `"*"`. `SessionStart`, `InstructionsLoaded`, and other non-tool events do NOT take a `matcher` field — the hook group has only `"hooks": [...]`.
 - Hook `command` paths MUST use `${CLAUDE_PLUGIN_ROOT}` — never hardcoded absolute paths.
 - Hook scripts MUST exist at the declared path and be executable (`chmod +x`).
 - Hook scripts MUST NOT recurse `node_modules/`, `bin/`, `obj/`, `dist/`, or `.git/`.
