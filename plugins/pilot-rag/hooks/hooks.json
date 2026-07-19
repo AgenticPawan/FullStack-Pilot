@@ -1,3 +1,17 @@
 {
-  "hooks": {}
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "SessionStart",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/scripts/manifest-freshness.js"],
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
 }

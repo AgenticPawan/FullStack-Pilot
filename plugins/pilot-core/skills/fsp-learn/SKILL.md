@@ -1,6 +1,7 @@
 ---
+name: fsp-learn
 description: Distil durable, project-specific knowledge from the current session into reviewable knowledge files. Never commits.
-argument-hint: "[--conventions] [--lessons] [--diff-only]"
+when_to_use: /fsp-learn, learn conventions, distil knowledge, save lessons, learn from session, update conventions, knowledge distillation, capture patterns, session lessons, what did we learn, conventions update
 ---
 
 # /fsp-learn — Session Knowledge Distillation

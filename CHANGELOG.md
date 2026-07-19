@@ -3,6 +3,39 @@
 All notable changes to FullStack Pilot are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## pilot-core 0.30.0, pilot-rag 0.5.0 — 2026-07-19 (Phase 1 — spec alignment)
+
+### pilot-core 0.30.0
+
+**Commands → Skills migration.** All 10 `/fsp-*` commands in `commands/` have been converted to skills in `skills/fsp-*/SKILL.md`. Each skill carries `name: fsp-*` frontmatter so the `/fsp-*` invocation route is preserved via the skill router. The `commands/` directory is now empty; `scripts/validate.mjs` was updated to register `fsp-*` skill `name:` fields as valid slash-command targets so all `/fsp-*` cross-references in agents and skill bodies continue to resolve.
+
+**`userConfig` added to `plugin.json`.** Three per-workspace settings are now exposed:
+- `strict_style_hooks` (boolean, default `true`) — when `false`, suppresses all advisory `warn` hook patterns; security `deny` patterns are never suppressed.
+- `org_prefix` (string) — optional organisation prefix for naming conventions and scaffolded project names.
+- `severity_floor` (string, default `P1`) — minimum finding severity `/fsp-fix` will auto-remediate; findings below this floor are reported only.
+
+**`dangerous-patterns.js` updated** to read `CLAUDE_PLUGIN_OPTION_STRICT_STYLE_HOOKS`. When set to `'false'`, all `warn`-action patterns are filtered out before the match loop; `deny` patterns always run.
+
+**Removed:** 10 `commands/fsp-*.md` files — superseded by the equivalent skills.
+
+### pilot-rag 0.5.0
+
+**`defaultEnabled: false`** added to `plugin.json`. pilot-rag is now opt-in.
+
+**`SessionStart` hook** (`hooks/hooks.json` + `hooks/scripts/manifest-freshness.js`) — on every session start, compares a SHA-256 hash of `pilot-rag/INGESTION_MANIFEST.md` against the hash stored in `${CLAUDE_PLUGIN_DATA}/rag-manifest.hash`. Emits an advisory `systemMessage` if they differ. Always fails open.
+
+**`/fsp-rag-init` skill** (`skills/fsp-rag-init/SKILL.md`) replaces the former `commands/fsp-rag-init.md`.
+
+---
+
+## pilot-core 0.29.0 — 2026-07-19 (Phase 0 — YAML quoting + strict CI gate)
+
+**YAML strict-parse quoting.** 17 `SKILL.md` and agent files had `description:` values containing `: ` (colon-space) that YAML 1.2 strict parsers silently misparse as nested mapping keys, dropping all frontmatter at runtime. All affected files now double-quote the description value.
+
+**CI strict validation gate.** `.github/workflows/validate.yml` now installs the Claude Code CLI and runs `claude plugin validate --strict` on all 6 plugins for every push/PR, catching runtime YAML parse issues the custom `validate.mjs` regex parser misses.
+
+---
+
 ## 2026-07-19 — orchestration layer (AGENTS.md, hooks, knowledge base, meta-skills)
 
 pilot-core 0.28.0 → 0.29.0. Closes the orchestration gap identified via gap analysis

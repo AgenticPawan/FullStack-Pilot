@@ -1,5 +1,7 @@
 ---
-description: Detect the project's Angular/.NET/SQL/Azure stack, then scaffold CLAUDE.md and governance rules from the confirmed profile.
+name: fsp-init
+description: Detect the project's Angular/.NET/SQL/Azure stack, write stack-profile.json, then scaffold CLAUDE.md and governance rules from the confirmed profile.
+when_to_use: /fsp-init, initialize project, detect stack, setup governance, scaffold CLAUDE.md, first time setup, stack detection, project initialization, new project, what stack am I using, set up pilot
 ---
 
 # /fsp-init — Stack Detection and Scaffold

@@ -1,5 +1,7 @@
 ---
+name: fsp-audit
 description: Run a full security audit (automated scanners plus a bounded Claude triage pass) on the current repository and write a findings report.
+when_to_use: /fsp-audit, security audit, vulnerability scan, run audit, OWASP review, dependency check, tenant isolation review, find security issues, audit my code, check for vulnerabilities, scan for secrets
 ---
 
 # /fsp-audit — Security Audit Pipeline

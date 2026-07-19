@@ -1,5 +1,7 @@
 ---
+name: fsp-verify
 description: Run the 7-phase quality gate (build, lint, antipatterns, tests, security, migrations, diff) before declaring a feature done or opening a PR.
+when_to_use: /fsp-verify, quality gate, verify before PR, check everything, pre-PR check, verify changes, is this ready, run all checks, done, ready to ship, before merge, feature complete
 ---
 
 Load the `quality-gate` skill and execute all seven phases against the current working branch.
@@ -13,16 +15,3 @@ Load the `quality-gate` skill and execute all seven phases against the current w
 5. **Security** — secrets, open firewall rules, unprotected endpoints
 6. **Migrations** — `dotnet ef migrations list`, no unexpected pending migrations
 7. **Diff review** — `git diff --stat main`, confirm intended scope
-
-## Output
-
-A pass/fail/warn status for each phase, then an overall `READY FOR PR` or `NOT READY` verdict.
-
-A single 🔴 FAIL in any phase means the feature is not ready. Fix the reported issue and re-run `/fsp-verify`.
-
-## Notes
-
-- Skip Phase 6 if no migration files changed this session.
-- Skip `ng` phases if `angular.json` does not exist in the project.
-- Skip `dotnet` phases if no `.sln` or `.csproj` exists.
-- Run after any batch of cross-file changes, not just at "done" time.
