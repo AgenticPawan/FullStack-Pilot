@@ -138,6 +138,28 @@ Follow [Conventional Commits](https://www.conventionalcommits.org/):
 
 One plugin or concern per commit. Reference issue numbers where applicable.
 
+## What's New (2026-07-19 — orchestration layer)
+
+Added in this session to close the gap with reference repos on automation and intelligence:
+
+**AGENTS.md** — repo-root routing document covering all 5 plugins: intent-to-agent mapping, cross-agent coordination patterns, subagent policy, MCP-first tool order, and hard safety rules (no force-push, no live-env changes, 10-iteration cap).
+
+**`rules-catalog/always-agent-routing.md`** — auto-loaded rules file: MCP-first order, subagent policy, skill load order, 10-iteration cap enforcement.
+
+**Four new hook scripts** (`bash-guard.js`, `antipattern-guard.js`, `test-analyzer.js`, `build-validator.js`) wired in `hooks.json`:
+- `bash-guard.js` — PreToolUse/Bash: blocks git force-push, hard-reset, DROP TABLE without WHERE, Azure deployments outside branch; warns on wide `rm -rf` and prod builds
+- `antipattern-guard.js` — PreToolUse/Write|Edit|MultiEdit: advisory warnings for Angular subscribe leaks, `: any` types, .NET `new HttpClient()` / `async void` / `.Result`, SQL `SELECT *`
+- `test-analyzer.js` — PostToolUse/Bash: parses `dotnet test` and `ng test` output; writes summary to `.claude/last-test-run.md`
+- `build-validator.js` — PreToolUse/Bash: validates `.sln`/`angular.json`/lock file presence before build commands
+
+**Knowledge base** (`plugins/pilot-core/knowledge/`): `stack-antipatterns.md`, `stack-packages.md`, and `decisions/ADR-001` through `ADR-005` (permissions-only auth, GUID keys, direct DbContext, takeUntilDestroyed, tenant filter at DbContext).
+
+**Three new skills**: `session-handoff` (session continuity via `.claude/handoff.md`), `project-instincts` (three-tier multi-stack learning system), `quality-gate` (7-phase pre-PR verification), `stack-health` (A–F graded health report).
+
+**Three new commands**: `/fsp-checkpoint` (commit + handoff), `/fsp-verify` (quality gate), `/fsp-health` (health report).
+
+---
+
 ## Before any schema change
 
 Before modifying a `plugin.json` or `marketplace.json` field:

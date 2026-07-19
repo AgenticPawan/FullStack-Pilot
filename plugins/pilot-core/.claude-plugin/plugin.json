@@ -2,8 +2,8 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "pilot-core",
   "displayName": "Pilot Core",
-  "version": "0.28.0",
-  "description": "Shared governance for full-stack Microsoft projects: stack detection and scaffolding, /fsp-bootstrap baseline-module scaffolding (auth/authz/logging/error-handling/health-checks/CORS) gated ahead of feature work, security audit/fix pipelines (/fsp-init, /fsp-audit, /fsp-fix, /fsp-learn), the autonomous delivery team (/fsp-architect assessment, /fsp-build one-shot pipeline), MCP discovery, dependency supply-chain and license policy, CI secret scanning, REST API design standards, and the cross-stack @fullstack-reviewer/@fullstack-implementor/@fullstack-support trio",
+  "version": "0.29.0",
+  "description": "Shared governance for full-stack Microsoft projects: stack detection and scaffolding, /fsp-bootstrap baseline scaffolding gated ahead of feature work, security pipelines (/fsp-init, /fsp-audit, /fsp-fix, /fsp-learn), autonomous delivery team (/fsp-architect, /fsp-build), MCP discovery, supply-chain and license policy, CI secret scanning, REST API standards, @fullstack-reviewer/@fullstack-implementor/@fullstack-support trio, /fsp-checkpoint, /fsp-verify, /fsp-health",
   "author": {
     "name": "AgenticPawan",
     "url": "https://github.com/AgenticPawan"
