@@ -141,7 +141,7 @@ Closes every finding in [docs/critical-review-2026-07-12.md](docs/critical-revie
   review's registry snapshot was stale); `effort` and `maxTurns` are documented, honored plugin-
   subagent frontmatter fields, so the reviewers run at intended depth (S2).
 
-## 2026-07-12 — backlog skills: zero-downtime-deployment + llm-cost-safety
+## 2026-07-12 — backlog skills: zero-downtime-deployment + rag-llm-cost-safety
 
 pilot-core 0.23.0 → 0.24.0, pilot-rag 0.2.0 → 0.3.0. Completes the skill backlog from
 [docs/CRITICAL-REVIEW-2026-07.md](docs/CRITICAL-REVIEW-2026-07.md) §4.
@@ -153,7 +153,7 @@ pilot-core 0.23.0 → 0.24.0, pilot-rag 0.2.0 → 0.3.0. Completes the skill bac
   expand/contract (ZDD-001), parallel-change discipline (ZDD-002), N-1 backward compatibility
   (ZDD-003, P0), non-locking migrations (ZDD-004), and migration/rollout ordering gated in CI
   (ZDD-005). Listed in `docs/pilot-core.md`.
-- **`llm-cost-safety`** (pilot-rag) — the cost twin of `rag-security` for the generation path:
+- **`rag-llm-cost-safety`** (pilot-rag) — the cost twin of `rag-security` for the generation path:
   per-request token/output ceilings and context-budget enforcement, incremental + batched
   embedding on ingestion (never re-embed unchanged chunks), output validation with bounded
   provider-failure handling (timeout + finite retries), and per-request token/cost logging.

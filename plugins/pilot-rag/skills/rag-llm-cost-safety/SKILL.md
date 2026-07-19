@@ -1,5 +1,5 @@
 ---
-name: llm-cost-safety
+name: rag-llm-cost-safety
 description: Cost/safety guardrails for the pilot-rag generation path — bounds /ask and ingestion token spend and runaway output. Covers per-request token/cost ceilings (output cap + context budget), embedding-cost control on ingestion, output validation and bounded provider-failure handling, and token/cost observability. Complements rag-security; matters most once the Ollama->Azure OpenAI swap points it at a metered provider.
 when_to_use: LLM cost, token budget, max output tokens, context window limit, cost ceiling, per request token cap, embedding cost ingestion, batch embeddings, re-embed unchanged, runaway generation, unbounded retry loop, provider timeout, token usage logging, cost observability, Azure OpenAI metered, Ollama local free, output validation, response length cap, SSE stream cost, cost gate RAG
 ---

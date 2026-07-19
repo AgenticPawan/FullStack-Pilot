@@ -163,7 +163,7 @@ Ranked by gap severity, not novelty.
    nothing governs expand/contract migrations coordinated with rolling deploys — the classic
    "column dropped before old pods drained" outage.
 
-4. **`llm-cost-safety` (pilot-rag).** Token/cost ceilings, context-size limits, output
+4. **`rag-llm-cost-safety` (pilot-rag).** Token/cost ceilings, context-size limits, output
    validation on the generation path. Pairs with `rag-security`.
 
 ---
