@@ -126,7 +126,7 @@ Lower-urgency additions from the review §4 — tracked here so they are not los
   coordinated with rolling deploys (Skill #3). **DONE 2026-07-12** — shipped in pilot-core
   (seam over sql-migration-safety + azure-cicd-security), 5 standard IDs (ZDD-001..005),
   pilot-core 0.24.0.
-- **`llm-cost-safety` (pilot-rag)** — token/cost ceilings, context limits, output validation
+- **`rag-llm-cost-safety` (pilot-rag)** — token/cost ceilings, context limits, output validation
   (Skill #4). **DONE 2026-07-12** — shipped in pilot-rag as the cost twin of rag-security,
   pilot-rag 0.3.0.
 

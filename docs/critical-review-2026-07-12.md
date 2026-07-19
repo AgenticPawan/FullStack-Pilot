@@ -198,7 +198,7 @@ The catalog is deep (137 skills); these are genuine **unowned seams**, not fille
    `azure-security-baseline` exist, but nothing governs the connective tissue: Managed Identity →
    Key Vault references in App Configuration as the *replacement* for the account keys
    secret-guard now flags.
-4. **In-app Azure OpenAI safety (not just the RAG scaffold).** `llm-cost-safety` and
+4. **In-app Azure OpenAI safety (not just the RAG scaffold).** `rag-llm-cost-safety` and
    `rag-security` are scoped to `pilot-rag`. Microsoft shops increasingly ship Azure OpenAI
    features in the .NET app itself; there is no `pilot-dotnet` skill for content filtering,
    prompt-injection, or PII egress in the user's *own* product code.
