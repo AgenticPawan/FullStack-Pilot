@@ -1,6 +1,6 @@
 ---
 name: azure-security-baseline
-description: Checks Azure Bicep resources against the Microsoft security baseline: blocks public blob storage, flags PaaS services without private endpoints, verifies managed identity authentication over connection-string keys, validates Key Vault secret references, checks RBAC least-privilege (no Owner/Contributor at subscription scope), and checks Azure Defender enablement. Outputs findings with Azure Security Benchmark control IDs and OWASP references.
+description: "Checks Azure Bicep resources against the Microsoft security baseline: blocks public blob storage, flags PaaS services without private endpoints, verifies managed identity authentication over connection-string keys, validates Key Vault secret references, checks RBAC least-privilege (no Owner/Contributor at subscription scope), and checks Azure Defender enablement. Outputs findings with Azure Security Benchmark control IDs and OWASP references."
 when_to_use: Azure security, managed identity, Key Vault, private endpoint, public storage, RBAC, least privilege, Azure Defender, security baseline, network security, storage security, connection string, Bicep security, Azure Security Benchmark
 ---
 

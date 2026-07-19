@@ -1,6 +1,6 @@
 ---
 name: project-instincts
-description: Three-tier project learning system for multi-stack codebases. Instincts (`.claude/instincts.json`) are unconfirmed hypotheses (confidence 0.0–1.0): auto-applied at ≥0.7, promoted to memory at ≥0.9. User corrections go directly to MEMORY.md. Non-obvious discoveries go to `.claude/learning-log.md`. Covers Angular, .NET, SQL, and Azure patterns. Trigger phrases activate the three modes: status, export, import.
+description: "Three-tier project learning system for multi-stack codebases. Instincts (`.claude/instincts.json`) are unconfirmed hypotheses (confidence 0.0–1.0): auto-applied at ≥0.7, promoted to memory at ≥0.9. User corrections go directly to MEMORY.md. Non-obvious discoveries go to `.claude/learning-log.md`. Covers Angular, .NET, SQL, and Azure patterns. Trigger phrases activate the three modes: status, export, import."
 when_to_use: learn from this, remember this pattern, show instincts, what have you learned, list instincts, export instincts, import instincts, log this discovery, project convention, naming pattern, multi-stack habit, session start review, what patterns have you observed
 ---
 

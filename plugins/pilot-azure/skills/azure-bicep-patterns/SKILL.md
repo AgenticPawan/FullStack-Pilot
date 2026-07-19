@@ -1,6 +1,6 @@
 ---
 name: azure-bicep-patterns
-description: Reviews Bicep files for production-readiness: module decomposition vs monolithic templates, parameterization of environment-specific values, what-if step in GitHub Actions deployment workflow, required cost tags on all resources, secure parameter types for secrets, conditional deployment for environment tiers, and Azure Verified Modules (AVM) alignment. Outputs a scored checklist with Bicep best-practice IDs.
+description: "Reviews Bicep files for production-readiness: module decomposition vs monolithic templates, parameterization of environment-specific values, what-if step in GitHub Actions deployment workflow, required cost tags on all resources, secure parameter types for secrets, conditional deployment for environment tiers, and Azure Verified Modules (AVM) alignment. Outputs a scored checklist with Bicep best-practice IDs."
 when_to_use: Bicep patterns, Bicep modules, Bicep parameterization, what-if deployment, Bicep secure parameter, Azure Verified Modules, AVM, Bicep best practices, Bicep review, deployment workflow, Bicep conditional, cost tags, Bicep production
 ---
 

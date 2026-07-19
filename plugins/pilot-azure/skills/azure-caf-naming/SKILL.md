@@ -1,6 +1,6 @@
 ---
 name: azure-caf-naming
-description: Enforces Azure Cloud Adoption Framework naming and tagging conventions: validates resource names match the CAF pattern <type>-<workload>-<env>-<region>-<instance> using the official abbreviation list, checks required tags (env, costCenter, owner, managedBy), detects missing or wrong type prefixes, and emits a regex pattern set consumable by the dangerous-patterns hook for live enforcement. Uses microsoft-learn MCP server when available for the current abbreviation reference.
+description: "Enforces Azure Cloud Adoption Framework naming and tagging conventions: validates resource names match the CAF pattern <type>-<workload>-<env>-<region>-<instance> using the official abbreviation list, checks required tags (env, costCenter, owner, managedBy), detects missing or wrong type prefixes, and emits a regex pattern set consumable by the dangerous-patterns hook for live enforcement. Uses microsoft-learn MCP server when available for the current abbreviation reference."
 when_to_use: CAF naming, Cloud Adoption Framework, resource naming, Azure naming convention, CAF abbreviation, resource tags, tagging policy, naming enforcement, Bicep naming, dangerous-patterns, naming regex
 ---
 

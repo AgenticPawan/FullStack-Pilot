@@ -1,7 +1,7 @@
 ---
 user-invocable: false
 name: batched-remediation
-description: Batched remediation pipeline. Reads audit findings.json, filters one severity tier (--batch P0-P3), groups by root cause, validates --max-files (default 10), creates branch pilot/fix-<tier>-<n>, applies fixes, verifies with build/tests, rolls back on failure. Updates finding statuses and writes a PR-ready description. Hard rules: never mix tiers; never exceed --max-files; API-surface changes need explicit human sign-off first.
+description: "Batched remediation pipeline. Reads audit findings.json, filters one severity tier (--batch P0-P3), groups by root cause, validates --max-files (default 10), creates branch pilot/fix-<tier>-<n>, applies fixes, verifies with build/tests, rolls back on failure. Updates finding statuses and writes a PR-ready description. Hard rules: never mix tiers; never exceed --max-files; API-surface changes need explicit human sign-off first."
 when_to_use: Invoke via /fsp-fix. Use when the user asks to fix, remediate, or patch findings from a prior audit. Requires findings.json produced by /fsp-audit.
 disable-model-invocation: true
 ---

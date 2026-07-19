@@ -1,6 +1,6 @@
 ---
 name: angular-security
-description: Angular security hardening: XSS template-binding hygiene, DomSanitizer bypass policy, nonce-based CSP, Trusted Types (v17+), CSRF handling with the .NET backend, and permission-ONLY client-side access control — route guards and UI gating check permissions, never roles; client checks are UX only, real enforcement is dotnet-authorization. References OWASP A01/A03.
+description: "Angular security hardening: XSS template-binding hygiene, DomSanitizer bypass policy, nonce-based CSP, Trusted Types (v17+), CSRF handling with the .NET backend, and permission-ONLY client-side access control — route guards and UI gating check permissions, never roles; client checks are UX only, real enforcement is dotnet-authorization. References OWASP A01/A03."
 when_to_use: XSS, innerHTML, DomSanitizer, CSP, Content Security Policy, Trusted Types, CSRF, cross-site scripting, sanitization, security audit, nonce, unsafe-inline, XSRF token, bypassSecurityTrust, security review, route guard, CanActivate, CanMatch, permission guard, role guard, hasPermission directive, hasRole directive, access control
 applies_to: angular
 ---

@@ -1,6 +1,6 @@
 ---
 name: quality-gate
-description: Seven-phase verification pipeline Claude runs before declaring any feature done across the full Angular/.NET/SQL/Azure stack. Phases: (1) Build — dotnet build + ng build, zero errors; (2) Analyzers — dotnet format --verify-no-changes + ng lint; (3) Antipatterns — antipattern-guard scan on changed files; (4) Tests — dotnet test + ng test --watch=false, no new failures; (5) Security — secrets, open firewall rules, unprotected endpoints; (6) Migrations — ef migrations list, no unapplied pending; (7) Diff review — git diff --stat main, confirm intended scope.
+description: "Seven-phase verification pipeline Claude runs before declaring any feature done across the full Angular/.NET/SQL/Azure stack. Phases: (1) Build — dotnet build + ng build, zero errors; (2) Analyzers — dotnet format --verify-no-changes + ng lint; (3) Antipatterns — antipattern-guard scan on changed files; (4) Tests — dotnet test + ng test --watch=false, no new failures; (5) Security — secrets, open firewall rules, unprotected endpoints; (6) Migrations — ef migrations list, no unapplied pending; (7) Diff review — git diff --stat main, confirm intended scope."
 when_to_use: done, ready to ship, before PR, feature complete, /fsp-verify, quality gate, final check, verify, is this ready, all checks, pre-commit verification, before merge, ship it
 ---
 

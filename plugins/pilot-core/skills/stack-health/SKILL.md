@@ -1,6 +1,6 @@
 ---
 name: stack-health
-description: Grades the full-stack project A–F across six dimensions: Build health, Test coverage proxy, Security posture, Dependency hygiene, Architecture compliance, and Observability. Produces a graded report card with a GPA (A=4.0, F=0.0) and ranked improvement recommendations. Covers Angular, .NET, SQL Server, and Azure stacks present in the project.
+description: "Grades the full-stack project A–F across six dimensions: Build health, Test coverage proxy, Security posture, Dependency hygiene, Architecture compliance, and Observability. Produces a graded report card with a GPA (A=4.0, F=0.0) and ranked improvement recommendations. Covers Angular, .NET, SQL Server, and Azure stacks present in the project."
 when_to_use: health check, project health, how is the project, grade my project, /fsp-health, quality report, overall status, what needs fixing, project score, stack audit, is the project healthy, technical debt overview
 ---
 

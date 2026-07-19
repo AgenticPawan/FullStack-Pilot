@@ -1,6 +1,6 @@
 ---
 name: dotnet-performance
-description: Reviews ASP.NET Core and EF Core code for runtime performance regressions: sync-over-async blocking that starves the thread pool, ValueTask/Task misuse in hot paths, large in-memory materialization instead of streaming with IAsyncEnumerable, minimal API vs MVC controller overhead, missing response compression for large JSON payloads, and string concatenation in loops instead of StringBuilder/string.Create.
+description: "Reviews ASP.NET Core and EF Core code for runtime performance regressions: sync-over-async blocking that starves the thread pool, ValueTask/Task misuse in hot paths, large in-memory materialization instead of streaming with IAsyncEnumerable, minimal API vs MVC controller overhead, missing response compression for large JSON payloads, and string concatenation in loops instead of StringBuilder/string.Create."
 when_to_use: performance review, thread pool starvation, .Result, .Wait(), blocking call, ValueTask, IAsyncEnumerable, streaming query, ToList, minimal API, ApiController overhead, response compression, string concatenation, StringBuilder, hot path, high throughput endpoint
 ---
 

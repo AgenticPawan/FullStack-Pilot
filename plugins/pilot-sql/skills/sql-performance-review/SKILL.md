@@ -1,6 +1,6 @@
 ---
 name: sql-performance-review
-description: Reviews .NET + EF Core query patterns for SQL Server performance: detects non-SARGable predicates (function on indexed column, implicit type conversion), identifies N+1 load patterns, flags missing AsNoTracking on read-only paths, recommends covering index columns from WHERE/ORDER patterns, and reads execution plans via the sql-mcp MCP server when available. Defers EF Core query-optimization implementation to the dotnet-data plugin skill.
+description: "Reviews .NET + EF Core query patterns for SQL Server performance: detects non-SARGable predicates (function on indexed column, implicit type conversion), identifies N+1 load patterns, flags missing AsNoTracking on read-only paths, recommends covering index columns from WHERE/ORDER patterns, and reads execution plans via the sql-mcp MCP server when available. Defers EF Core query-optimization implementation to the dotnet-data plugin skill."
 when_to_use: SQL performance, slow query, N+1, missing index, SARGable, implicit conversion, AsNoTracking, Include, execution plan, query plan, covering index, EF Core performance
 ---
 

@@ -1,7 +1,7 @@
 ---
 user-invocable: false
 name: audit-orchestration
-description: Four-phase security-audit orchestrator: (1) detect available scanners and mark coverage gaps; (2) run each scanner scoped by stack-profile.json; (3) normalise findings into .claude/pilot/audit/findings.json (severity P0-P3, cwe, owasp, file, line, evidence, proposedFix); (4) generate AUDIT-REPORT.md and print the P0 table. Claude semantic pass strictly limited to IDOR/missing authorization, tenant isolation, authN/authZ logic, and secrets in config — every finding must cite file:line evidence or is discarded.
+description: "Four-phase security-audit orchestrator: (1) detect available scanners and mark coverage gaps; (2) run each scanner scoped by stack-profile.json; (3) normalise findings into .claude/pilot/audit/findings.json (severity P0-P3, cwe, owasp, file, line, evidence, proposedFix); (4) generate AUDIT-REPORT.md and print the P0 table. Claude semantic pass strictly limited to IDOR/missing authorization, tenant isolation, authN/authZ logic, and secrets in config — every finding must cite file:line evidence or is discarded."
 when_to_use: Invoke via /fsp-audit. Use when the user requests a security audit, vulnerability scan, OWASP review, dependency check, or tenant-isolation review on the current project.
 disable-model-invocation: true
 ---
