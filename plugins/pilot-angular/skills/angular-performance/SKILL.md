@@ -1,6 +1,6 @@
 ---
 name: angular-performance
-description: Angular rendering performance: OnPush change detection, zoneless (v18+ experimental, v20 stable), @for with track (v17+), deferrable views with @defer triggers (v17+), lazy-loaded routes, bundle budget configuration in angular.json, and NgOptimizedImage for LCP (v15+).
+description: "Angular rendering performance: OnPush change detection, zoneless (v18+ experimental, v20 stable), @for with track (v17+), deferrable views with @defer triggers (v17+), lazy-loaded routes, bundle budget configuration in angular.json, and NgOptimizedImage for LCP (v15+)."
 when_to_use: performance, change detection, OnPush, zoneless, @defer, lazy loading, code splitting, bundle size, budget, NgOptimizedImage, LCP, track expression, defer block, slow rendering, initial load, core web vitals
 applies_to: angular>=17
 ---

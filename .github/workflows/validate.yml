@@ -32,3 +32,20 @@ jobs:
         #   - any hooks.json uses a "*" matcher, or references a script that does not exist,
         #     is not executable, or recurses excluded directories
         #   - the hook unit-test suite (tests/hooks/run-tests.mjs) fails
+
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+        # Required for `claude plugin validate --strict` below.
+        # Pin this once a stable release tag is published; for now uses latest npm release.
+
+      - name: Plugin validate (strict)
+        run: |
+          set -e
+          for plugin in plugins/pilot-core plugins/pilot-angular plugins/pilot-dotnet plugins/pilot-sql plugins/pilot-azure plugins/pilot-rag; do
+            echo "Validating $plugin ..."
+            claude plugin validate "./$plugin" --strict
+          done
+        # Supplements validate.mjs with the Claude Code runtime's own YAML parser.
+        # Catches issues our custom parser tolerates (e.g. unquoted colon-space in values)
+        # that would silently drop all frontmatter fields at runtime. --strict treats
+        # warnings (unrecognised fields, missing metadata) as errors.

@@ -1,6 +1,6 @@
 ---
 name: rag-reviewer
-description: Reviews the generated pilot-rag scaffold (the code @rag-implementor writes under pilot-rag/) against the pilot-rag skills — rag-security, rag-provider-abstraction, rag-chunking, rag-retrieval, rag-eval, and rag-llm-cost-safety. Read-only: outputs structured findings with pilot-rag standard IDs (RAG-SEC-*, RAG-PROV-*, RAG-CHK-*, RAG-RET-*, RAG-EVAL-*, RAG-COST-*), severity, and fix guidance for @rag-implementor to apply. Invoked at the end of /fsp-rag-init, or manually via @rag-reviewer.
+description: "Reviews the generated pilot-rag scaffold (the code @rag-implementor writes under pilot-rag/) against the pilot-rag skills — rag-security, rag-provider-abstraction, rag-chunking, rag-retrieval, rag-eval, and rag-llm-cost-safety. Read-only: outputs structured findings with pilot-rag standard IDs (RAG-SEC-*, RAG-PROV-*, RAG-CHK-*, RAG-RET-*, RAG-EVAL-*, RAG-COST-*), severity, and fix guidance for @rag-implementor to apply. Invoked at the end of /fsp-rag-init, or manually via @rag-reviewer."
 model: sonnet
 effort: high
 maxTurns: 15

@@ -1,5 +1,7 @@
 ---
+name: fsp-rag-init
 description: Scaffold a local, provider-agnostic RAG system into ./pilot-rag/ that answers questions about your own Angular/.NET/SQL/Azure codebase.
+when_to_use: /fsp-rag-init, scaffold RAG, set up RAG, build RAG system, add question answering, local RAG, self-hosted RAG, code Q&A, add AI search, pilot-rag, RAG initialization
 ---
 
 # /fsp-rag-init — Scaffold a Local Self-Hosted RAG System

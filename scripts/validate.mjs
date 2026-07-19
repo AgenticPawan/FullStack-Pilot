@@ -372,6 +372,19 @@ for (const filePath of walk(ROOT)) {
 
 if (commandCount === 0) info('no command files found');
 
+// Phase-1 migration: fsp-* commands moved to skills/fsp-*/SKILL.md with
+// matching name: field. Register those names as valid slash-command targets so
+// /fsp-* references in agent/skill bodies still resolve after command files are removed.
+for (const filePath of walk(ROOT)) {
+  if (path.basename(filePath) !== 'SKILL.md') continue;
+  if (!filePath.includes(`${SEP}plugins${SEP}`)) continue;
+  const raw = fs.readFileSync(filePath, 'utf8');
+  const fm = parseFrontmatter(raw);
+  if (!fm) continue;
+  const sname = (fm['name'] || '').trim();
+  if (sname.startsWith('fsp-')) validCommands.add(sname);
+}
+
 // ─── 3d. command-reference integrity ─────────────────────────────────────────
 // Shipped command/skill/agent markdown must not tell users to run a slash command that
 // doesn't exist. Catches the dangling-reference class (e.g. a stale "/fix-critical" left

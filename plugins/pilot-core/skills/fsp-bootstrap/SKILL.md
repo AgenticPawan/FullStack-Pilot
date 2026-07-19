@@ -1,6 +1,7 @@
 ---
+name: fsp-bootstrap
 description: Detect and scaffold missing baseline modules (auth, authz, logging, error-handling, health-checks, CORS) before feature work begins.
-argument-hint: "[--yes]"
+when_to_use: /fsp-bootstrap, scaffold baseline, add authentication, add logging, add error handling, add health checks, add CORS, missing baseline modules, scaffold foundation, greenfield setup, bootstrap project, foundation modules
 ---
 
 # /fsp-bootstrap — Scaffold Baseline Modules

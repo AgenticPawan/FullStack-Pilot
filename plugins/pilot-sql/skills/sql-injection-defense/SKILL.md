@@ -1,6 +1,6 @@
 ---
 name: sql-injection-defense
-description: Detects SQL injection risks in .NET + EF Core: flags FromSqlRaw with non-static string arguments, distinguishes safe FromSqlInterpolated from concatenated queries, reviews stored procedure EXEC patterns for dynamic SQL, and checks Dapper query strings for parameter hygiene. Maps all findings to CWE-89 / OWASP A03:2021 and emits them in the /fsp-audit findings schema. Defers query-optimization decisions to the dotnet-data plugin.
+description: "Detects SQL injection risks in .NET + EF Core: flags FromSqlRaw with non-static string arguments, distinguishes safe FromSqlInterpolated from concatenated queries, reviews stored procedure EXEC patterns for dynamic SQL, and checks Dapper query strings for parameter hygiene. Maps all findings to CWE-89 / OWASP A03:2021 and emits them in the /fsp-audit findings schema. Defers query-optimization decisions to the dotnet-data plugin."
 when_to_use: SQL injection, FromSqlRaw, FromSqlInterpolated, raw SQL, stored procedure, EXEC, sp_executesql, parameterized query, SQL concatenation, Dapper, CWE-89, OWASP A03, security audit
 ---
 

@@ -91,7 +91,14 @@ function main() {
   }
 
   const projectDir = process.env.CLAUDE_PROJECT_DIR || payload.cwd || process.cwd();
-  const patterns = loadPatterns();
+  const allPatterns = loadPatterns();
+
+  // When the user sets strict_style_hooks=false, suppress advisory (warn) patterns entirely.
+  // Security deny-patterns are never suppressed regardless of this setting.
+  const styleEnabled = process.env.CLAUDE_PLUGIN_OPTION_STRICT_STYLE_HOOKS !== 'false';
+  const patterns = styleEnabled
+    ? allPatterns
+    : allPatterns.filter(p => (p.action === 'warn' ? false : true));
 
   // Collect non-blocking warnings; a hard 'deny' short-circuits and wins immediately.
   const warnings = [];

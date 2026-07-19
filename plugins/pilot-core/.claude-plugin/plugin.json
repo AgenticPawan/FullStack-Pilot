@@ -2,8 +2,8 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "pilot-core",
   "displayName": "Pilot Core",
-  "version": "0.28.0",
-  "description": "Shared governance for full-stack Microsoft projects: stack detection and scaffolding, /fsp-bootstrap baseline-module scaffolding (auth/authz/logging/error-handling/health-checks/CORS) gated ahead of feature work, security audit/fix pipelines (/fsp-init, /fsp-audit, /fsp-fix, /fsp-learn), the autonomous delivery team (/fsp-architect assessment, /fsp-build one-shot pipeline), MCP discovery, dependency supply-chain and license policy, CI secret scanning, REST API design standards, and the cross-stack @fullstack-reviewer/@fullstack-implementor/@fullstack-support trio",
+  "version": "0.30.0",
+  "description": "Shared governance for full-stack Microsoft projects: stack detection and scaffolding, /fsp-bootstrap baseline scaffolding gated ahead of feature work, security pipelines (/fsp-init, /fsp-audit, /fsp-fix, /fsp-learn), autonomous delivery team (/fsp-architect, /fsp-build), MCP discovery, supply-chain and license policy, CI secret scanning, REST API standards, @fullstack-reviewer/@fullstack-implementor/@fullstack-support trio, /fsp-checkpoint, /fsp-verify, /fsp-health",
   "author": {
     "name": "AgenticPawan",
     "url": "https://github.com/AgenticPawan"
@@ -11,5 +11,24 @@
   "homepage": "https://github.com/AgenticPawan/FullStack-Pilot#pilot-core",
   "repository": "https://github.com/AgenticPawan/FullStack-Pilot",
   "license": "MIT",
-  "keywords": ["governance", "commits", "code-health", "microsoft", "fullstack", "supply-chain", "sbom", "incident-response", "postmortem", "license-compliance", "test-data", "adr", "decision-records", "onboarding", "search-integration", "git-workflow", "secret-scanning", "api-design", "load-testing", "realtime-contract", "signalr-seam", "e2e-testing", "playwright", "data-residency", "data-sovereignty", "gdpr", "fsp-commands", "support-agent", "triage"]
+  "keywords": ["governance", "commits", "code-health", "microsoft", "fullstack", "supply-chain", "sbom", "incident-response", "postmortem", "license-compliance", "test-data", "adr", "decision-records", "onboarding", "search-integration", "git-workflow", "secret-scanning", "api-design", "load-testing", "realtime-contract", "signalr-seam", "e2e-testing", "playwright", "data-residency", "data-sovereignty", "gdpr", "fsp-commands", "support-agent", "triage"],
+  "userConfig": {
+    "strict_style_hooks": {
+      "title": "Enable style advisory hooks",
+      "type": "boolean",
+      "default": true,
+      "description": "When false, advisory (warn) hook patterns are suppressed entirely. Security deny-patterns are never suppressed regardless of this setting."
+    },
+    "org_prefix": {
+      "title": "Organisation prefix",
+      "type": "string",
+      "description": "Optional organisation prefix for naming conventions and scaffolded project names (e.g. \"acme\")."
+    },
+    "severity_floor": {
+      "title": "Auto-fix severity floor",
+      "type": "string",
+      "default": "P1",
+      "description": "Minimum finding severity /fsp-fix will auto-remediate (P0, P1, P2, P3). Findings below this floor are reported but not automatically fixed."
+    }
+  }
 }

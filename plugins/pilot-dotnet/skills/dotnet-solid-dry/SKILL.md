@@ -1,6 +1,6 @@
 ---
 name: dotnet-solid-dry
-description: Reviews C# for SOLID/DRY violations: god services (SRP), type-switch chains (OCP), substitutability breaks via NotImplementedException (LSP), fat interfaces (ISP), high-level services constructing concrete dependencies (DIP), and duplicated logic/magic values (DRY). Outputs pilot-dotnet solid-dry standard IDs.
+description: "Reviews C# for SOLID/DRY violations: god services (SRP), type-switch chains (OCP), substitutability breaks via NotImplementedException (LSP), fat interfaces (ISP), high-level services constructing concrete dependencies (DIP), and duplicated logic/magic values (DRY). Outputs pilot-dotnet solid-dry standard IDs."
 when_to_use: SOLID principles, single responsibility, SRP violation, open closed principle, OCP, switch on type, Liskov substitution, LSP violation, NotImplementedException, interface segregation, ISP, fat interface, dependency inversion, DIP, new concrete dependency, DRY, duplicated validation, magic string, magic number
 ---
 

@@ -1,6 +1,7 @@
 ---
+name: fsp-architect
 description: Assess the whole solution against the pilot target state and emit a ranked, buildable gap register with ready-to-run /fsp-build lines.
-argument-hint: "[--scope <area>] [--refresh]"
+when_to_use: /fsp-architect, assess solution, architecture assessment, find gaps, gap register, what should we build next, architecture review, whole solution review, pilot assessment, evaluate architecture
 ---
 
 # /fsp-architect — Whole-Solution Architecture Assessment

@@ -1,6 +1,6 @@
 ---
 name: sql-migration-safety
-description: Reviews EF Core migration files before deployment: detects destructive operations (DROP COLUMN, DROP TABLE, column type narrowing, NOT NULL constraint on existing data), flags table-locking DDL on tables that should use online-safe patterns (add-nullable-then-backfill), verifies rollback scripts or reversible Down() implementations, and cross-checks migration intent against the current model snapshot. Outputs findings with sql-migration-safety standard IDs.
+description: "Reviews EF Core migration files before deployment: detects destructive operations (DROP COLUMN, DROP TABLE, column type narrowing, NOT NULL constraint on existing data), flags table-locking DDL on tables that should use online-safe patterns (add-nullable-then-backfill), verifies rollback scripts or reversible Down() implementations, and cross-checks migration intent against the current model snapshot. Outputs findings with sql-migration-safety standard IDs."
 when_to_use: EF Core migration, migration safety, DROP COLUMN, DROP TABLE, destructive migration, irreversible migration, rollback script, online migration, zero-downtime, migration review, data loss, schema change
 ---
 

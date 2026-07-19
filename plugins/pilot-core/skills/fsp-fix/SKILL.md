@@ -1,6 +1,7 @@
 ---
+name: fsp-fix
 description: Apply /fsp-audit findings for one severity tier on a safe, reviewable git branch.
-argument-hint: "--batch <P0|P1|P2|P3> [--max-files <n>]"
+when_to_use: /fsp-fix, fix findings, remediate findings, apply fixes, fix security issues, batch fix, fix audit results, fix P0, fix P1, remediate, patch vulnerabilities
 ---
 
 # /fsp-fix — Batched Security Remediation

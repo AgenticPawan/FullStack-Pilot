@@ -1,6 +1,6 @@
 ---
 name: sql-multitenancy
-description: Audits EF Core tenant isolation at the data layer: verifies HasQueryFilter is applied to every entity with TenantId or OrgId, flags IgnoreQueryFilters calls without a justification comment, generates a cross-tenant test scaffold asserting Tenant A cannot read Tenant B's rows, and documents SQL Server row-level security as a defence-in-depth option. Outputs findings with pilot-sql multitenancy standard IDs.
+description: "Audits EF Core tenant isolation at the data layer: verifies HasQueryFilter is applied to every entity with TenantId or OrgId, flags IgnoreQueryFilters calls without a justification comment, generates a cross-tenant test scaffold asserting Tenant A cannot read Tenant B's rows, and documents SQL Server row-level security as a defence-in-depth option. Outputs findings with pilot-sql multitenancy standard IDs."
 when_to_use: tenant isolation, multitenancy, global query filter, HasQueryFilter, IgnoreQueryFilters, TenantId, cross-tenant, row-level security, RLS, data isolation, tenant filter, tenant context
 ---
 

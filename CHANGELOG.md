@@ -3,6 +3,108 @@
 All notable changes to FullStack Pilot are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## pilot-core 0.30.0, pilot-rag 0.5.0 — 2026-07-19 (Phase 1 — spec alignment)
+
+### pilot-core 0.30.0
+
+**Commands → Skills migration.** All 10 `/fsp-*` commands in `commands/` have been converted to skills in `skills/fsp-*/SKILL.md`. Each skill carries `name: fsp-*` frontmatter so the `/fsp-*` invocation route is preserved via the skill router. The `commands/` directory is now empty; `scripts/validate.mjs` was updated to register `fsp-*` skill `name:` fields as valid slash-command targets so all `/fsp-*` cross-references in agents and skill bodies continue to resolve.
+
+**`userConfig` added to `plugin.json`.** Three per-workspace settings are now exposed:
+- `strict_style_hooks` (boolean, default `true`) — when `false`, suppresses all advisory `warn` hook patterns; security `deny` patterns are never suppressed.
+- `org_prefix` (string) — optional organisation prefix for naming conventions and scaffolded project names.
+- `severity_floor` (string, default `P1`) — minimum finding severity `/fsp-fix` will auto-remediate; findings below this floor are reported only.
+
+**`dangerous-patterns.js` updated** to read `CLAUDE_PLUGIN_OPTION_STRICT_STYLE_HOOKS`. When set to `'false'`, all `warn`-action patterns are filtered out before the match loop; `deny` patterns always run.
+
+**Removed:** 10 `commands/fsp-*.md` files — superseded by the equivalent skills.
+
+### pilot-rag 0.5.0
+
+**`defaultEnabled: false`** added to `plugin.json`. pilot-rag is now opt-in.
+
+**`SessionStart` hook** (`hooks/hooks.json` + `hooks/scripts/manifest-freshness.js`) — on every session start, compares a SHA-256 hash of `pilot-rag/INGESTION_MANIFEST.md` against the hash stored in `${CLAUDE_PLUGIN_DATA}/rag-manifest.hash`. Emits an advisory `systemMessage` if they differ. Always fails open.
+
+**`/fsp-rag-init` skill** (`skills/fsp-rag-init/SKILL.md`) replaces the former `commands/fsp-rag-init.md`.
+
+---
+
+## pilot-core 0.29.0 — 2026-07-19 (Phase 0 — YAML quoting + strict CI gate)
+
+**YAML strict-parse quoting.** 17 `SKILL.md` and agent files had `description:` values containing `: ` (colon-space) that YAML 1.2 strict parsers silently misparse as nested mapping keys, dropping all frontmatter at runtime. All affected files now double-quote the description value.
+
+**CI strict validation gate.** `.github/workflows/validate.yml` now installs the Claude Code CLI and runs `claude plugin validate --strict` on all 6 plugins for every push/PR, catching runtime YAML parse issues the custom `validate.mjs` regex parser misses.
+
+---
+
+## 2026-07-19 — orchestration layer (AGENTS.md, hooks, knowledge base, meta-skills)
+
+pilot-core 0.28.0 → 0.29.0. Closes the orchestration gap identified via gap analysis
+against a reference multi-agent Claude Code plugin. Adds routing intelligence, learning
+capabilities, quality gates, and a knowledge base to complement the existing 124-skill depth.
+
+### Added
+
+**Routing & Rules**
+- **`AGENTS.md`** at repo root — intent-to-agent routing table covering all 5 plugins,
+  cross-agent coordination policy, subagent decision framework, MCP-first tool order,
+  and hard safety rules (no force-push, 10-iteration loop cap, no live-env changes).
+- **`rules-catalog/always-agent-routing.md`** (pilot-core) — auto-loaded rules file
+  mirroring AGENTS.md policy for autonomous enforcement.
+
+**Hook Scripts** (4 new; wired in `hooks/hooks.json`)
+- **`bash-guard.js`** — PreToolUse/Bash: blocks `git push --force`, `git reset --hard`,
+  `git checkout -- .`, `git clean -f`, `DELETE FROM` without WHERE, `DROP TABLE`, Azure
+  deployment commands with `--subscription`; warns on wide `rm -rf` and prod builds.
+- **`antipattern-guard.js`** — PreToolUse/Write|Edit|MultiEdit: advisory warnings for
+  Angular (`subscribe()` leaks, `: any` types, `console.log` in non-test `.ts`),
+  .NET (`new HttpClient()`, `async void`, `.Result`, `Console.WriteLine` in non-test `.cs`),
+  SQL (`SELECT *` in queries). Complements `dangerous-patterns.js` (security) and
+  `secret-guard.js` (secrets).
+- **`test-analyzer.js`** — PostToolUse/Bash: parses `dotnet test` and `ng test` (Karma/Jest)
+  output; writes a structured summary to `.claude/last-test-run.md`; surfaces pass/fail counts
+  via systemMessage.
+- **`build-validator.js`** — PreToolUse/Bash: validates `.sln`/`.csproj`, `angular.json`,
+  `Directory.Build.props`, and lock file presence before any `dotnet build`/`ng build` call.
+
+**Knowledge Base** (`plugins/pilot-core/knowledge/`)
+- **`stack-antipatterns.md`** — multi-stack antipattern reference (Angular/NET/SQL/Azure)
+  with BAD→WHY→GOOD format; covers ANG-001–005, NET-001–006, SQL-001–004, AZR-001–003.
+- **`stack-packages.md`** — vetted package guide for Angular (NgRx, CDK, Material), .NET
+  (Mediator, FluentValidation, Polly v8, HybridCache, Testcontainers, xUnit v3, Wolverine,
+  Serilog), SQL (EF Core, Bulk Extensions), and Azure (AVM, Azure.Identity, App Config);
+  includes "when NOT to use" for each entry.
+- **`decisions/ADR-001.md`** — Why permissions-only auth (no role checks in application code)
+- **`decisions/ADR-002.md`** — Why GUID entity keys (not int/IDENTITY)
+- **`decisions/ADR-003.md`** — Why direct DbContext (no repository wrapper over EF Core)
+- **`decisions/ADR-004.md`** — Why `takeUntilDestroyed` over `ngOnDestroy` + Subject
+- **`decisions/ADR-005.md`** — Why tenant filter at DbContext level (not controller level)
+
+**Skills** (pilot-core)
+- **`session-handoff`** — session continuity skill: writes structured `.claude/handoff.md`
+  at session end, reads it at session start; includes P0/P1 incident extension (timeline,
+  ruled-out hypotheses, current hypothesis, escalation status).
+- **`project-instincts`** — three-tier multi-stack learning system: instincts
+  (`.claude/instincts.json`, 0.0–1.0 confidence ladder, auto-applied at ≥0.7), corrections
+  (MEMORY.md, immediately on user correction), discoveries (`.claude/learning-log.md`);
+  status/export/import modes; covers Angular/NET/SQL/Azure instinct categories.
+- **`quality-gate`** — 7-phase pre-PR verification: build, analyzers, antipatterns, tests,
+  security spot-check, migration safety, diff review; outputs per-phase pass/fail/warn +
+  overall READY/NOT READY verdict.
+- **`stack-health`** — A–F graded health report across 6 dimensions: Build, Test Coverage,
+  Security Posture, Dependency Hygiene, Architecture Compliance, Observability; GPA (A=4.0),
+  top-3 ranked improvement recommendations; conditional per stack present.
+
+**Commands** (pilot-core)
+- **`/fsp-checkpoint`** — commit staged changes + write `.claude/handoff.md`; outputs
+  branch/commit/handoff path/next-action confirmation.
+- **`/fsp-verify`** — runs `quality-gate` 7-phase pipeline; single 🔴 in any phase = NOT READY.
+- **`/fsp-health`** — runs `stack-health`; outputs graded report card + ranked recommendations.
+
+### Changed
+- **`hooks/hooks.json`** — extended matchers: added `Bash` PreToolUse (bash-guard,
+  build-validator) and `Bash` PostToolUse (test-analyzer) hook groups.
+- **`plugin.json`** — version 0.28.0 → 0.29.0; description updated to mention new commands.
+
 ## 2026-07-13 — audit-plugin remediation (MultiEdit hook gap + four skill-gap skills)
 
 pilot-core 0.27.0 → 0.28.0, pilot-azure 0.18.0 → 0.19.0. Closes the Vulnerability, Standards,

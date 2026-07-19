@@ -1,6 +1,6 @@
 ---
 name: rag-provider-abstraction
-description: Phase 2 of the pilot-rag scaffold. Builds the RagPilot.sln skeleton (Core/Ingestion/Api/Tests) and the provider-abstraction layer — a single static factory mapping appsettings to Microsoft.Extensions.AI IChatClient + IEmbeddingGenerator, with an architecture test asserting RagPilot.Core references no vendor SDK. Enforces the core rule: swapping Ollama<->Azure OpenAI is appsettings-only, zero code changes. Use for /fsp-rag-init Phase 2.
+description: "Phase 2 of the pilot-rag scaffold. Builds the RagPilot.sln skeleton (Core/Ingestion/Api/Tests) and the provider-abstraction layer — a single static factory mapping appsettings to Microsoft.Extensions.AI IChatClient + IEmbeddingGenerator, with an architecture test asserting RagPilot.Core references no vendor SDK. Enforces the core rule: swapping Ollama<->Azure OpenAI is appsettings-only, zero code changes. Use for /fsp-rag-init Phase 2."
 when_to_use: rag provider abstraction, Microsoft.Extensions.AI, IChatClient, IEmbeddingGenerator, provider factory, appsettings Ai Provider Ollama AzureOpenAI, architecture test no vendor refs, RagPilot.Core RagPilot.Api RagPilot.Ingestion, DefaultAzureCredential, swap provider zero code change, phase 2 rag, solution skeleton
 ---
 

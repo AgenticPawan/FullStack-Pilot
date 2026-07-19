@@ -1,6 +1,7 @@
 ---
+name: fsp-build
 description: Build a feature end to end — spec, plan, implement, review, test — on a reviewable branch in one command.
-argument-hint: "<feature | spec-file | GAP-id> [--resume <slug>] [--yes]"
+when_to_use: /fsp-build, build feature, implement feature, feature pipeline, end-to-end build, spec and implement, new feature, build GAP, resume build, one-shot feature
 ---
 
 # /fsp-build — One-Shot Feature Pipeline
