@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 430" width="900" height="430"
+     role="img" aria-label="FullStack Pilot architecture: six governance plugins for Angular, .NET, SQL Server, and Azure">
+  <defs>
+    <marker id="a" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0,8 3,0 6" fill="#64748b"/>
+    </marker>
+    <style>
+      .f { font-family: ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,sans-serif; }
+      .m { font-family: ui-monospace,'Cascadia Code','Fira Code',monospace; }
+      .s1,.s2,.s3,.s4,.s5,.s6 { opacity: 0.45; }
+      @keyframes step {
+        0%,16.67% { opacity: 1; }
+        22%,100%  { opacity: 0.45; }
+      }
+      .s1 { animation: step 9s 0.0s infinite; }
+      .s2 { animation: step 9s 1.5s infinite; }
+      .s3 { animation: step 9s 3.0s infinite; }
+      .s4 { animation: step 9s 4.5s infinite; }
+      .s5 { animation: step 9s 6.0s infinite; }
+      .s6 { animation: step 9s 7.5s infinite; }
+    </style>
+  </defs>
+
+  <!-- background -->
+  <rect width="900" height="430" rx="14" fill="#f8fafc" stroke="#e2e8f0"/>
+
+  <!-- ── HEADER ─────────────────────────────────────────────────────────────── -->
+  <text x="450" y="38" class="f" text-anchor="middle" font-size="21" font-weight="700" fill="#0f172a">FullStack Pilot</text>
+  <text x="450" y="57" class="f" text-anchor="middle" font-size="12.5" fill="#64748b">Codebase governance for full-stack Microsoft shops</text>
+  <line x1="20" y1="67" x2="880" y2="67" stroke="#e2e8f0"/>
+
+  <!-- ── STACK PILLS ─────────────────────────────────────────────────────────── -->
+  <text x="122" y="89" class="f" text-anchor="end" font-size="11" font-weight="500" fill="#64748b">Your project:</text>
+  <rect x="128" y="74" width="109" height="23" rx="11.5" fill="#dd0031"/>
+  <text x="182" y="89" class="f" text-anchor="middle" font-size="10.5" font-weight="600" fill="#fff">Angular 17–20</text>
+  <rect x="245" y="74" width="82"  height="23" rx="11.5" fill="#512bd4"/>
+  <text x="286" y="89" class="f" text-anchor="middle" font-size="10.5" font-weight="600" fill="#fff">.NET 8–11</text>
+  <rect x="335" y="74" width="100" height="23" rx="11.5" fill="#c44f27"/>
+  <text x="385" y="89" class="f" text-anchor="middle" font-size="10.5" font-weight="600" fill="#fff">SQL Server</text>
+  <rect x="443" y="74" width="96"  height="23" rx="11.5" fill="#0078d4"/>
+  <text x="491" y="89" class="f" text-anchor="middle" font-size="10.5" font-weight="600" fill="#fff">Azure / Bicep</text>
+
+  <!-- ── INSTALL ARROW ───────────────────────────────────────────────────────── -->
+  <line x1="450" y1="100" x2="450" y2="116" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="450" y="128" class="m" text-anchor="middle" font-size="10" fill="#64748b">/plugin marketplace add AgenticPawan/FullStack-Pilot</text>
+
+  <!-- ── PILOT-CORE CARD ────────────────────────────────────────────────────── -->
+  <rect x="20" y="135" width="860" height="55" rx="10" fill="#0f172a"/>
+  <text x="32"  y="154" class="f" font-size="13" font-weight="700" fill="#fff">pilot-core</text>
+  <rect x="112" y="142" width="60" height="16" rx="8" fill="#1e3a5f"/>
+  <text x="142" y="154" class="f" text-anchor="middle" font-size="9" font-weight="600" fill="#93c5fd">required</text>
+  <text x="180" y="154" class="f" font-size="11" fill="#94a3b8">— shared engine, installed as a dependency by every stack plugin</text>
+  <text x="32"  y="170" class="f" font-size="10" fill="#64748b">8 commands · 24 skills · 7 agents · PreToolUse/PostToolUse security hooks · MCP discovery · CI secret scanning · SLO load testing</text>
+  <text x="32"  y="183" class="f" font-size="10" fill="#475569">Delivery team: @fsp-analyst · @fsp-scout · @fsp-architect · @fsp-qa     Cross-stack: @fullstack-reviewer · @fullstack-implementor · @fullstack-support</text>
+
+  <!-- ── PLUGIN CARDS (x=20,194,368,542,716; w=164; h=95; y=200) ───────────── -->
+
+  <!-- pilot-angular -->
+  <rect x="20"  y="200" width="164" height="95" rx="8" fill="#dd0031"/>
+  <text x="30"  y="217" class="f" font-size="12" font-weight="700" fill="#fff">pilot-angular</text>
+  <text x="30"  y="233" class="f" font-size="10" fill="#fecaca">32 skills · 3 agents</text>
+  <text x="30"  y="248" class="f" font-size="10" fill="#fca5a5">signals, a11y, perf,</text>
+  <text x="30"  y="262" class="f" font-size="10" fill="#fca5a5">security, SSR, i18n</text>
+  <line x1="30" y1="271" x2="174" y2="271" stroke="rgba(255,255,255,0.2)"/>
+  <text x="30"  y="284" class="f" font-size="9.5" fill="rgba(255,255,255,0.75)">rev · impl · support</text>
+
+  <!-- pilot-dotnet -->
+  <rect x="194" y="200" width="164" height="95" rx="8" fill="#512bd4"/>
+  <text x="204" y="217" class="f" font-size="12" font-weight="700" fill="#fff">pilot-dotnet</text>
+  <text x="204" y="233" class="f" font-size="10" fill="#ddd6fe">57 skills · 3 agents</text>
+  <text x="204" y="248" class="f" font-size="10" fill="#c4b5fd">clean arch, auth,</text>
+  <text x="204" y="262" class="f" font-size="10" fill="#c4b5fd">outbox, saga, gRPC</text>
+  <line x1="204" y1="271" x2="348" y2="271" stroke="rgba(255,255,255,0.2)"/>
+  <text x="204" y="284" class="f" font-size="9.5" fill="rgba(255,255,255,0.75)">rev · impl · support</text>
+
+  <!-- pilot-sql -->
+  <rect x="368" y="200" width="164" height="95" rx="8" fill="#c44f27"/>
+  <text x="378" y="217" class="f" font-size="12" font-weight="700" fill="#fff">pilot-sql</text>
+  <text x="378" y="233" class="f" font-size="10" fill="#fed7aa">11 skills · 3 agents</text>
+  <text x="378" y="248" class="f" font-size="10" fill="#fdba74">migrations, indexes,</text>
+  <text x="378" y="262" class="f" font-size="10" fill="#fdba74">HADR, protection</text>
+  <line x1="378" y1="271" x2="522" y2="271" stroke="rgba(255,255,255,0.2)"/>
+  <text x="378" y="284" class="f" font-size="9.5" fill="rgba(255,255,255,0.75)">rev · impl · support</text>
+
+  <!-- pilot-azure -->
+  <rect x="542" y="200" width="164" height="95" rx="8" fill="#0078d4"/>
+  <text x="552" y="217" class="f" font-size="12" font-weight="700" fill="#fff">pilot-azure</text>
+  <text x="552" y="233" class="f" font-size="10" fill="#bae6fd">18 skills · 3 agents</text>
+  <text x="552" y="248" class="f" font-size="10" fill="#93c5fd">AKS, ACA, APIM,</text>
+  <text x="552" y="262" class="f" font-size="10" fill="#93c5fd">WAF, FinOps, DR</text>
+  <line x1="552" y1="271" x2="696" y2="271" stroke="rgba(255,255,255,0.2)"/>
+  <text x="552" y="284" class="f" font-size="9.5" fill="rgba(255,255,255,0.75)">rev · impl · support</text>
+
+  <!-- pilot-rag -->
+  <rect x="716" y="200" width="164" height="95" rx="8" fill="#16a34a"/>
+  <text x="726" y="217" class="f" font-size="12" font-weight="700" fill="#fff">pilot-rag</text>
+  <text x="726" y="233" class="f" font-size="10" fill="#bbf7d0">7 skills · 2 agents</text>
+  <text x="726" y="248" class="f" font-size="10" fill="#86efac">self-hosted RAG over</text>
+  <text x="726" y="262" class="f" font-size="10" fill="#86efac">your own codebase</text>
+  <line x1="726" y1="271" x2="870" y2="271" stroke="rgba(255,255,255,0.2)"/>
+  <text x="726" y="284" class="m" font-size="9.5" fill="rgba(255,255,255,0.75)">/fsp-rag-init</text>
+
+  <!-- ── COMMAND PIPELINE ───────────────────────────────────────────────────── -->
+  <!-- boxes: x=[22,167,312,457,602,747] w=131 h=50 y=319  arrows y=344 -->
+  <text x="22" y="313" class="f" font-size="10" font-weight="600" letter-spacing="0.08em" fill="#94a3b8">COMMAND PIPELINE</text>
+
+  <g class="s1">
+    <rect x="22"  y="319" width="131" height="50" rx="6" fill="#1e293b"/>
+    <text x="87"  y="339" class="m" text-anchor="middle" font-size="11" font-weight="600" fill="#38bdf8">/fsp-init</text>
+    <text x="87"  y="353" class="f" text-anchor="middle" font-size="9" fill="#94a3b8">detect stack · write</text>
+    <text x="87"  y="364" class="f" text-anchor="middle" font-size="9" fill="#94a3b8">CLAUDE.md + rules</text>
+  </g>
+  <line x1="153" y1="344" x2="165" y2="344" stroke="#64748b" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <g class="s2">
+    <rect x="167" y="319" width="131" height="50" rx="6" fill="#1e293b"/>
+    <text x="232" y="339" class="m" text-anchor="middle" font-size="10.5" font-weight="600" fill="#38bdf8">/fsp-bootstrap</text>
+    <text x="232" y="353" class="f" text-anchor="middle" font-size="9" fill="#94a3b8">scaffold missing</text>
+    <text x="232" y="364" class="f" text-anchor="middle" font-size="9" fill="#94a3b8">baseline modules</text>
+  </g>
+  <line x1="298" y1="344" x2="310" y2="344" stroke="#64748b" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <g class="s3">
+    <rect x="312" y="319" width="131" height="50" rx="6" fill="#1e293b"/>
+    <text x="377" y="339" class="m" text-anchor="middle" font-size="11" font-weight="600" fill="#38bdf8">/fsp-audit</text>
+    <text x="377" y="353" class="f" text-anchor="middle" font-size="9" fill="#94a3b8">scan + Claude review</text>
+    <text x="377" y="364" class="f" text-anchor="middle" font-size="9" fill="#94a3b8">→ AUDIT-REPORT.md</text>
+  </g>
+  <line x1="443" y1="344" x2="455" y2="344" stroke="#64748b" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <g class="s4">
+    <rect x="457" y="319" width="131" height="50" rx="6" fill="#1e293b"/>
+    <text x="522" y="339" class="m" text-anchor="middle" font-size="11" font-weight="600" fill="#38bdf8">/fsp-fix</text>
+    <text x="522" y="353" class="f" text-anchor="middle" font-size="9" fill="#94a3b8">safe branch · apply</text>
+    <text x="522" y="364" class="f" text-anchor="middle" font-size="9" fill="#94a3b8">fixes by severity</text>
+  </g>
+  <line x1="588" y1="344" x2="600" y2="344" stroke="#64748b" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <g class="s5">
+    <rect x="602" y="319" width="131" height="50" rx="6" fill="#1e293b"/>
+    <text x="667" y="339" class="m" text-anchor="middle" font-size="10.5" font-weight="600" fill="#38bdf8">/fsp-architect</text>
+    <text x="667" y="353" class="f" text-anchor="middle" font-size="9" fill="#94a3b8">assess gaps · write</text>
+    <text x="667" y="364" class="f" text-anchor="middle" font-size="9" fill="#94a3b8">enhancement plans</text>
+  </g>
+  <line x1="733" y1="344" x2="745" y2="344" stroke="#64748b" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <g class="s6">
+    <rect x="747" y="319" width="131" height="50" rx="6" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
+    <text x="812" y="339" class="m" text-anchor="middle" font-size="11" font-weight="600" fill="#38bdf8">/fsp-build</text>
+    <text x="812" y="353" class="f" text-anchor="middle" font-size="9" fill="#94a3b8">spec → plan → impl</text>
+    <text x="812" y="364" class="f" text-anchor="middle" font-size="9" fill="#94a3b8">→ review → QA</text>
+  </g>
+
+  <!-- ── FOOTER ─────────────────────────────────────────────────────────────── -->
+  <line x1="20" y1="385" x2="880" y2="385" stroke="#e2e8f0"/>
+  <text x="450" y="401" class="f" text-anchor="middle" font-size="10.5" fill="#94a3b8">150+ skills · 17 specialist agents · security hooks · model-tiered (haiku → sonnet → opus) · MIT License</text>
+  <text x="450" y="417" class="f" text-anchor="middle" font-size="10" fill="#cbd5e1">github.com/AgenticPawan/FullStack-Pilot</text>
+</svg>
