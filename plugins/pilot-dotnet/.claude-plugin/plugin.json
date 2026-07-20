@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "pilot-dotnet",
   "displayName": "Pilot .NET",
-  "version": "0.26.2",
+  "version": "0.27.0",
   "dependencies": [{ "name": "pilot-core" }],
   "description": "C# / ASP.NET Core governance: Clean Architecture, SOLID/DRY, permissions-only authorization, authentication, security headers (HSTS/CSP/anti-forgery/safe deserialization), multitenancy, EF Core patterns, API versioning/pagination/idempotency, resilience (Polly), observability, ProblemDetails error handling, caching, messaging (outbox, saga, Service Bus), background jobs, feature flags, SignalR, gRPC, BFF, testing, data protection, and NuGet governance. Ships @dotnet-reviewer, @dotnet-implementor, and @dotnet-support",
   "author": {
@@ -12,5 +12,9 @@
   "homepage": "https://github.com/AgenticPawan/FullStack-Pilot#pilot-dotnet",
   "repository": "https://github.com/AgenticPawan/FullStack-Pilot",
   "license": "MIT",
+  "lspServers": "./.lsp.json",
+  "experimental": {
+    "monitors": "./monitors/monitors.json"
+  },
   "keywords": ["dotnet", "csharp", "aspnetcore", "efcore", "nuget", "minimal-api", "hangfire", "api-versioning", "localization", "resilience", "observability", "testing", "feature-flags", "signalr", "audit-trail", "financial-precision", "secrets-rotation", "contract-testing", "connection-pooling", "graphql", "chaos-engineering", "automapper", "dto-mapping", "serilog", "logging", "idempotency", "cqrs", "mediatr", "authentication", "oidc", "oauth2", "webhooks", "pagination", "notifications", "startup-validation", "etl", "reporting", "health-checks", "grpc", "saga", "messaging", "bff", "middleware", "central-package-management", "implementor-agent", "support-agent", "root-cause"]
 }

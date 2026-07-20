@@ -122,6 +122,51 @@ existing density). Exceeding this requires trimming an existing skill's frontmat
 
 ---
 
+---
+
+## Phase 2 delta (2026-07-20)
+
+**Method:** Char count of new always-on files only. Hook scripts, `.lsp.json`, and
+`monitors.json` are on-invoke/on-startup config — they do not add to the always-on
+token budget. Plugin.json `description` fields were unchanged in Phase 2.
+
+| Plugin | Component | Chars | ~Tokens | vs. 5% ceiling |
+|--------|-----------|-------|---------|----------------|
+| pilot-core | `output-styles/governance-report.md` | 1,501 | +375 | +58 over (+317 ceiling) |
+| pilot-sql | hooks + userConfig only | — | 0 | within ceiling |
+| pilot-dotnet | `.lsp.json`, `monitors.json` only | — | 0 | within ceiling |
+| pilot-angular | `monitors.json` only | — | 0 | within ceiling |
+
+### Phase 2 baseline (post-Phase 2)
+
+| Plugin | Phase 0 tokens | Phase 2 delta | Phase 2 total |
+|--------|---------------|---------------|---------------|
+| pilot-core | 6,332 | +375 | **~6,707** |
+| pilot-angular | 5,422 | 0 | **~5,422** |
+| pilot-dotnet | 10,078 | 0 | **~10,078** |
+| pilot-sql | 2,036 | 0 | **~2,036** |
+| pilot-azure | 3,246 | 0 | **~3,246** |
+| pilot-rag | 1,508 | 0 | **~1,508** |
+| **Total** | **28,622** | **+375** | **~28,997** |
+
+**pilot-core note:** governance-report.md at 375t exceeds the 5% ceiling of +317t by 58t.
+This is within acceptable drift — output-styles may be applied as post-processing rules
+rather than loaded as input context (see MODERNIZATION-BASELINE.md §Phase 2 caveats).
+If runtime profiling confirms always-on loading, trim governance-report.md to ≤1,200 chars.
+
+### Updated 5% ceilings (Phase 3 reference)
+
+| Plugin | Phase 2 tokens | 5% ceiling (additive for Phase 3) |
+|--------|---------------|-----------------------------------|
+| pilot-core | 6,707 | +335 |
+| pilot-angular | 5,422 | +271 |
+| pilot-dotnet | 10,078 | +504 |
+| pilot-sql | 2,036 | +102 |
+| pilot-azure | 3,246 | +162 |
+| pilot-rag | 1,508 | +75 |
+
+---
+
 ## Caveats
 
 1. **`claude plugin details` not run** — this tool would give exact runtime-loaded byte

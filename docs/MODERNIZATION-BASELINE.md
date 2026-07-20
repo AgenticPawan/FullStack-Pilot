@@ -1,4 +1,4 @@
-# FullStack Pilot — Modernization Baseline (2026-07-19)
+# FullStack Pilot — Modernization Baseline (2026-07-19, updated 2026-07-20)
 
 **Phase:** 0 — Baseline & debt gate  
 **Branch:** `remediation/critical-review-2026-07`  
@@ -41,6 +41,72 @@ current tree. Evidence is file:line or a direct reference to the closed remediat
 ## 3. Open P0 gate
 
 **No P0 findings are open.** Phase 1 may proceed.
+
+---
+
+## Phase 2 completion (2026-07-20)
+
+**Status:** Complete — `node scripts/validate.mjs` exits 0, 55/55 hook tests pass.
+
+### Plan vs. delivered
+
+| Plan item | Component | Status | Notes |
+|-----------|-----------|--------|-------|
+| LSP server for pilot-dotnet | `plugins/pilot-dotnet/.lsp.json` | ✓ done | Uses `csharp-ls`; setup guide at `plugins/pilot-dotnet/docs/lsp-setup.md`. Requires Claude Code v2.1.205+. |
+| SessionStart governance hook | `pilot-core/hooks/scripts/session-refresh.js` | ✓ done | Warns when `stack-profile.json` is >7 days stale. Kill-switch: `enable_governance_hooks=false`. |
+| Setup CI gate hook | `pilot-core/hooks/scripts/ci-setup.js` | ✓ done | Runs `scripts/validate.mjs` on `Setup` event; surfaces result via `additionalContext`. |
+| PostToolUseFailure triage hints | `pilot-core/hooks/scripts/triage-hint.js` | ✓ done | Pattern-matched hints for Bash/Write/Edit/MultiEdit failures. |
+| PreCompact findings snapshot | `pilot-core/hooks/scripts/precompact-snapshot.js` | ✓ done | Reads `audit/findings.json`, groups by severity P0→P3, emits `systemMessage` summary. |
+| hooks.json restructure (pilot-core) | `pilot-core/hooks/hooks.json` | ✓ done | Full rewrite: SessionStart, Setup, PreToolUse (×2 groups), PostToolUse (×2 groups), PostToolUseFailure, PreCompact. Exec-form throughout. |
+| `enable_governance_hooks` userConfig | `pilot-core/.claude-plugin/plugin.json` | ✓ done | Boolean kill-switch for governance hooks (not security deny-patterns). |
+| Migration verifier hook (pilot-sql) | `pilot-sql/hooks/scripts/migration-verifier.js` | ✓ done | Blocks destructive EF Core ops without approval annotation; warns on new tables missing tenant identifier. Implemented as `command` type (not `agent`) — agent hooks cannot read `CLAUDE_PLUGIN_OPTION_*` env vars. |
+| `enable_migration_verifier` userConfig | `pilot-sql/.claude-plugin/plugin.json` | ✓ done | Boolean kill-switch for the migration verifier. |
+| pilot-dotnet monitors | `pilot-dotnet/monitors/monitors.json` | ✓ done | `dotnet watch build` gated on `on-skill-invoke:dotnet-testing`. |
+| pilot-angular monitors | `pilot-angular/monitors/monitors.json` | ✓ done | `ng build --watch` gated on `on-skill-invoke:angular-testing`. |
+| `experimental.monitors` in plugin.json | `pilot-dotnet`, `pilot-angular` plugin.json | ✓ done | `"experimental": { "monitors": "./monitors/monitors.json" }` added to both. |
+| Output-style governance report | `pilot-core/output-styles/governance-report.md` | ✓ done | Format: `[ID] SEVERITY — Title`, grouped by P0→P3, ≤10 lines of source quoted per finding. |
+
+### Deviation: migration verifier as `command` not `agent`
+
+The modernization spec asked for an `agent`-type hook in pilot-sql. Agent-type hooks run in
+an agent context and do not receive shell environment variables, making the `CLAUDE_PLUGIN_OPTION_ENABLE_MIGRATION_VERIFIER` kill-switch via `userConfig` impossible to implement. The hook was
+implemented as a `command`-type exec-form Node.js script that achieves identical heuristic
+checking while supporting the kill-switch. Functionally equivalent; spec note updated here.
+
+### Hook unit tests added (Phase 2)
+
+`tests/hooks/run-tests.mjs` grew from 35 to 55 tests. New suites:
+
+| Suite | Tests | Coverage |
+|-------|-------|----------|
+| `session-refresh` | 3 | no profile, fresh profile, kill-switch |
+| `precompact-snapshot` | 3 | no findings, P0+P1 findings, kill-switch |
+| `triage-hint` | 4 | Bash/PATH hint, Edit/old_string hint, unknown error, kill-switch |
+| `ci-setup` | 3 | outside-repo skip, in-repo with mock validator, kill-switch |
+| `migration-verifier` | 7 | non-migration, clean, DropColumn blocked, DropColumn approved, new table warned, TenantId present, kill-switch |
+
+The `ci-setup` in-repo test uses a mock `validate.mjs` (temp dir skeleton) to avoid
+the recursive validate→test→ci-setup→validate call graph.
+
+### What was NOT verified in Phase 2
+
+1. **Monitor runtime behavior** — `monitors.json` format was derived from the live
+   plugins-reference.md (`on-skill-invoke:<skill>` gating). The exact event that triggers
+   a monitor and how notifications appear in the UI was not verified with a live session.
+   If the `when` field syntax changes in a future Claude Code release, monitors will
+   silently stop gating; the component is marked `experimental` in `plugin.json` accordingly.
+
+2. **LSP server binary availability** — `.lsp.json` declares `csharp-ls` as the LSP
+   command. The binary is NOT bundled; users must install it separately (`dotnet tool install
+   --global csharp-ls`). If the binary is absent, Claude Code will log a warning and
+   continue without LSP — it does not block the session. The setup guide at
+   `plugins/pilot-dotnet/docs/lsp-setup.md` covers both csharp-ls and the Microsoft
+   official alternative.
+
+3. **output-styles always-on token cost** — It is assumed governance-report.md (~375t) is
+   loaded into context at session start. If output-styles are applied as post-processing
+   rules rather than consumed as input context, the always-on overhead for pilot-core
+   would be lower than the TOKEN-BUDGET.md Phase 2 figure.
 
 ### What was NOT verified in Phase 0
 

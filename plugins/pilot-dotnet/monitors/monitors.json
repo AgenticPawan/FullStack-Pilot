@@ -1,0 +1,8 @@
+[
+  {
+    "name": "dotnet-watch-build",
+    "command": "dotnet watch --no-launch-profile build 2>&1",
+    "description": "dotnet watch build — compiler errors streamed as session notifications",
+    "when": "on-skill-invoke:dotnet-testing"
+  }
+]
