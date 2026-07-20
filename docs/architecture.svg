@@ -51,7 +51,7 @@
   <rect x="112" y="142" width="60" height="16" rx="8" fill="#1e3a5f"/>
   <text x="142" y="154" class="f" text-anchor="middle" font-size="9" font-weight="600" fill="#93c5fd">required</text>
   <text x="180" y="154" class="f" font-size="11" fill="#94a3b8">— shared engine, installed as a dependency by every stack plugin</text>
-  <text x="32"  y="170" class="f" font-size="10" fill="#64748b">8 commands · 24 skills · 7 agents · PreToolUse/PostToolUse security hooks · MCP discovery · CI secret scanning · SLO load testing</text>
+  <text x="32"  y="170" class="f" font-size="10" fill="#64748b">39 skills · 7 agents · 7 hook scripts (PreToolUse/PostToolUse/SessionStart) · MCP discovery · CI secret scanning · SLO load testing</text>
   <text x="32"  y="183" class="f" font-size="10" fill="#475569">Delivery team: @fsp-analyst · @fsp-scout · @fsp-architect · @fsp-qa     Cross-stack: @fullstack-reviewer · @fullstack-implementor · @fullstack-support</text>
 
   <!-- ── PLUGIN CARDS (x=20,194,368,542,716; w=164; h=95; y=200) ───────────── -->
@@ -95,7 +95,7 @@
   <!-- pilot-rag -->
   <rect x="716" y="200" width="164" height="95" rx="8" fill="#16a34a"/>
   <text x="726" y="217" class="f" font-size="12" font-weight="700" fill="#fff">pilot-rag</text>
-  <text x="726" y="233" class="f" font-size="10" fill="#bbf7d0">7 skills · 2 agents</text>
+  <text x="726" y="233" class="f" font-size="10" fill="#bbf7d0">8 skills · 2 agents</text>
   <text x="726" y="248" class="f" font-size="10" fill="#86efac">self-hosted RAG over</text>
   <text x="726" y="262" class="f" font-size="10" fill="#86efac">your own codebase</text>
   <line x1="726" y1="271" x2="870" y2="271" stroke="rgba(255,255,255,0.2)"/>
@@ -154,6 +154,6 @@
 
   <!-- ── FOOTER ─────────────────────────────────────────────────────────────── -->
   <line x1="20" y1="385" x2="880" y2="385" stroke="#e2e8f0"/>
-  <text x="450" y="401" class="f" text-anchor="middle" font-size="10.5" fill="#94a3b8">150+ skills · 17 specialist agents · security hooks · model-tiered (haiku → sonnet → opus) · MIT License</text>
+  <text x="450" y="401" class="f" text-anchor="middle" font-size="10.5" fill="#94a3b8">165+ skills · 21 specialist agents · 8 hook scripts · model-tiered (haiku → sonnet → opus) · MIT License</text>
   <text x="450" y="417" class="f" text-anchor="middle" font-size="10" fill="#cbd5e1">github.com/AgenticPawan/FullStack-Pilot</text>
 </svg>
