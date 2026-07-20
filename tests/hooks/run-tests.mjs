@@ -3,7 +3,7 @@
 // Each test sends a JSON payload to a hook script via stdin and checks stdout/exit.
 
 import { spawnSync } from 'node:child_process';
-import { writeFileSync, mkdtempSync, mkdirSync } from 'node:fs';
+import { writeFileSync, mkdtempSync, mkdirSync, utimesSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import os from 'node:os';
@@ -413,7 +413,7 @@ console.log('\n  session-refresh');
   // unreliable cross-platform; instead we backdate the profile via utimes.
   const profilePath = join(tmpManifestNewer, '.claude', 'pilot', 'stack-profile.json');
   const oldMtime = new Date(Date.now() - 5000);
-  try { fs.utimesSync(profilePath, oldMtime, oldMtime); } catch (_) {}
+  try { utimesSync(profilePath, oldMtime, oldMtime); } catch (_) {}
   writeFileSync(join(tmpManifestNewer, 'package.json'), '{"name":"app"}');
   const r = spawnSync('node', [join(SCRIPTS_DIR, 'session-refresh.js')], {
     input: '{}',
