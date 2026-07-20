@@ -1,6 +1,6 @@
 # FullStack Pilot
 
-> 165+ governance skills and 21 specialist agents for [Claude Code](https://claude.ai/code) — Angular · .NET · SQL Server · Azure
+> 170+ governance skills and 23 specialist agents for [Claude Code](https://claude.ai/code) — Angular · .NET · SQL Server · Azure
 
 <p align="center">
   <img src="docs/architecture.svg" alt="FullStack Pilot architecture diagram" width="900">
@@ -10,7 +10,7 @@
 
 Teams using Claude Code for full-stack Microsoft apps keep re-inventing the same rules: every `CLAUDE.md` hand-rolls the same auth pattern, the same "parameterized queries only" SQL convention, the same "no role checks — permissions only" guard. When those rules drift between projects or a new developer skips one, production gets a bug or a compliance finding.
 
-FullStack Pilot ships those rules as 150+ versioned, stack-specific skills and 17 specialist agents. Every new project starts from a consistent governance baseline rather than a blank slate.
+FullStack Pilot ships those rules as 170+ versioned, stack-specific skills and 23 specialist agents. Every new project starts from a consistent governance baseline rather than a blank slate.
 
 ## Install
 
@@ -78,18 +78,27 @@ Two support agents go beyond source: `@infra-support` can query live Azure diagn
 
 | Plugin | Skills | Agents | Highlights |
 |---|---|---|---|
-| `pilot-core` | 39 | 7 | `/fsp-init`→`/fsp-build` pipeline skills, `/fsp-checkpoint` · `/fsp-verify` · `/fsp-health`, delivery-team agents, MCP discovery, CI secret scanning, REST API standards, SLO load testing, git governance, incident-response runbook, license compliance, supply-chain policy |
-| `pilot-angular` | 32 | 3 | Signals & NgRx, a11y (WCAG 2.2 AA), motion/reduced-motion, performance budgets, security (XSS/CSP/permissions-only guards), HTTP resilience, SSR, real-time/SignalR, i18n, PWA, visual regression, v15→v20 upgrade path |
-| `pilot-dotnet` | 57 | 3 | Clean Architecture, permissions-only auth, multitenancy, soft delete, audit fields, transactional outbox, Saga orchestration, gRPC, GraphQL, BFF, chaos engineering, NuGet Central Package Management |
-| `pilot-sql` | 11 | 3 | Migration safety, injection defense, schema design, temporal tables/CDC, HADR failover (Always On AGs, Azure SQL failover groups), data protection (TDE / DDM / Always Encrypted), index maintenance, backup/restore drills |
+| `pilot-core` | 40 | 9 | `/fsp-init`→`/fsp-build` pipeline skills, `/fsp-checkpoint` · `/fsp-verify` · `/fsp-health`, delivery-team agents, `@fsp-upgrade-planner` · `@fsp-threat-modeler`, DORA metrics, MCP discovery, CI secret scanning, REST API standards, SLO load testing, git governance, incident-response runbook, license compliance, supply-chain policy |
+| `pilot-angular` | 33 | 3 | Signals & NgRx, a11y (WCAG 2.2 AA), motion/reduced-motion, performance budgets, security (XSS/CSP/permissions-only guards), HTTP resilience, SSR, real-time/SignalR, i18n, PWA, visual regression, zoneless migration, v15→v20 upgrade path |
+| `pilot-dotnet` | 59 | 3 | Clean Architecture, permissions-only auth, multitenancy, soft delete, audit fields, transactional outbox, Saga orchestration, gRPC, GraphQL, BFF, chaos engineering, .NET Aspire governance, OpenAPI governance, NuGet Central Package Management |
+| `pilot-sql` | 12 | 3 | Migration safety, injection defense, schema design, temporal tables/CDC, data retention & GDPR purge, HADR failover (Always On AGs, Azure SQL failover groups), data protection (TDE / DDM / Always Encrypted), index maintenance, backup/restore drills |
 | `pilot-azure` | 18 | 3 | CAF naming, security baseline, WAF review, AKS governance, Container Apps, APIM policy, edge WAF, Key Vault + App Config, FinOps guardrails, multi-region DR, container image security, SLO/error-budget policy |
 | `pilot-rag` | 8 | 2 | `/fsp-rag-init` scaffolds a local self-hosted RAG system into `./pilot-rag/` — Microsoft.Extensions.AI abstraction (swap Ollama↔Azure OpenAI by appsettings only), Qdrant, five chunkers with idempotent ingestion, SSE `/ask` with score floor and source citation, Angular Signals chat UI, 80% retrieval hit-rate gate |
 
 ## Hooks — always-on enforcement
 
-pilot-core ships 7 hook scripts that guard every file write, shell command, and session start without any per-project configuration:
+pilot-core ships 11 hook scripts covering every hook event type; pilot-sql adds a migration safety verifier:
 
-**pilot-core** (PreToolUse / PostToolUse)
+**pilot-core** — session lifecycle
+
+| Event | Script | What it enforces |
+|---|---|---|
+| `SessionStart` | `session-refresh.js` | Warns when `stack-profile.json` is >7 days stale; kill-switch: `enable_governance_hooks=false` |
+| `Setup` | `ci-setup.js` | Runs `scripts/validate.mjs` and surfaces the result via `additionalContext`; skips outside FSP repo |
+| `PostToolUseFailure` | `triage-hint.js` | Pattern-matched hints for Bash/Write/Edit/MultiEdit failures (PATH, old_string, permission errors) |
+| `PreCompact` | `precompact-snapshot.js` | Summarises open audit findings by severity before context compaction |
+
+**pilot-core** — file write / shell guards (PreToolUse / PostToolUse)
 
 | Event | Matcher | Script | What it enforces |
 |---|---|---|---|
@@ -100,6 +109,12 @@ pilot-core ships 7 hook scripts that guard every file write, shell command, and 
 | PreToolUse | `Bash` | `build-validator.js` | Validates `.sln` / `angular.json` / lock file presence before any build command fires |
 | PostToolUse | `Write\|Edit\|MultiEdit` | `formatter.js` | Runs Prettier on changed files when a config is present (uses `npx.cmd` on Windows) |
 | PostToolUse | `Bash` | `test-analyzer.js` | Parses `dotnet test` and `ng test` output; writes a structured summary to `.claude/last-test-run.md` |
+
+**pilot-sql** (PreToolUse)
+
+| Event | Matcher | Script | What it enforces |
+|---|---|---|---|
+| PreToolUse | `Write\|Edit\|MultiEdit` | `migration-verifier.js` | Blocks destructive EF Core ops (DropColumn/DropTable/AlterColumn/DropIndex) without a `// pilot-sql: migration-safety approved` annotation; warns on new tables missing a tenant identifier. Kill-switch: `enable_migration_verifier=false` |
 
 **pilot-rag** (SessionStart)
 

@@ -1,4 +1,4 @@
-# FullStack Pilot — Modernization Baseline (2026-07-19, updated 2026-07-20)
+# FullStack Pilot — Modernization Baseline (2026-07-19, final 2026-07-20)
 
 **Phase:** 0 — Baseline & debt gate  
 **Branch:** `remediation/critical-review-2026-07`  
@@ -160,3 +160,41 @@ unless the project's policy tightens the guard.
 2. **`secret-guard.js` Bash coverage** — V4 is documented as defense-in-depth (not a DLP boundary). Closing the Bash gap (`echo "..." >> .env`) is backlogged but not scheduled for Phase 0. The threat model comment in the hook script is the accepted resolution.
 
 3. **Always-on cost of rules-catalog files** — The four `always-*.md` rules in `plugins/pilot-core/rules-catalog/` (~4,269 chars / ~1,068 tokens) are treated as always-on in the token budget, but the exact loading behavior (whether the runtime loads them at session start or on first Edit/Write hook fire) was not verified with a live session trace. The budget below is conservative (worst-case always-on).
+
+---
+
+## Phase 4 completion (2026-07-20)
+
+**Status:** Complete — release tag `v0.4.0` created. `node scripts/validate.mjs` exits 0, 55/55 hook tests pass.
+
+### Deliverables
+
+| Deliverable | Status | Notes |
+|-------------|--------|-------|
+| Token budget precise re-run | ✓ done | Full char-count measurement via script; see `docs/TOKEN-BUDGET.md` §Phase 4 re-run |
+| README counts and hooks section | ✓ done | Skills 165+→170+, agents 21→23, hooks 7→11+1 (pilot-sql), plugin table updated |
+| `docs/MODERNIZATION-BASELINE.md` Phase 4 section | ✓ done | This file |
+| `docs/TOKEN-BUDGET.md` Phase 4 re-run | ✓ done | Precise per-plugin always-on figures replacing delta estimates |
+| Git tag `v0.4.0` | ✓ done | Annotated tag on `remediation/critical-review-2026-07` |
+| `claude plugin tag --push` | **Pending** | Must be run by maintainer — requires marketplace auth credentials |
+
+### Final always-on token budget (precise measurement)
+
+| Plugin | Version | Skills | Tokens (always-on) |
+|--------|---------|--------|--------------------|
+| pilot-core | 0.32.0 | 40 | ~7,318 |
+| pilot-angular | 0.25.0 | 33 | ~5,578 |
+| pilot-dotnet | 0.28.0 | 59 | ~10,362 |
+| pilot-sql | 0.18.0 | 12 | ~2,180 |
+| pilot-azure | 0.19.0 | 18 | ~3,246 |
+| pilot-rag | 0.5.0 | 8 | ~1,549 |
+| **Total** | | **170** | **~30,233** |
+
+Phase 0 baseline was ~28,622t. Total growth across Phases 1–3: **+1,611t (+5.6%)**.
+Breakdown: Phase 1 command→skill conversion (+628t), Phase 2 output-style (+375t), Phase 3 new skills (+608t).
+
+### What was NOT verified in Phase 4
+
+1. **`claude plugin tag --push`** — this CLI command pushes the plugin to the Claude Code marketplace. It requires the maintainer to be authenticated (`claude auth login`) with an account that has write access to `AgenticPawan/FullStack-Pilot`. It cannot be run in the development environment — the maintainer must run it manually after the branch merges to `master`.
+
+2. **`claude plugin validate --strict` against the tag** — the CI runs this gate on every push/PR. It was confirmed passing locally for all 6 plugins in Phase 0. New Phase 2–3 components (LSP, monitors, output-styles) were not re-validated with `--strict` because the CLI is not available in the development environment. If the strict validator adds schema checks for any of these experimental fields in a future release, the CI step will catch it.

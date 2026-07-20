@@ -196,6 +196,84 @@ covers GDPR Art.17 compliance — high value for the token cost. Acceptable one-
 
 ---
 
+---
+
+## Phase 4 precise re-run (2026-07-20)
+
+**Method:** Char count via Node.js script reading each plugin's actual source files.
+All three phases of additions are baked into these numbers — this is the authoritative
+post-modernisation measurement.
+
+### pilot-core v0.32.0
+
+| Component | Count | Chars | ~Tokens |
+|-----------|-------|-------|---------|
+| `plugin.json` description | 1 | 469 | 117 |
+| SKILL.md frontmatter (40 skills) | 40 | 23,044 | 5,761 |
+| `always-*.md` rules (4 files) | 4 | 4,269 | 1,067 |
+| `output-styles/governance-report.md` | 1 | 1,491 | 373 |
+| **Subtotal** | | **29,273** | **~7,318** |
+
+Growth vs. Phase 0 baseline (6,332t): **+986t (+15.6%)** — driven by Phase 1 command→skill conversion
+(+10 skills from commands, ~+920t) and Phase 2 output-styles (+373t). Always-on token cost is
+within the ~120K context budget for a full stack install.
+
+### pilot-angular v0.25.0
+
+| Component | Count | Chars | ~Tokens |
+|-----------|-------|-------|---------|
+| `plugin.json` description | 1 | 571 | 143 |
+| SKILL.md frontmatter (33 skills) | 33 | 21,742 | 5,436 |
+| **Subtotal** | | **22,313** | **~5,578** |
+
+### pilot-dotnet v0.28.0
+
+| Component | Count | Chars | ~Tokens |
+|-----------|-------|-------|---------|
+| `plugin.json` description | 1 | 521 | 130 |
+| SKILL.md frontmatter (59 skills) | 59 | 40,926 | 10,232 |
+| **Subtotal** | | **41,447** | **~10,362** |
+
+### pilot-sql v0.18.0
+
+| Component | Count | Chars | ~Tokens |
+|-----------|-------|-------|---------|
+| `plugin.json` description | 1 | 581 | 145 |
+| SKILL.md frontmatter (12 skills) | 12 | 8,140 | 2,035 |
+| **Subtotal** | | **8,721** | **~2,180** |
+
+### pilot-azure v0.19.0 (unchanged)
+
+| Component | Count | Chars | ~Tokens |
+|-----------|-------|-------|---------|
+| `plugin.json` description | 1 | 450 | 113 |
+| SKILL.md frontmatter (18 skills) | 18 | 12,533 | 3,133 |
+| **Subtotal** | | **12,983** | **~3,246** |
+
+### pilot-rag v0.5.0
+
+| Component | Count | Chars | ~Tokens |
+|-----------|-------|-------|---------|
+| `plugin.json` description | 1 | 600 | 150 |
+| SKILL.md frontmatter (8 skills) | 8 | 5,594 | 1,399 |
+| **Subtotal** | | **6,194** | **~1,549** |
+
+### Aggregate — all 6 plugins
+
+| Plugin | ~Tokens |
+|--------|---------|
+| pilot-core | 7,318 |
+| pilot-angular | 5,578 |
+| pilot-dotnet | 10,362 |
+| pilot-sql | 2,180 |
+| pilot-azure | 3,246 |
+| pilot-rag | 1,549 |
+| **Total** | **~30,233** |
+
+Phase 0 total: 28,622t → Phase 4 total: **30,233t** (+1,611t / +5.6% across all phases).
+
+---
+
 ## Caveats
 
 1. **`claude plugin details` not run** — this tool would give exact runtime-loaded byte
