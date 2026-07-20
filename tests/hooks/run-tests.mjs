@@ -256,6 +256,24 @@ check('passes constant-only SQL concatenation (no variable injected)',
     'var sql = "SELECT * FROM " + "Users";')),
   false);
 
+// V5 — strict_style_hooks=false: warn patterns are suppressed; deny patterns still fire.
+check('blocks innerHTML (deny) even when strict_style_hooks=false',
+  runHook('dangerous-patterns.js', pre('Write', '/p/app.component.ts',
+    'this.el.nativeElement.innerHTML = evil;'),
+    { CLAUDE_PLUGIN_OPTION_STRICT_STYLE_HOOKS: 'false' }),
+  true);
+
+{
+  const r = runHook('dangerous-patterns.js',
+    pre('Write', join(tmpDotnet8, 'Service.cs'), 'var now = DateTime.Now;'),
+    { CLAUDE_PROJECT_DIR: tmpDotnet8, CLAUDE_PLUGIN_OPTION_STRICT_STYLE_HOOKS: 'false' });
+  const decision = r.json?.hookSpecificOutput?.permissionDecision;
+  const ok = r.exit === 0 && decision !== 'deny' && decision !== 'defer';
+  if (ok) { console.log('    ✓ suppresses DateTime.Now warn when strict_style_hooks=false'); passed++; }
+  else { console.error('    ✗ suppresses DateTime.Now warn when strict_style_hooks=false');
+    console.error(`      exit=${r.exit} decision=${decision || 'none'}`); failed++; }
+}
+
 // V6 — ReDoS guard: a catastrophic pattern in (user-extensible) config is skipped, never run.
 // Point the hook at a throwaway plugin root whose config carries a nested-unbounded-quantifier
 // pattern. If the guard regressed, running "(a+)+$" over 50 'a's + "!" would backtrack past the
@@ -350,6 +368,32 @@ console.log('\n  session-refresh');
   const ok = r.status === 0 && !r.stdout;
   if (ok) { console.log('    ✓ exits 0 silently when enable_governance_hooks=false'); passed++; }
   else { console.error('    ✗ exits 0 silently when enable_governance_hooks=false'); failed++; }
+}
+
+{
+  // package.json newer than stack-profile.json — should emit manifest-change warning
+  const tmpManifestNewer = mkdtempSync(join(os.tmpdir(), 'pilot-sr-manifest-'));
+  mkdirSync(join(tmpManifestNewer, '.claude', 'pilot'), { recursive: true });
+  // Write profile first, then package.json (so package.json is definitively newer)
+  writeFileSync(join(tmpManifestNewer, '.claude', 'pilot', 'stack-profile.json'), '{"angular":"17"}');
+  // Force a 10ms gap by writing the manifest file after a tiny delay via Date manipulation is
+  // unreliable cross-platform; instead we backdate the profile via utimes.
+  const profilePath = join(tmpManifestNewer, '.claude', 'pilot', 'stack-profile.json');
+  const oldMtime = new Date(Date.now() - 5000);
+  try { fs.utimesSync(profilePath, oldMtime, oldMtime); } catch (_) {}
+  writeFileSync(join(tmpManifestNewer, 'package.json'), '{"name":"app"}');
+  const r = spawnSync('node', [join(SCRIPTS_DIR, 'session-refresh.js')], {
+    input: '{}',
+    encoding: 'utf8',
+    timeout: 8000,
+    env: { ...process.env, CLAUDE_PLUGIN_ROOT: PLUGIN_ROOT, CLAUDE_PROJECT_DIR: tmpManifestNewer },
+  });
+  const json = JSON.parse(r.stdout || '{}');
+  const ok = r.status === 0 && typeof json.systemMessage === 'string'
+    && json.systemMessage.includes('package.json');
+  if (ok) { console.log('    ✓ warns when package.json is newer than stack-profile.json'); passed++; }
+  else { console.error('    ✗ warns when package.json is newer than stack-profile.json');
+    console.error(`      stdout=${r.stdout.slice(0,200)}`); failed++; }
 }
 
 // ── precompact-snapshot tests ────────────────────────────���────────────────────
@@ -553,6 +597,67 @@ check('passes migration verifier when kill-switch is off',
     'migrationBuilder.DropColumn("OldCol", "T");'),
     { CLAUDE_PLUGIN_OPTION_ENABLE_MIGRATION_VERIFIER: 'false' }),
   false);
+
+// HasQueryFilter coverage advisory
+{
+  // Project with a DbContext that has NO HasQueryFilter → should warn on new CreateTable
+  const tmpNoFilter = mkdtempSync(join(os.tmpdir(), 'pilot-mv-nofilter-'));
+  writeFileSync(join(tmpNoFilter, 'AppDbContext.cs'),
+    'public class AppDbContext : DbContext { public DbSet<Order> Orders { get; set; } }');
+  const r = spawnSync('node', [join(SQL_SCRIPTS_DIR, 'migration-verifier.js')], {
+    input: JSON.stringify(pre('Write', '/p/Migrations/20240201_AddOrders.cs',
+      'migrationBuilder.CreateTable("Orders", t => { t.Column<int>("TenantId"); });')),
+    encoding: 'utf8',
+    timeout: 8000,
+    env: { ...process.env, CLAUDE_PLUGIN_ROOT: SQL_PLUGIN_ROOT, CLAUDE_PROJECT_DIR: tmpNoFilter },
+  });
+  let json = null;
+  try { json = JSON.parse(r.stdout || ''); } catch (_) {}
+  const decision = json?.hookSpecificOutput?.permissionDecision;
+  const ok = r.status === 0 && decision === 'defer'
+    && typeof json?.systemMessage === 'string'
+    && json.systemMessage.includes('HasQueryFilter');
+  if (ok) { console.log('    ✓ warns (HasQueryFilter advisory) when DbContext lacks HasQueryFilter'); passed++; }
+  else { console.error('    ✗ warns (HasQueryFilter advisory) when DbContext lacks HasQueryFilter');
+    console.error(`      exit=${r.status} decision=${decision || 'none'} sm=${json?.systemMessage?.slice(0,120)}`); failed++; }
+}
+
+{
+  // Project with a DbContext that HAS HasQueryFilter → no advisory
+  const tmpWithFilter = mkdtempSync(join(os.tmpdir(), 'pilot-mv-withfilter-'));
+  writeFileSync(join(tmpWithFilter, 'AppDbContext.cs'),
+    'public class AppDbContext : DbContext { protected override void OnModelCreating(ModelBuilder b) { b.Entity<Order>().HasQueryFilter(o => !o.IsDeleted && o.TenantId == _tenantId); } }');
+  const r = spawnSync('node', [join(SQL_SCRIPTS_DIR, 'migration-verifier.js')], {
+    input: JSON.stringify(pre('Write', '/p/Migrations/20240201_AddOrders.cs',
+      'migrationBuilder.CreateTable("Orders", t => { t.Column<int>("TenantId"); });')),
+    encoding: 'utf8',
+    timeout: 8000,
+    env: { ...process.env, CLAUDE_PLUGIN_ROOT: SQL_PLUGIN_ROOT, CLAUDE_PROJECT_DIR: tmpWithFilter },
+  });
+  const ok = r.status === 0 && !r.stdout;
+  if (ok) { console.log('    ✓ passes when DbContext already has HasQueryFilter'); passed++; }
+  else { console.error('    ✗ passes when DbContext already has HasQueryFilter');
+    console.error(`      stdout=${r.stdout.slice(0,200)}`); failed++; }
+}
+
+{
+  // Kill-switch disables HasQueryFilter check
+  const tmpNoFilter2 = mkdtempSync(join(os.tmpdir(), 'pilot-mv-ks-'));
+  writeFileSync(join(tmpNoFilter2, 'AppDbContext.cs'),
+    'public class AppDbContext : DbContext { }');
+  const r = spawnSync('node', [join(SQL_SCRIPTS_DIR, 'migration-verifier.js')], {
+    input: JSON.stringify(pre('Write', '/p/Migrations/20240201_AddOrders.cs',
+      'migrationBuilder.CreateTable("Orders", t => { t.Column<int>("TenantId"); });')),
+    encoding: 'utf8',
+    timeout: 8000,
+    env: { ...process.env, CLAUDE_PLUGIN_ROOT: SQL_PLUGIN_ROOT, CLAUDE_PROJECT_DIR: tmpNoFilter2,
+           CLAUDE_PLUGIN_OPTION_ENABLE_QUERY_FILTER_CHECK: 'false' },
+  });
+  const ok = r.status === 0 && !r.stdout;
+  if (ok) { console.log('    ✓ skips HasQueryFilter check when enable_query_filter_check=false'); passed++; }
+  else { console.error('    ✗ skips HasQueryFilter check when enable_query_filter_check=false');
+    console.error(`      stdout=${r.stdout.slice(0,200)}`); failed++; }
+}
 
 // ── Summary ───────────────────────────────────────────────────────────────────
 
