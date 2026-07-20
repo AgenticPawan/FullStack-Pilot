@@ -302,6 +302,39 @@ writeFileSync(join(tmpRedos, 'hooks', 'config', 'dangerous-patterns.json'), JSON
   }
 }
 
+// V7 — new W4 patterns: sync-over-async (warn), select-star (warn), ngmodule (warn),
+//       floating-image-tag (deny)
+checkWarn('warns (non-blocking) on .Result in .cs (sync-over-async)',
+  runHook('dangerous-patterns.js', pre('Write', '/p/Repo.cs',
+    'var data = _service.LoadAsync(id).Result;')));
+
+checkWarn('warns (non-blocking) on .GetAwaiter().GetResult() in .cs (sync-over-async)',
+  runHook('dangerous-patterns.js', pre('Write', '/p/Repo.cs',
+    'var result = _http.GetStringAsync(url).GetAwaiter().GetResult();')));
+
+checkWarn('warns (non-blocking) on SELECT * FROM in .cs raw SQL string (select-star)',
+  runHook('dangerous-patterns.js', pre('Write', '/p/QueryHelper.cs',
+    'var sql = @"SELECT * FROM Orders WHERE TenantId = @t";')));
+
+checkWarn('warns (non-blocking) on @NgModule declaration in .ts (standalone-only-gte19)',
+  runHook('dangerous-patterns.js', pre('Write', '/p/orders.module.ts',
+    '@NgModule({ declarations: [OrderListComponent], imports: [CommonModule] }) export class OrdersModule {}')));
+
+check('blocks :latest image tag in .bicep (floating-image-tag)',
+  runHook('dangerous-patterns.js', pre('Write', '/p/infra/container-app.bicep',
+    "image: 'mcr.microsoft.com/dotnet/aspnet:latest'")),
+  true);
+
+check('blocks :latest image tag in docker-compose .yml (floating-image-tag)',
+  runHook('dangerous-patterns.js', pre('Write', '/p/docker-compose.yml',
+    'services:\n  cache:\n    image: redis:latest')),
+  true);
+
+check('passes pinned image version in .bicep — no :latest (floating-image-tag)',
+  runHook('dangerous-patterns.js', pre('Write', '/p/infra/container-app.bicep',
+    "image: 'mcr.microsoft.com/dotnet/aspnet:8.0.11'")),
+  false);
+
 // ── formatter tests ───────────────────────────────────────────────────────────
 
 console.log('\n  formatter');
