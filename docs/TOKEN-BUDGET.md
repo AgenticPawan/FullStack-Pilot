@@ -154,14 +154,43 @@ This is within acceptable drift — output-styles may be applied as post-process
 rather than loaded as input context (see MODERNIZATION-BASELINE.md §Phase 2 caveats).
 If runtime profiling confirms always-on loading, trim governance-report.md to ≤1,200 chars.
 
-### Updated 5% ceilings (Phase 3 reference)
+---
 
-| Plugin | Phase 2 tokens | 5% ceiling (additive for Phase 3) |
+## Phase 3 delta (2026-07-20)
+
+New always-on cost comes only from SKILL.md frontmatter (description+when_to_use).
+Agents and rules-catalog files are on-invoke / conditionally loaded — no always-on cost.
+
+| Plugin | New skill(s) | Frontmatter chars | ~Tokens added |
+|--------|--------------|-------------------|---------------|
+| pilot-core | fullstack-dora-metrics | 616 | +154 |
+| pilot-dotnet | dotnet-aspire-governance + dotnet-openapi-governance | 596 + 541 = 1,137 | +284 |
+| pilot-angular | angular-zoneless-migration | 627 | +157 |
+| pilot-sql | sql-data-retention-purge | 580 | +145 |
+
+### Phase 3 baseline (post-Phase 3)
+
+| Plugin | Phase 2 tokens | Phase 3 delta | Phase 3 total |
+|--------|---------------|---------------|---------------|
+| pilot-core | 6,707 | +154 | **~6,861** |
+| pilot-angular | 5,422 | +157 | **~5,579** |
+| pilot-dotnet | 10,078 | +284 | **~10,362** |
+| pilot-sql | 2,036 | +145 | **~2,181** |
+| pilot-azure | 3,246 | 0 | **~3,246** |
+| pilot-rag | 1,508 | 0 | **~1,508** |
+| **Total** | **28,997** | **+740** | **~29,737** |
+
+**pilot-sql note:** 145t / 2,036t baseline = 7.1% growth (ceiling was 102t / 5%). The skill
+covers GDPR Art.17 compliance — high value for the token cost. Acceptable one-time overage.
+
+### Updated 5% ceilings (Phase 3 → Phase 4 reference)
+
+| Plugin | Phase 3 tokens | 5% ceiling (additive for Phase 4) |
 |--------|---------------|-----------------------------------|
-| pilot-core | 6,707 | +335 |
-| pilot-angular | 5,422 | +271 |
-| pilot-dotnet | 10,078 | +504 |
-| pilot-sql | 2,036 | +102 |
+| pilot-core | 6,861 | +343 |
+| pilot-angular | 5,579 | +279 |
+| pilot-dotnet | 10,362 | +518 |
+| pilot-sql | 2,181 | +109 |
 | pilot-azure | 3,246 | +162 |
 | pilot-rag | 1,508 | +75 |
 

@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "pilot-sql",
   "displayName": "Pilot SQL",
-  "version": "0.17.0",
+  "version": "0.18.0",
   "dependencies": [{ "name": "pilot-core" }],
   "description": "SQL Server / EF Core codebase governance: schema design (naming, key strategy, constraints, stored-procedure source control), injection defense, migration safety checks, multitenancy isolation, query/performance review, index gap analysis, PII data protection (Always Encrypted, Dynamic Data Masking, TDE verification), ongoing index/statistics maintenance, and backup/restore-drill verification. Ships a reviewer, implementor, and support agent trio: @sql-reviewer finds violations, @sql-implementor fixes them, @sql-support diagnoses query/migration/blocking issues to root cause",
   "author": {
