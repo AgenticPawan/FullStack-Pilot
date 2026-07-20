@@ -123,6 +123,65 @@ and continue with static analysis only.
 
 ---
 
+## Check F — Query Store review
+
+SQL Server Query Store captures query plans, runtimes, and statistics without external tooling.
+Use it when `sql-mcp` is not available or to identify **plan regression** (the optimizer chose
+a worse plan after a statistics update or index change).
+
+### Enabling (must be on for the pattern to work)
+
+```sql
+ALTER DATABASE [YourDb] SET QUERY_STORE = ON
+    WITH (OPERATION_MODE = READ_WRITE,
+          CLEANUP_POLICY = (STALE_QUERY_THRESHOLD_DAYS = 30),
+          DATA_FLUSH_INTERVAL_SECONDS = 900,
+          MAX_STORAGE_SIZE_MB = 1024,
+          QUERY_CAPTURE_MODE = AUTO);
+```
+
+### Finding regressions
+
+```sql
+-- Top 10 queries by average CPU increase over last 24 hours vs prior 24 hours
+SELECT TOP 10
+    qsq.query_id,
+    qsqt.query_sql_text,
+    AVG(qsrs.avg_cpu_time)        AS avg_cpu_recent,
+    AVG(qsrs_prior.avg_cpu_time)  AS avg_cpu_prior,
+    AVG(qsrs.avg_cpu_time) - AVG(qsrs_prior.avg_cpu_time) AS cpu_delta
+FROM sys.query_store_query qsq
+JOIN sys.query_store_query_text qsqt ON qsq.query_text_id = qsqt.query_text_id
+JOIN sys.query_store_plan qsp ON qsq.query_id = qsp.query_id
+JOIN sys.query_store_runtime_stats qsrs
+    ON qsp.plan_id = qsrs.plan_id
+    AND qsrs.last_execution_time >= DATEADD(hour, -24, GETUTCDATE())
+JOIN sys.query_store_runtime_stats qsrs_prior
+    ON qsp.plan_id = qsrs_prior.plan_id
+    AND qsrs_prior.last_execution_time
+        BETWEEN DATEADD(hour, -48, GETUTCDATE()) AND DATEADD(hour, -24, GETUTCDATE())
+GROUP BY qsq.query_id, qsqt.query_sql_text
+ORDER BY cpu_delta DESC;
+```
+
+### Forcing a stable plan (regression mitigation)
+
+```sql
+-- After identifying the last-good plan_id from Query Store:
+EXEC sp_query_store_force_plan @query_id = <id>, @plan_id = <good-plan-id>;
+```
+
+**Findings**
+
+| ID | Severity | What it checks |
+|----|----------|----------------|
+| QS-001 | P1 | Query Store is OFF on a production database (blind to plan regressions) |
+| QS-002 | P1 | A query shows >2× CPU increase between consecutive 24-hour windows (plan regression candidate) |
+| QS-003 | P2 | Query Store `MAX_STORAGE_SIZE_MB` is ≤ 100 MB on a busy database (data gaps likely) |
+| QS-004 | P2 | `QUERY_CAPTURE_MODE = ALL` on a high-throughput database (excessive capture noise) |
+
+---
+
 ## Finding severity
 
 | Pattern | Severity |

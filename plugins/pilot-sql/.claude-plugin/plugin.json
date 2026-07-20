@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "pilot-sql",
   "displayName": "Pilot SQL",
-  "version": "0.20.0",
+  "version": "0.21.0",
   "dependencies": [
     {
       "name": "pilot-core"
