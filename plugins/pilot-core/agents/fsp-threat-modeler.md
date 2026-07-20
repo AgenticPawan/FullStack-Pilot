@@ -87,6 +87,35 @@ Methodology: STRIDE + OWASP Top 10 (2021)
 <Brief list of MITIGATED threats with the control reference>
 ```
 
+## findings.json-compatible output
+
+After writing THREAT-MODEL.md, also write (or merge into) `.claude/pilot/audit/findings.json`
+with one entry per OPEN or PARTIAL threat, so `/fsp-audit` and the `precompact-snapshot`
+hook can surface them:
+
+```json
+{
+  "id": "T-001",
+  "severity": "P0",
+  "title": "<threat name>",
+  "file": "<entry-point file:line or 'cross-cutting'>",
+  "standard": "<pilot standard ID or 'STRIDE/<category>'>",
+  "status": "OPEN",
+  "agent": "fsp-threat-modeler"
+}
+```
+
+Severity mapping: Critical impact → P0, High → P1, Medium → P2, Low → P3.
+
+## Pre-plan gate (optional)
+
+When invoked from `/fsp-architect` or `/fsp-build` Step 3, the orchestrating command
+passes `--gate` to indicate this is a blocking gate. In gate mode:
+- Run the threat model against the spec/ADR provided.
+- If any P0 threats are OPEN, stop the pipeline and print the P0 list — do NOT proceed
+  to implementation until the user resolves them or explicitly acknowledges with CONFIRM.
+- P1–P3 open threats are advisory: list them and allow the pipeline to continue.
+
 ## Chat reply
 
 Reply with the threat count, the count of OPEN/PARTIAL threats, the single highest-priority

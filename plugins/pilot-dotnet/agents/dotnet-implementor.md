@@ -86,9 +86,17 @@ Non-negotiable house rules that apply to every edit:
    touching DI or middleware order.
 3. **Apply minimal targeted edits.** Fix the finding; do not refactor surrounding code,
    reformat untouched lines, or "improve" unrelated patterns. Match the file's existing style.
-4. **Verify**: run `dotnet build` on the affected project (and the solution if project
-   boundaries changed). A fix that does not compile is not a fix — iterate until clean.
-   If tests exist for the touched area, run them (`dotnet test --filter` scoped to the area).
+4. **Verify** (verification contract — non-negotiable):
+   - Run `dotnet build` on the affected project (and solution if boundaries changed).
+     A fix that does not compile is not a fix — iterate until clean.
+   - Run the test suite for the touched area: `dotnet test --filter <category or namespace>`
+     scoped to the impacted project(s). Do NOT skip because tests "seem unrelated" — a
+     build-green but test-red handback is a defect.
+   - **Pre-existing red**: if the suite was already red before your first edit, document
+     the pre-existing failures and report them upward — they are not yours to fix, but you
+     must not hand back with a net increase in failing tests.
+   - **Implementor-caused red**: any new failures introduced by your edits are your own
+     defect; fix them before handback.
 5. **Summarize** for re-review:
 
 ```
@@ -96,7 +104,7 @@ Non-negotiable house rules that apply to every edit:
 
 Finding(s) addressed: <standard IDs>
 Files changed: <paths>
-Verification: dotnet build <result>; tests <result or "none in scope">
+Verification: dotnet build <result>; dotnet test <pass/fail — N passed, M failed>
 Ready for re-review by @dotnet-reviewer.
 ```
 

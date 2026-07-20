@@ -2,8 +2,12 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "pilot-sql",
   "displayName": "Pilot SQL",
-  "version": "0.19.0",
-  "dependencies": [{ "name": "pilot-core" }],
+  "version": "0.20.0",
+  "dependencies": [
+    {
+      "name": "pilot-core"
+    }
+  ],
   "description": "SQL Server / EF Core codebase governance: schema design (naming, key strategy, constraints, stored-procedure source control), injection defense, migration safety checks, multitenancy isolation, query/performance review, index gap analysis, PII data protection (Always Encrypted, Dynamic Data Masking, TDE verification), ongoing index/statistics maintenance, and backup/restore-drill verification. Ships a reviewer, implementor, and support agent trio: @sql-reviewer finds violations, @sql-implementor fixes them, @sql-support diagnoses query/migration/blocking issues to root cause",
   "author": {
     "name": "AgenticPawan",
@@ -26,5 +30,24 @@
       "description": "When false, disables the advisory check that warns when a new CreateTable migration is written but no DbContext in the project contains a HasQueryFilter call. Cost: reads up to 10 .cs files from the project root and src/."
     }
   },
-  "keywords": ["sql-server", "efcore", "migrations", "query-review", "index", "data-protection", "always-encrypted", "index-maintenance", "backup-recovery", "schema-design", "tsqlt", "tsql-testing", "temporal-tables", "change-data-capture", "change-tracking", "implementor-agent", "support-agent", "root-cause"]
+  "keywords": [
+    "sql-server",
+    "efcore",
+    "migrations",
+    "query-review",
+    "index",
+    "data-protection",
+    "always-encrypted",
+    "index-maintenance",
+    "backup-recovery",
+    "schema-design",
+    "tsqlt",
+    "tsql-testing",
+    "temporal-tables",
+    "change-data-capture",
+    "change-tracking",
+    "implementor-agent",
+    "support-agent",
+    "root-cause"
+  ]
 }

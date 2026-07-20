@@ -2,8 +2,12 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "pilot-angular",
   "displayName": "Pilot Angular",
-  "version": "0.25.0",
-  "dependencies": [{ "name": "pilot-core" }],
+  "version": "0.26.0",
+  "dependencies": [
+    {
+      "name": "pilot-core"
+    }
+  ],
   "description": "Angular / TypeScript governance for v15-20: signals and state, performance, accessibility (WCAG 2.2 AA), UI/UX visual consistency (spacing/type scale, responsive layout, visual hierarchy), permissions-only route guards, authentication (OIDC/PKCE), HTTP resilience, routing, SSR, testing, i18n, theming, dynamic forms, PWA/offline, telemetry, monorepo and lint governance, OpenAPI/NSwag client generation, feature flags, and NgRx. Ships @angular-reviewer (finds violations), @angular-implementor (fixes them), and @angular-support (diagnoses frontend issues to root cause)",
   "author": {
     "name": "AgenticPawan",
@@ -15,5 +19,34 @@
   "experimental": {
     "monitors": "./monitors/monitors.json"
   },
-  "keywords": ["angular", "typescript", "signals", "standalone", "accessibility", "sri", "third-party-scripts", "nswag", "openapi-client", "dialog-service", "toast", "design-system", "authentication", "oidc", "ssr", "hydration", "runtime-config", "routing", "eslint", "storybook", "visual-regression", "feature-flags", "ngrx", "reduced-motion", "animations", "implementor-agent", "support-agent", "root-cause"]
+  "keywords": [
+    "angular",
+    "typescript",
+    "signals",
+    "standalone",
+    "accessibility",
+    "sri",
+    "third-party-scripts",
+    "nswag",
+    "openapi-client",
+    "dialog-service",
+    "toast",
+    "design-system",
+    "authentication",
+    "oidc",
+    "ssr",
+    "hydration",
+    "runtime-config",
+    "routing",
+    "eslint",
+    "storybook",
+    "visual-regression",
+    "feature-flags",
+    "ngrx",
+    "reduced-motion",
+    "animations",
+    "implementor-agent",
+    "support-agent",
+    "root-cause"
+  ]
 }

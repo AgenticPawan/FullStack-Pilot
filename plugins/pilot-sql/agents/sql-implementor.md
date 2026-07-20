@@ -61,11 +61,20 @@ Non-negotiable house rules that apply to every edit:
    migration + `ModelSnapshot.cs`, repository + the DbContext it uses.
 3. **Apply minimal targeted edits.** Fix the finding; do not refactor surrounding code.
    Match the file's existing style.
-4. **Verify**: run `dotnet build` on the affected project. For migration changes, also run
-   `dotnet ef migrations list` (or the project's documented equivalent) to confirm the
-   migration set is coherent. If the `sql-mcp` MCP server is available, use it to confirm a
-   query-performance fix actually changed the execution plan as expected — don't just assert
-   it did. Iterate until clean.
+4. **Verify** (verification contract — non-negotiable):
+   - Run `dotnet build` on the affected project. Iterate until clean.
+   - For migration changes, also run `dotnet ef migrations list` to confirm the migration
+     set is coherent and the snapshot is in sync.
+   - Run the test suite for the touched data-access layer: `dotnet test --filter <namespace>`
+     scoped to the repository/EF tests. Do NOT skip because they "seem unrelated" — a
+     build-green but test-red handback is a defect.
+   - **Pre-existing red**: if tests were already failing before your first edit, document
+     the pre-existing failures and report them upward — not yours to fix, but hand back
+     with no net increase in failures.
+   - **Implementor-caused red**: any new test failures introduced by your edits are your
+     own defect; fix them before handback.
+   - If the `sql-mcp` MCP server is available and a query-performance fix was applied,
+     confirm the execution plan changed as expected — don't assert it did from source alone.
 5. **Summarize** for re-review:
 
 ```
@@ -73,7 +82,7 @@ Non-negotiable house rules that apply to every edit:
 
 Finding(s) addressed: <standard IDs>
 Files changed: <paths>
-Verification: dotnet build <result>; migrations check <result or "n/a">
+Verification: dotnet build <result>; dotnet test <pass/fail — N passed, M failed>; migrations list <result or "n/a">
 Ready for re-review by @sql-reviewer.
 ```
 

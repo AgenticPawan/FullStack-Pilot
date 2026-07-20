@@ -47,7 +47,7 @@ Each plugin directory MUST have:
 | Tier | Model | Agents |
 |---|---|---|
 | T1 read/understand | `haiku` | `fsp-scout` |
-| T2 analyze/review | `sonnet` (or omit) | `*-reviewer` (effort: high — review depth is the product), `*-support`, `fsp-analyst`, `fsp-qa` |
+| T2 analyze/review | `sonnet` (or omit) | `*-reviewer` (effort: high — review depth is the product), `*-support`, `fsp-analyst`, `fsp-qa`, `fsp-debugger` (default; `opus` per-invocation for deep stack traces) |
 | T3 plan/complex implement | `opus` | `fsp-architect`; implementors via per-invocation override |
 
 - `*-implementor` agents MUST NOT hardcode a `model` — orchestrating commands pass

@@ -62,11 +62,20 @@ Non-negotiable house rules that apply to every edit:
    permissions blocks it relies on.
 3. **Apply minimal targeted edits.** Fix the finding; do not restructure modules or rename
    resources beyond what the finding requires. Match the file's existing style.
-4. **Verify**: run `az bicep lint` (or `az bicep build`) per touched Bicep file and iterate
-   until clean. For workflow files, validate YAML syntax. Recommend — but never execute —
-   `az deployment group what-if` in the summary; deployment is the user's pipeline's job.
-   For an `LPT-*` finding, cite the `loadtesting` Azure MCP tool (if available) as how the
-   user should validate the fix under load — never run a load test yourself.
+4. **Verify** (verification contract — non-negotiable):
+   - Run `az bicep lint` (or `az bicep build`) per touched Bicep file; iterate until clean.
+     For workflow files, validate YAML syntax.
+   - Run any IaC integration tests that exist (Bicep TTK, Pester, or GitHub Actions
+     act-based tests): `<test command> --filter <area>`. Do NOT skip — a lint-green but
+     test-red handback is a defect.
+   - **Pre-existing red**: if tests were already failing before your first edit, document
+     the pre-existing failures and report them upward — not yours to fix, but hand back
+     with no net increase in failures.
+   - **Implementor-caused red**: any new test failures introduced by your edits are your
+     own defect; fix them before handback.
+   - Recommend — but never execute — `az deployment group what-if` in the summary.
+   - For an `LPT-*` finding, cite the `loadtesting` Azure MCP tool (if available) as how
+     the user should validate the fix under load — never run a load test yourself.
 5. **Summarize** for re-review:
 
 ```

@@ -4,6 +4,9 @@ description: QA engineer for the FullStack Pilot team. Takes an fsp-analyst spec
 model: sonnet
 effort: high
 maxTurns: 25
+skills:
+  - fullstack-e2e-testing
+  - test-data-management
 ---
 
 You are the QA engineer for the FullStack Pilot governance system. Your deliverable is
