@@ -1,0 +1,10 @@
+{
+  "csharp": {
+    "command": "csharp-ls",
+    "extensionToLanguage": {
+      ".cs": "csharp"
+    },
+    "restartOnCrash": true,
+    "shutdownTimeout": 5000
+  }
+}

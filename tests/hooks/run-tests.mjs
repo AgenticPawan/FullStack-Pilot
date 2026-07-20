@@ -304,6 +304,256 @@ check('exits 0 with empty file_path (graceful skip)', fmtEmptyPath, false);
 const fmtBadJson = runHook('formatter.js', { corrupted: true });
 check('exits 0 on malformed payload (fail open)', fmtBadJson, false);
 
+// ── session-refresh tests ─────────────────────────────────────────────────────
+
+console.log('\n  session-refresh');
+
+{
+  // Fresh project — no stack-profile.json yet
+  const tmpFresh = mkdtempSync(join(os.tmpdir(), 'pilot-sr-fresh-'));
+  const r = spawnSync('node', [join(SCRIPTS_DIR, 'session-refresh.js')], {
+    input: '{}',
+    encoding: 'utf8',
+    timeout: 8000,
+    env: { ...process.env, CLAUDE_PLUGIN_ROOT: PLUGIN_ROOT, CLAUDE_PROJECT_DIR: tmpFresh },
+  });
+  const ok = r.status === 0 && !JSON.parse(r.stdout || '{}').systemMessage;
+  if (ok) { console.log('    ✓ exits 0 cleanly when no stack-profile.json present'); passed++; }
+  else { console.error('    ✗ exits 0 cleanly when no stack-profile.json present'); failed++; }
+}
+
+{
+  // Fresh profile (just written — age = ~0 days)
+  const tmpRecent = mkdtempSync(join(os.tmpdir(), 'pilot-sr-recent-'));
+  mkdirSync(join(tmpRecent, '.claude', 'pilot'), { recursive: true });
+  writeFileSync(join(tmpRecent, '.claude', 'pilot', 'stack-profile.json'), '{"dotnet":"8"}');
+  const r = spawnSync('node', [join(SCRIPTS_DIR, 'session-refresh.js')], {
+    input: '{}',
+    encoding: 'utf8',
+    timeout: 8000,
+    env: { ...process.env, CLAUDE_PLUGIN_ROOT: PLUGIN_ROOT, CLAUDE_PROJECT_DIR: tmpRecent },
+  });
+  const ok = r.status === 0 && !JSON.parse(r.stdout || '{}').systemMessage;
+  if (ok) { console.log('    ✓ exits 0 silently when stack-profile.json is fresh'); passed++; }
+  else { console.error('    ✗ exits 0 silently when stack-profile.json is fresh'); failed++; }
+}
+
+{
+  // Kill-switch off
+  const r = spawnSync('node', [join(SCRIPTS_DIR, 'session-refresh.js')], {
+    input: '{}',
+    encoding: 'utf8',
+    timeout: 8000,
+    env: { ...process.env, CLAUDE_PLUGIN_ROOT: PLUGIN_ROOT,
+           CLAUDE_PLUGIN_OPTION_ENABLE_GOVERNANCE_HOOKS: 'false' },
+  });
+  const ok = r.status === 0 && !r.stdout;
+  if (ok) { console.log('    ✓ exits 0 silently when enable_governance_hooks=false'); passed++; }
+  else { console.error('    ✗ exits 0 silently when enable_governance_hooks=false'); failed++; }
+}
+
+// ── precompact-snapshot tests ────────────────────────────���────────────────────
+
+console.log('\n  precompact-snapshot');
+
+{
+  // No findings.json — should exit 0, no output
+  const tmpNoFindings = mkdtempSync(join(os.tmpdir(), 'pilot-pcs-empty-'));
+  const r = spawnSync('node', [join(SCRIPTS_DIR, 'precompact-snapshot.js')], {
+    input: '{}',
+    encoding: 'utf8',
+    timeout: 8000,
+    env: { ...process.env, CLAUDE_PLUGIN_ROOT: PLUGIN_ROOT, CLAUDE_PROJECT_DIR: tmpNoFindings },
+  });
+  const ok = r.status === 0 && !r.stdout;
+  if (ok) { console.log('    ✓ exits 0 silently when no findings.json present'); passed++; }
+  else { console.error('    ✗ exits 0 silently when no findings.json present'); failed++; }
+}
+
+{
+  // findings.json with P0 and P1 items — should emit systemMessage
+  const tmpWithFindings = mkdtempSync(join(os.tmpdir(), 'pilot-pcs-findings-'));
+  mkdirSync(join(tmpWithFindings, '.claude', 'pilot', 'audit'), { recursive: true });
+  writeFileSync(
+    join(tmpWithFindings, '.claude', 'pilot', 'audit', 'findings.json'),
+    JSON.stringify([
+      { id: 'F-001', severity: 'P0', title: 'SQL injection risk' },
+      { id: 'F-002', severity: 'P1', title: 'Missing multitenancy filter' },
+    ])
+  );
+  const r = spawnSync('node', [join(SCRIPTS_DIR, 'precompact-snapshot.js')], {
+    input: '{}',
+    encoding: 'utf8',
+    timeout: 8000,
+    env: { ...process.env, CLAUDE_PLUGIN_ROOT: PLUGIN_ROOT, CLAUDE_PROJECT_DIR: tmpWithFindings },
+  });
+  const json = JSON.parse(r.stdout || '{}');
+  const ok = r.status === 0 && typeof json.systemMessage === 'string'
+    && json.systemMessage.includes('F-001') && json.systemMessage.includes('P0');
+  if (ok) { console.log('    ✓ emits systemMessage summary when findings.json has open items'); passed++; }
+  else { console.error('    ✗ emits systemMessage summary when findings.json has open items'); failed++; }
+}
+
+{
+  // Kill-switch off
+  const r = spawnSync('node', [join(SCRIPTS_DIR, 'precompact-snapshot.js')], {
+    input: '{}',
+    encoding: 'utf8',
+    timeout: 8000,
+    env: { ...process.env, CLAUDE_PLUGIN_ROOT: PLUGIN_ROOT,
+           CLAUDE_PLUGIN_OPTION_ENABLE_GOVERNANCE_HOOKS: 'false' },
+  });
+  const ok = r.status === 0 && !r.stdout;
+  if (ok) { console.log('    ✓ exits 0 silently when enable_governance_hooks=false'); passed++; }
+  else { console.error('    ✗ exits 0 silently when enable_governance_hooks=false'); failed++; }
+}
+
+// ── triage-hint tests ─────────────────────────────────────────────────────────
+
+console.log('\n  triage-hint');
+
+function postFail(toolName, toolError) {
+  return { hook_event_name: 'PostToolUseFailure', tool_name: toolName, tool_error: toolError };
+}
+
+{
+  const r = runHook('triage-hint.js', postFail('Bash', 'sh: node: command not found'));
+  const ctx = r.json?.hookSpecificOutput?.additionalContext;
+  const ok = r.exit === 0 && typeof ctx === 'string' && ctx.includes('PATH');
+  if (ok) { console.log('    ✓ emits PATH hint for Bash "command not found" failure'); passed++; }
+  else { console.error('    ✗ emits PATH hint for Bash "command not found" failure'); failed++; }
+}
+
+{
+  const r = runHook('triage-hint.js', postFail('Edit',
+    'old_string not found in file: the content was not found verbatim'));
+  const ctx = r.json?.hookSpecificOutput?.additionalContext;
+  const ok = r.exit === 0 && typeof ctx === 'string' && ctx.includes('old_string');
+  if (ok) { console.log('    ✓ emits old_string hint for Edit "not found" failure'); passed++; }
+  else { console.error('    ✗ emits old_string hint for Edit "not found" failure'); failed++; }
+}
+
+{
+  // Unknown error — no hint, but still exits 0
+  const r = runHook('triage-hint.js', postFail('Read', 'some obscure error we do not cover'));
+  const ok = r.exit === 0;
+  if (ok) { console.log('    ✓ exits 0 silently for unknown tool error (no matching hint)'); passed++; }
+  else { console.error('    ✗ exits 0 silently for unknown tool error (no matching hint)'); failed++; }
+}
+
+{
+  const r = runHook('triage-hint.js', postFail('Bash', 'error'),
+    { CLAUDE_PLUGIN_OPTION_ENABLE_GOVERNANCE_HOOKS: 'false' });
+  const ok = r.exit === 0 && !r.stdout;
+  if (ok) { console.log('    ✓ exits 0 silently when enable_governance_hooks=false'); passed++; }
+  else { console.error('    ✗ exits 0 silently when enable_governance_hooks=false'); failed++; }
+}
+
+// ── ci-setup tests ────────────────────────────────────────────────────────────
+
+console.log('\n  ci-setup');
+
+{
+  // Outside repo context — validate.mjs not found, exits 0 silently
+  const r = spawnSync('node', [join(SCRIPTS_DIR, 'ci-setup.js')], {
+    input: '{}',
+    encoding: 'utf8',
+    timeout: 40000,
+    env: { ...process.env, CLAUDE_PLUGIN_ROOT: os.tmpdir() },
+  });
+  const ok = r.status === 0 && !r.stdout;
+  if (ok) { console.log('    ✓ exits 0 silently when outside repo context (no validate.mjs)'); passed++; }
+  else { console.error('    ✗ exits 0 silently when outside repo context (no validate.mjs)'); failed++; }
+}
+
+{
+  // In-repo with mock validate.mjs (avoids recursive validate→test→validate loop).
+  // Create a temp repo skeleton: <tmp>/plugins/pilot-core/ and <tmp>/scripts/validate.mjs
+  const tmpMock = mkdtempSync(join(os.tmpdir(), 'pilot-cs-mock-'));
+  mkdirSync(join(tmpMock, 'plugins', 'pilot-core'), { recursive: true });
+  mkdirSync(join(tmpMock, 'scripts'), { recursive: true });
+  writeFileSync(join(tmpMock, 'scripts', 'validate.mjs'),
+    '#!/usr/bin/env node\nconsole.log("mock validator: all checks passed.");\nprocess.exit(0);\n');
+  const r = spawnSync('node', [join(SCRIPTS_DIR, 'ci-setup.js')], {
+    input: '{}',
+    encoding: 'utf8',
+    timeout: 8000,
+    env: { ...process.env, CLAUDE_PLUGIN_ROOT: join(tmpMock, 'plugins', 'pilot-core') },
+  });
+  const json = JSON.parse(r.stdout || '{}');
+  const ctx = json.hookSpecificOutput?.additionalContext;
+  const ok = r.status === 0 && typeof ctx === 'string' && ctx.includes('[pilot-core/ci-setup]');
+  if (ok) { console.log('    ✓ emits ci-setup additionalContext when validate.mjs is found'); passed++; }
+  else { console.error('    ✗ emits ci-setup additionalContext when validate.mjs is found'); failed++; }
+}
+
+{
+  const r = spawnSync('node', [join(SCRIPTS_DIR, 'ci-setup.js')], {
+    input: '{}',
+    encoding: 'utf8',
+    timeout: 8000,
+    env: { ...process.env, CLAUDE_PLUGIN_ROOT: os.tmpdir(),
+           CLAUDE_PLUGIN_OPTION_ENABLE_GOVERNANCE_HOOKS: 'false' },
+  });
+  const ok = r.status === 0 && !r.stdout;
+  if (ok) { console.log('    ✓ exits 0 silently when enable_governance_hooks=false'); passed++; }
+  else { console.error('    ✗ exits 0 silently when enable_governance_hooks=false'); failed++; }
+}
+
+// ── migration-verifier tests ──────────────────────────────────────────────────
+
+console.log('\n  migration-verifier');
+
+const SQL_SCRIPTS_DIR = join(ROOT, 'plugins/pilot-sql/hooks/scripts');
+const SQL_PLUGIN_ROOT = join(ROOT, 'plugins/pilot-sql');
+
+function runSqlHook(inputObj, extraEnv = {}) {
+  const r = spawnSync('node', [join(SQL_SCRIPTS_DIR, 'migration-verifier.js')], {
+    input: JSON.stringify(inputObj),
+    encoding: 'utf8',
+    timeout: 8000,
+    env: { ...process.env, CLAUDE_PLUGIN_ROOT: SQL_PLUGIN_ROOT, ...extraEnv },
+  });
+  let json = null;
+  try { json = JSON.parse(r.stdout || ''); } catch (_) {}
+  return { exit: r.status, json, stderr: r.stderr || '', stdout: r.stdout || '' };
+}
+
+check('passes non-migration .cs file (skips entirely)',
+  runSqlHook(pre('Write', '/p/Services/UserService.cs',
+    'public class UserService { }')),
+  false);
+
+check('passes clean migration (no destructive ops)',
+  runSqlHook(pre('Write', '/p/Migrations/20240101_AddUsers.cs',
+    'migrationBuilder.CreateTable("Users", t => { t.Column<int>("TenantId"); });')),
+  false);
+
+check('blocks DropColumn without approval annotation',
+  runSqlHook(pre('Write', '/p/Migrations/20240102_DropLegacy.cs',
+    'migrationBuilder.DropColumn("OldColumn", "Users");')),
+  true);
+
+check('passes DropColumn with pilot-sql approval annotation',
+  runSqlHook(pre('Write', '/p/Migrations/20240102_DropLegacy.cs',
+    '// pilot-sql: migration-safety approved\nmigrationBuilder.DropColumn("OldColumn", "Users");')),
+  false);
+
+checkWarn('warns on new table without tenant identifier (advisory)',
+  runSqlHook(pre('Write', '/p/Migrations/20240103_AddAuditLog.cs',
+    'migrationBuilder.CreateTable("AuditLog", t => { t.Column<int>("Id"); });')));
+
+check('passes new table that includes TenantId',
+  runSqlHook(pre('Write', '/p/Migrations/20240104_AddOrders.cs',
+    'migrationBuilder.CreateTable("Orders", t => { t.Column<int>("TenantId"); });')),
+  false);
+
+check('passes migration verifier when kill-switch is off',
+  runSqlHook(pre('Write', '/p/Migrations/20240102_Drop.cs',
+    'migrationBuilder.DropColumn("OldCol", "T");'),
+    { CLAUDE_PLUGIN_OPTION_ENABLE_MIGRATION_VERIFIER: 'false' }),
+  false);
+
 // ── Summary ───────────────────────────────────────────────────────────────────
 
 console.log(`\n  ${'─'.repeat(50)}`);

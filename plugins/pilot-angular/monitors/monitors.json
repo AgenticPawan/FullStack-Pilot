@@ -1,0 +1,8 @@
+[
+  {
+    "name": "ng-build-watch",
+    "command": "ng build --watch --configuration development 2>&1",
+    "description": "ng build --watch — Angular build errors streamed as session notifications",
+    "when": "on-skill-invoke:angular-testing"
+  }
+]
