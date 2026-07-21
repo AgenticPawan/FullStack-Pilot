@@ -98,6 +98,52 @@ builder.AddContainer("redis", "redis", "7.2.5");
 
 ---
 
+## Check D — Aspire vs Container Apps decision
+
+| Signal | Use Aspire | Use Azure Container Apps directly |
+|--------|-----------|----------------------------------|
+| Local dev orchestration needed | ✅ | ❌ no local experience |
+| Team owns the app code (not a third-party image) | ✅ | works for both |
+| Hosting on Azure Container Apps (ACA) | ✅ (`azd` provisions from Aspire manifest) | ✅ |
+| Hosting on AKS / bare VMs | Aspire for local; Helm/Bicep for prod | ✅ |
+| Want Aspire dashboard in production | ⚠️ secure carefully | ❌ use Azure Monitor |
+
+**Findings**
+
+| ID | Severity | What it checks |
+|----|----------|----------------|
+| ASP-006 | P2 | Project uses Aspire for local dev but deploys to AKS with no manifest-to-Helm bridge — Aspire manifest is unused in production |
+| ASP-007 | P2 | Aspire dashboard exposed in non-development without HTTPS and auth (re-enforces ASP-004 for ACA deployments) |
+
+**Cross-reference:** `azure-container-apps` for ACA-side governance.
+
+---
+
+## Check E — Local/Azure resource parity
+
+Local Aspire resources must correspond to Azure-hosted equivalents so `azd provision`
+and `azd deploy` produce a runnable environment.
+
+**Parity rules:**
+- Every `builder.AddSqlServer(...)` in AppHost must have a corresponding SQL Server
+  flexible server or Azure SQL resource in the Bicep templates (or be declared as an
+  `existingResource` in `main.bicep`).
+- Every `builder.AddRedis(...)` must correspond to an Azure Cache for Redis resource.
+- Every `builder.AddAzureServiceBus(...)` / `builder.AddAzureEventHubs(...)` must exist
+  in Bicep with the same queue/topic names used in `WithReference`.
+- Environment variables injected by `WithReference` in Aspire must match the key names
+  read in `appsettings.json` / `Program.cs` in every target service — drift here silently
+  breaks `azd up` without a compile error.
+
+**Findings**
+
+| ID | Severity | What it checks |
+|----|----------|----------------|
+| ASP-008 | P1 | Aspire resource declared in AppHost with no corresponding Bicep resource and no `existingResource` annotation |
+| ASP-009 | P1 | `WithReference` connection variable name in AppHost does not match the `ConnectionStrings__<name>` key in `appsettings.json` of the consuming project |
+
+---
+
 ## Aspire resource naming conventions
 
 | Resource type | Pattern | Example |

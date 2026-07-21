@@ -31,13 +31,36 @@ function main() {
     process.exit(0);
   }
 
-  const ageDays = (Date.now() - stat.mtimeMs) / (1000 * 60 * 60 * 24);
-  if (ageDays >= STALE_DAYS) {
+  const profileMtime = stat.mtimeMs;
+  const ageDays = (Date.now() - profileMtime) / (1000 * 60 * 60 * 24);
+
+  // Check 1 — age-based staleness
+  const stale = ageDays >= STALE_DAYS;
+
+  // Check 2 — dependency manifest newer than profile.
+  // Only reads filenames in the project root (no recursion) — bounded O(readdir).
+  let newerManifest = null;
+  try {
+    const entries = fs.readdirSync(cwd, { withFileTypes: true });
+    for (const e of entries) {
+      if (!e.isFile()) continue;
+      if (e.name !== 'package.json' && !e.name.endsWith('.csproj')) continue;
+      try {
+        const mtime = fs.statSync(path.join(cwd, e.name)).mtimeMs;
+        if (mtime > profileMtime) { newerManifest = e.name; break; }
+      } catch (_) { /* ignore */ }
+    }
+  } catch (_) { /* ignore — readdir failure is non-fatal */ }
+
+  if (stale || newerManifest) {
+    const reasons = [];
+    if (stale) reasons.push(`stack-profile.json is ${Math.floor(ageDays)} day(s) old`);
+    if (newerManifest) reasons.push(`${newerManifest} was modified after the last scan`);
     process.stdout.write(JSON.stringify({
       systemMessage:
-        `[pilot-core] stack-profile.json is ${Math.floor(ageDays)} day(s) old. ` +
-        'Run /fsp-init to refresh stack detection — new frameworks or packages added ' +
-        'since the last scan may not appear in reviewer findings.',
+        `[pilot-core] Stack profile may be outdated (${reasons.join('; ')}). ` +
+        'Run /fsp-init to refresh stack detection — new frameworks or packages ' +
+        'may not appear in reviewer findings.',
     }));
   }
 }

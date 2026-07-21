@@ -71,12 +71,19 @@ Non-negotiable house rules that apply to every edit:
    an interceptor with the `provideHttpClient` wiring; a route guard with the route config.
 3. **Apply minimal targeted edits.** Fix the finding; do not refactor surrounding code,
    migrate unrelated patterns, or reformat untouched lines. Match the file's existing style.
-4. **Verify**: run `npx tsc --noEmit` (or `ng build` if the project has non-trivial template
-   type-checking). If lint is configured, run `ng lint` scoped to the touched project.
-   Iterate until clean. Run affected specs if a test runner is configured. For a
-   visual/rendering fix, if the app is running and the bundled Playwright MCP tools are
-   available, do a quick live render check (`browser_snapshot`/`browser_console_messages`)
-   rather than asserting the fix looks right from source alone.
+4. **Verify** (verification contract — non-negotiable):
+   - Run `npx tsc --noEmit` (or `ng build` for template type-checking). If lint is
+     configured, run `ng lint` scoped to the touched project. Iterate until clean.
+   - Run the spec suite for the touched area: `ng test --include=<spec-pattern> --watch=false`.
+     Do NOT skip specs because they "seem unrelated" — a build-green but test-red handback
+     is a defect.
+   - **Pre-existing red**: if specs were already failing before your first edit, document
+     the pre-existing failures and report them upward — not yours to fix, but hand back
+     with no net increase in failures.
+   - **Implementor-caused red**: any new spec failures introduced by your edits are your
+     own defect; fix them before handback.
+   - For a visual/rendering fix, if the app is running and the bundled Playwright MCP tools
+     are available, do a quick live render check (`browser_snapshot`/`browser_console_messages`).
 5. **Summarize** for re-review:
 
 ```
@@ -84,7 +91,7 @@ Non-negotiable house rules that apply to every edit:
 
 Finding(s) addressed: <rule/skill IDs>
 Files changed: <paths>
-Verification: tsc/ng build <result>; lint <result>; tests <result or "none in scope">
+Verification: tsc/ng build <result>; lint <result>; ng test <pass/fail — N passed, M failed>
 Ready for re-review by @angular-reviewer.
 ```
 

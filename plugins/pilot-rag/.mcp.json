@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "pilot-rag-ask": {
+      "type": "http",
+      "url": "http://localhost:5200/mcp"
+    }
+  }
+}

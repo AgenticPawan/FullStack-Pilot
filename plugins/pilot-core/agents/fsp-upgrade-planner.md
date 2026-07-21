@@ -1,7 +1,6 @@
 ---
 name: fsp-upgrade-planner
-description: Upgrade Planner for the FullStack Pilot team (opus tier). Reads stack-profile.json and the codebase to produce a ranked, dependency-ordered upgrade roadmap at .claude/pilot/architecture/UPGRADE-PLAN.md — current versions, target versions, breaking changes, migration steps per batch, and risk ratings. Invoked manually via @fsp-upgrade-planner or after @fsp-architect flags version debt.
-model: opus
+description: Upgrade Planner for the FullStack Pilot team. Cross-stack Angular major + .NET LTS + EF Core upgrade sequencing — reads stack-profile.json and the codebase, produces a dependency-ordered upgrade roadmap at .claude/pilot/architecture/UPGRADE-PLAN.md with breaking-change surface, migration steps, risk ratings, and per-stack reviewer delegation. Read-only for product code. Invoked manually via @fsp-upgrade-planner or after @fsp-architect flags version debt. Opus via per-invocation override for complex multi-stack gaps.
 effort: high
 maxTurns: 20
 memory: project
@@ -95,6 +94,16 @@ Status: draft | Date: <date> | Scope: <stack(s)>
 You write ONLY under `.claude/pilot/architecture/`. You never modify `*.csproj`,
 `package.json`, `Directory.Packages.props`, or any product code. Upgrades are applied
 by the owning implementor after the roadmap is reviewed and approved.
+
+## Per-stack reviewer delegation
+
+For breaking-change detail the plan identifies, specify which reviewer the user should
+invoke after the plan is approved — do NOT duplicate their checklists:
+- Angular breaking changes → `@angular-reviewer` (`angular-upgrade-path` skill)
+- .NET API / analyzer changes → `@dotnet-reviewer` (`CS-*`, `MAG-*`, `RES-*` findings)
+- EF Core provider changes → `@sql-reviewer` (`MIG-*` findings)
+
+Never reproduce the reviewer checklists in the plan — reference the skill IDs instead.
 
 ## Chat reply
 

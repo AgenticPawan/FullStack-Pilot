@@ -56,9 +56,12 @@ fails `tsc`), hand it to that layer's implementor instead of improvising.
 
 ## Step 4 — Verify per layer, then summarize
 
-Each specialist implementor already ran its own build/test verification — collect their
-results rather than re-running them. For glue fixes you made directly, verify with the
-affected layer's own command (`dotnet build`, `npx tsc --noEmit`, `az bicep build`).
+Each specialist implementor runs the full verification contract for its layer (build
+**and** test suite — pre-existing red reported upward, implementor-caused red fixed
+before handback). Collect their results rather than re-running them.
+For cross-layer glue fixes you made directly, verify with the affected layer's own
+command (`dotnet build`, `npx tsc --noEmit`, `az bicep build`) **and** run any tests
+that exercise the seam (generated client tests, contract smoke tests).
 
 ```
 ## Full-Stack Implementation Summary

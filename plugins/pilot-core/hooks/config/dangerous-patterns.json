@@ -64,6 +64,42 @@
       "fileExtensions": [".bicep"],
       "pattern": "\\.listKeys\\(\\)",
       "message": "Use managed identity instead of account keys. Remove listKeys() from outputs. (azure-security-baseline ASB-IM-1)"
+    },
+    {
+      "id": "no-sync-over-async",
+      "name": "DOTNET_SYNC_OVER_ASYNC",
+      "action": "warn",
+      "description": "Blocking on async via .Result or .GetAwaiter().GetResult() can deadlock ASP.NET Core",
+      "fileExtensions": [".cs"],
+      "pattern": "\\.Result\\b|\\.GetAwaiter\\(\\)\\.GetResult\\(\\)",
+      "message": "Blocking on async (.Result / .GetAwaiter().GetResult()) deadlocks ASP.NET Core's synchronization context. Propagate async all the way up. See dotnet-no-sync-over-async. Advisory — not blocked."
+    },
+    {
+      "id": "no-select-star",
+      "name": "SQL_SELECT_STAR",
+      "action": "warn",
+      "description": "SELECT * in application SQL strings over-fetches columns and breaks covering-index optimisation",
+      "fileExtensions": [".cs"],
+      "pattern": "SELECT\\s+\\*\\s+FROM",
+      "message": "SELECT * couples the app to schema changes and fetches unused columns. Project to specific columns or use EF Core LINQ. See sql-no-select-star. Advisory — not blocked."
+    },
+    {
+      "id": "no-ngmodule-gte19",
+      "name": "ANGULAR_NGMODULE_IN_STANDALONE_PROJECT",
+      "action": "warn",
+      "description": "NgModule declarations conflict with Angular 19+ standalone-only component conventions",
+      "fileExtensions": [".ts"],
+      "pattern": "@NgModule\\s*\\(",
+      "message": "NgModule detected. Angular 19+ projects should use standalone components only. Run `ng generate @angular/core:standalone` to migrate. See angular-standalone-only-gte19. Advisory — not blocked."
+    },
+    {
+      "id": "no-floating-image-tag",
+      "name": "AZURE_FLOATING_IMAGE_TAG",
+      "action": "deny",
+      "description": "Container image reference uses :latest — supply-chain risk (dependency-supply-chain)",
+      "fileExtensions": [".bicep", ".yml", ".yaml", ".json"],
+      "pattern": ":latest\\b",
+      "message": "Floating :latest image tag detected. Pin to an explicit version tag or digest to prevent supply-chain attacks. See azure-no-floating-image-tags, dependency-supply-chain. (azure-security-baseline)"
     }
   ]
 }

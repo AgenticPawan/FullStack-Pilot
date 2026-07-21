@@ -26,6 +26,9 @@ when_to_use: Invoke via /fsp-build only. Runs when the user asks to build a feat
 Extract from the invocation:
 - the build target: free-text feature | path to an existing spec | `GAP-<n>` id | `--resume <feature-slug>`
 - `--yes` (skip the soft plan gate), `--max-files <n>` (default 25)
+- `--tdd` (test-first mode: per work item, fsp-qa writes failing tests for that item's
+  ACs BEFORE the implementor starts; implementor must make them green as part of its
+  verification contract; default off)
 
 **Resolve the target:**
 - Free text → feature-slug = kebab-case short name; Step 1 runs.
@@ -38,6 +41,12 @@ Extract from the invocation:
 **Preconditions (fresh runs):**
 - `.claude/pilot/stack-profile.json` exists, else stop: "run /fsp-init first".
 - `git status --porcelain` is clean, else stop and ask (never stash silently).
+  **Exception**: when stack implementors are invoked with `isolation: "worktree"` (the
+  default for /fsp-build pipeline invocations), each implementor works in its own isolated
+  git worktree. The main working tree is NOT required to be clean in that case — the
+  worktree is created clean from the current HEAD. `--resume` semantics are preserved:
+  completed work items record the worktree merge commit SHA in STATE.json, and the pipeline
+  merges each completed worktree back to the build branch before starting the next item.
 - **Foundation check**: read `.claude/pilot/foundation/STATUS.md` if present.
   - Present, every Required module `done` or `skipped-by-user-choice` → proceed.
   - Absent → judge greenfield from the stack profile's own evidence (e.g. a dotnet project
@@ -62,9 +71,9 @@ Create `.claude/pilot/builds/<feature-slug>/` and initialize `STATE.json`:
   "feature": "<slug>", "target": "<raw invocation target>",
   "startBranch": "<branch>", "buildBranch": null,
   "maxFiles": 25, "yes": false,
-  "steps": { "specify": "pending", "scout": "pending", "plan": "pending",
-             "gate": "pending", "implement": "pending", "review": "pending",
-             "qa": "pending", "report": "pending" },
+  "steps": { "specify": "pending", "scout": "pending", "threatModel": "pending",
+             "plan": "pending", "gate": "pending", "implement": "pending",
+             "review": "pending", "qa": "pending", "report": "pending" },
   "workItems": {}, "startedAt": "<iso>", "updatedAt": "<iso>"
 }
 ```
@@ -87,6 +96,16 @@ From the spec's data/permission implications, determine the affected stack slice
 
 If a scout reports its budget was insufficient, relay its request and stop (RULE 7).
 Record brief paths; mark `scout: done`.
+
+## Step 2.5 — Threat model gate (optional, fsp-threat-modeler)
+
+Triggered when the spec contains external integrations, auth surface changes, public-facing
+API additions, or `--threat-model` was passed. Invoke `fsp-threat-modeler --gate`:
+- P0 threats OPEN → pipeline stops; print the P0 list; require CONFIRM to continue.
+- P1–P3 threats OPEN → advisory; log in STATE.json under `threatModel.advisories`; continue.
+- Record the threat-model path in STATE.json under `threatModel.path`.
+
+Skip (mark `"skipped"`) when none of the above triggers apply.
 
 ## Step 3 — Plan (fsp-architect, opus)
 
@@ -122,12 +141,24 @@ Mark `gate: done` with the decision recorded.
 Create the branch: `git checkout -b pilot/build-<feature-slug>` (record in STATE.json).
 
 For each work item in dependency order:
-1. Invoke the owning `@<stack>-implementor` agent, passing paths to: PLAN.md (its
+1. **`--tdd` pre-step (when `--tdd` is active)**: before invoking the implementor,
+   invoke `fsp-qa` scoped to **only this work item's ACs**. It writes failing tests to
+   the allowed test paths and runs them — they must be red. If fsp-qa cannot make them
+   red (AC is not testable in isolation), document and skip TDD for that AC only.
+   Commit the failing tests (`test(<area>): TDD stubs for WI-n`) before the implementor
+   starts.
+2. Invoke the owning `@<stack>-implementor` agent, passing paths to: PLAN.md (its
    work item), the spec, and the relevant scout brief. Per-invocation model override:
-   `opus` if `Complexity: high`, else `sonnet` (RULE 4).
-2. The implementor edits product code and reports the files it changed.
-3. Run the work item's verification command. Failure → one fix round with the same
-   implementor; second failure → mark the item `failed`, write STATE.json, stop (RULE 7).
+   `opus` if `Complexity: high`, else `sonnet` (RULE 4). Invoked with
+   `isolation: "worktree"` — the implementor works in an isolated git worktree branched
+   from the current build-branch HEAD; its edits are merged back on success.
+3. The implementor edits product code, runs the impacted test suite per the verification
+   contract (build + tests; pre-existing red reported upward; implementor-caused red fixed
+   before handback), and reports the files it changed plus the test result.
+3. Confirm the verification contract was met: the implementor's summary must include a
+   test-run result (pass/fail/count), not just a build result. If absent, ask before
+   continuing. Verification failure → one fix round with the same implementor; second
+   failure → mark the item `failed`, write STATE.json, stop (RULE 7).
 4. Commit the verified item on the build branch (`feat(<area>): <WI-n title>`,
    conventional format) — per-item commits keep every later step's diff isolated
    and give `--resume` a clean boundary.

@@ -25,7 +25,7 @@ Each plugin directory MUST have:
 
     <plugin>/
       .claude-plugin/plugin.json        ← manifest: name, version, description, author
-      commands/fsp-<verb>.md            ← commands (when added)
+      commands/fsp-<verb>.md            ← commands (legacy — prefer SKILL.md with name: fsp-<verb>)
       skills/<skill-name>/SKILL.md      ← skills (when added)
       agents/<name>.md                  ← agents (when added)
       hooks/hooks.json                  ← hooks (when added)
@@ -34,6 +34,23 @@ Each plugin directory MUST have:
 
 - Command files MUST be named `fsp-<verb>.md` (invoked as `/fsp-<verb>`).
   The `fsp-` prefix brands every FullStack Pilot command; CI enforces it.
+- **Legacy pattern:** `commands/fsp-<verb>.md` files are still supported but new commands
+  should be authored as a `SKILL.md` with `name: fsp-<verb>` in frontmatter — the Skill
+  tool resolves both forms, and SKILL.md carries richer routing metadata.
+
+## Plugin manifest conventions
+
+- **`userConfig`**: declare user-overridable options in `plugin.json` as a `userConfig` object
+  (`key: { title, type, default, description }`). Hook scripts read the live value via
+  `process.env.CLAUDE_PLUGIN_OPTION_<KEY_UPPERCASE>` (boolean options arrive as `'true'`/`'false'`
+  strings). Prefer `userConfig` kill-switches over hard-coded behaviour for anything ops teams may
+  need to turn off per-project.
+- **`dependencies`**: every stack plugin MUST declare `"dependencies": [{ "name": "pilot-core" }]` —
+  CI enforces this. `pilot-core` is the base and is exempt. `pilot-rag` also declares this dependency
+  so its hooks and skills load only when pilot-core's security floor is present.
+- **`defaultEnabled`**: `pilot-rag` MUST declare `"defaultEnabled": false` — the RAG scaffold is
+  opt-in and requires `/fsp-rag-init` to generate the project before it is usable. CI enforces this.
+  Stack plugins omit `defaultEnabled` (defaults to `true`).
 
 ## Agent conventions
 
@@ -42,12 +59,45 @@ Each plugin directory MUST have:
   (they diagnose and report — never modify files). `*-implementor` agents MUST NOT.
 - Every agent MUST have `name` and `description` frontmatter.
 
+### Implementor verification contract (CI-enforced)
+
+Every `*-implementor` agent body MUST describe the four-step verification contract:
+
+1. **Build** — run the stack's build command (`dotnet build` / `npx tsc --noEmit` / `az bicep lint`).
+2. **Test** — run the full test suite scoped to the work item's namespace or spec pattern.
+3. **Pre-existing red** — red before your changes? Document it and report upward; do NOT fix it unless
+   the task explicitly covers it.
+4. **Implementor-caused red** — red only after your changes? Fix it before handing back.
+
+Summary template: `Verification: <build result>; <test pass/fail — N passed, M failed>`
+
+Agents that omit this contract fail CI (`validate.mjs` checks for the phrase "pre-existing red").
+
+### Worktree isolation
+
+The `/fsp-build` pipeline invokes implementors with `isolation: "worktree"` so each agent works
+on an isolated git worktree, preventing mid-pipeline conflicts between parallel stack agents.
+Implementors MUST NOT assume they are in the main working tree.
+
+### LSP-aware review
+
+Reviewer agents may invoke the LSP tool (when available) to resolve types and cross-file references
+without reading additional source files. Prefer LSP lookups over speculative extra reads when
+a type's definition is ambiguous from context — it stays within the read budget.
+
+### `agent`-type hooks (pending GA)
+
+The Claude Code plugin schema reserves an `agent`-type hook for routing to an agent instead of
+a shell script. Until it reaches GA, implement semantic analysis as an enhanced `command`-type
+hook script (bounded `.cs` file reads, pattern matching) and note the intent in the commit message.
+Do not ship `type: "agent"` hook entries — the validator will flag unknown hook types.
+
 ## Model matrix (CI-enforced)
 
 | Tier | Model | Agents |
 |---|---|---|
 | T1 read/understand | `haiku` | `fsp-scout` |
-| T2 analyze/review | `sonnet` (or omit) | `*-reviewer` (effort: high — review depth is the product), `*-support`, `fsp-analyst`, `fsp-qa` |
+| T2 analyze/review | `sonnet` (or omit) | `*-reviewer` (effort: high — review depth is the product), `*-support`, `fsp-analyst`, `fsp-qa`, `fsp-debugger` (default; `opus` per-invocation for deep stack traces) |
 | T3 plan/complex implement | `opus` | `fsp-architect`; implementors via per-invocation override |
 
 - `*-implementor` agents MUST NOT hardcode a `model` — orchestrating commands pass
@@ -138,7 +188,7 @@ Follow [Conventional Commits](https://www.conventionalcommits.org/):
 
 One plugin or concern per commit. Reference issue numbers where applicable.
 
-## What's New (2026-07-19 — orchestration layer)
+## What's New (2026-07-21 — gap-closure & developer-loop upgrade)
 
 Added in this session to close the gap with reference repos on automation and intelligence:
 
@@ -157,6 +207,16 @@ Added in this session to close the gap with reference repos on automation and in
 **Three new skills**: `session-handoff` (session continuity via `.claude/handoff.md`), `project-instincts` (three-tier multi-stack learning system), `quality-gate` (7-phase pre-PR verification), `stack-health` (A–F graded health report).
 
 **Three new commands**: `/fsp-checkpoint` (commit + handoff), `/fsp-verify` (quality gate), `/fsp-health` (health report).
+
+**Workstream 1 (hooks)**: `session-refresh.js` extended with manifest-mtime check (re-runs /fsp-init when package.json/.csproj is newer than stack-profile); `migration-verifier.js` extended with `HasQueryFilter` advisory (Rule 3) and `enable_query_filter_check` kill-switch. +6 test fixtures (61 total). Bumped pilot-core→0.33.0, pilot-sql→0.19.0.
+
+**Workstream 2 (developer loop)**: All 6 implementor agents updated with the four-step verification contract (build + test suite; pre-existing/implementor-caused red distinction; summary template). New `fsp-debugger` agent (T2/sonnet, Read budget 15, prove-green gate, traceability row). `fsp-upgrade-planner` extended with per-stack reviewer delegation section. `fsp-threat-modeler` extended with findings.json-compatible output and `--gate` mode (P0 OPEN blocks; P1-P3 advisory). New `db-migration-planner` agent (sonnet, read-only, expand/contract planning). `fsp-build-orchestration` skill updated: `--tdd` flag, `--threat-model` flag, Step 2.5 threat-model gate, worktree isolation on implementors. `fsp-qa` gains skills frontmatter. Bumped all 6 plugins (pilot-core→0.34.0 … pilot-rag→0.6.0).
+
+**Workstream 3 (skills)**: `dotnet-aspire-governance` + Checks D and E (Aspire vs ACA decision, local/Azure resource parity). `sql-performance-review` + Check F (Query Store — QS-001..QS-004). `rag-security` + Domain 1b (prompt injection beyond RAG content). New `dotnet-yarp-gateway` skill (YARP-001..YARP-008, 5 checks). New `fsp-security-scanning-dast` skill (DAST-001..DAST-006, ZAP baseline, findings.json bridge). Bumped pilot-core→0.35.0 and four plugins.
+
+**Workstream 4 (rules-catalog + enforcement)**: 6 new rules-catalog entries: `dotnet-no-sync-over-async`, `dotnet-cancellation-token-propagation`, `sql-no-select-star`, `angular-standalone-only-gte19`, `always-idempotent-consumers`, `azure-no-floating-image-tags`. 4 wired into `dangerous-patterns.json`: DOTNET_SYNC_OVER_ASYNC (warn), SQL_SELECT_STAR (warn), ANGULAR_NGMODULE_IN_STANDALONE_PROJECT (warn), AZURE_FLOATING_IMAGE_TAG (**deny** — supply-chain gate). +7 test fixtures (68 total). Bumped pilot-core→0.36.0.
+
+**Workstream 5 (MCP)**: `plugins/pilot-rag/.mcp.json` registers `pilot-rag-ask` HTTP MCP server at `http://localhost:5200/mcp` (auto-loaded when plugin is enabled; no-op until `/fsp-rag-init` scaffold is running). `rag-retrieval` SKILL.md extended with MCP binding section (`ModelContextProtocol.AspNetCore`, `McpServerTool` registration, scoped tool reference `mcp__plugin_pilot-rag_pilot-rag-ask__ask`). Fixed pre-existing `utimesSync` test flake. Bumped pilot-rag→0.8.0.
 
 ---
 

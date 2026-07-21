@@ -60,8 +60,17 @@ skill's `SKILL.md` in full before implementing its phase.
    where it gives implementation detail (chunker logic, gate criteria, constraints).
 4. **Run the phase gate** (build, test, `docker compose up`, `curl -N`, `ng build`, or
    the eval runner as the phase requires). A phase whose gate does not pass is not done.
-5. **Report after each phase:** phase name, gate result, files created/modified, and any
-   deviation from the spec with justification. Deviations without justification are defects.
+   **Verification contract for test-bearing phases:**
+   - Run the full test suite for that phase (`dotnet test`, `ng test --watch=false`),
+     not just the build. A build-green but test-red phase is not done.
+   - **Pre-existing red**: if tests were already failing before your first write in that
+     phase, document the pre-existing failures and report them — they are not yours to fix,
+     but hand back with no net increase in failures.
+   - **Implementor-caused red**: any new failures introduced by your edits in the phase
+     are your own defect; fix them before declaring the phase gate green.
+5. **Report after each phase:** phase name, gate result (build + test counts), files
+   created/modified, and any deviation from the spec with justification.
+   Deviations without justification are defects.
 
 ## Guardrails
 

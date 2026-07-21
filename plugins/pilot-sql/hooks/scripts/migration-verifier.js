@@ -13,6 +13,38 @@
 const fs   = require('node:fs');
 const path = require('node:path');
 
+// Scan up to MAX_CTX_FILES .cs files in projectDir and projectDir/src for
+// DbContext subclasses, then check whether any contain HasQueryFilter.
+// Returns true (found), false (DbContext found, no HasQueryFilter), or null (no DbContext found).
+const MAX_CTX_FILES = 10;
+function dbContextHasQueryFilter(projectDir) {
+  const dirsToSearch = [projectDir, path.join(projectDir, 'src')];
+  const candidates = [];
+  for (const dir of dirsToSearch) {
+    try {
+      const entries = fs.readdirSync(dir, { withFileTypes: true });
+      for (const e of entries) {
+        if (e.isFile() && e.name.endsWith('.cs')) {
+          candidates.push(path.join(dir, e.name));
+          if (candidates.length >= MAX_CTX_FILES) break;
+        }
+      }
+    } catch (_) { /* dir may not exist */ }
+    if (candidates.length >= MAX_CTX_FILES) break;
+  }
+
+  let foundDbContext = false;
+  for (const f of candidates) {
+    try {
+      const src = fs.readFileSync(f, 'utf8');
+      if (!/DbContext/.test(src)) continue;
+      foundDbContext = true;
+      if (/HasQueryFilter/.test(src)) return true;
+    } catch (_) { /* unreadable file — skip */ }
+  }
+  return foundDbContext ? false : null; // null = no DbContext found, skip advisory
+}
+
 function isMigrationFile(filePath) {
   return /[/\\]Migrations[/\\][^/\\]+\.cs$/i.test(filePath);
 }
@@ -92,6 +124,38 @@ function main() {
         'table or an infrastructure/lookup table.',
     }));
     process.exit(0);
+  }
+
+  // ── Rule 3 (WARN): HasQueryFilter coverage check ─────────────────────────────
+  // When a new CreateTable migration is written, scan up to MAX_CTX_FILES source
+  // files (project root + src/) for DbContext subclasses. If none contain
+  // HasQueryFilter, emit an advisory so developers add the global tenant/soft-delete
+  // filter before the new entity can be queried without it.
+  //
+  // Cost: O(readdir × 2 dirs + read × MAX_CTX_FILES). No AI invocation.
+  // Kill-switch: CLAUDE_PLUGIN_OPTION_ENABLE_QUERY_FILTER_CHECK=false
+  if (CREATE_TABLE_RE.test(content)
+      && process.env.CLAUDE_PLUGIN_OPTION_ENABLE_QUERY_FILTER_CHECK !== 'false') {
+    const projectDir = process.env.CLAUDE_PROJECT_DIR || payload.cwd || process.cwd();
+    const hasQueryFilter = dbContextHasQueryFilter(projectDir);
+    if (hasQueryFilter === false) {
+      process.stdout.write(JSON.stringify({
+        hookSpecificOutput: {
+          hookEventName: 'PreToolUse',
+          permissionDecision: 'defer',
+          permissionDecisionReason:
+            '[pilot-sql/migration-verifier] Advisory — no HasQueryFilter detected in DbContext. Not blocked.',
+        },
+        systemMessage:
+          '[pilot-sql/migration-verifier] No HasQueryFilter call found in any DbContext ' +
+          'scanned (up to 10 files in project root and src/). For multi-tenant and soft-delete ' +
+          'entities the global query filter prevents accidental cross-tenant reads and leaks ' +
+          'soft-deleted rows. Add modelBuilder.Entity<T>().HasQueryFilter(...) in OnModelCreating. ' +
+          'See sql-multitenancy (MT-004) and dotnet-soft-delete. Advisory — not blocked. ' +
+          'Set enable_query_filter_check=false in pilot-sql userConfig to suppress.',
+      }));
+      process.exit(0);
+    }
   }
 
   process.exit(0);

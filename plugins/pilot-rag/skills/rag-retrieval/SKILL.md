@@ -64,12 +64,69 @@ Via the `IEmbeddingGenerator` from the provider factory.
 
 If the gate cannot pass, **stop and report why** — do not proceed to Phase 5.
 
+## MCP binding (Phase 4 — alongside the REST endpoint)
+
+The scaffold exposes the `/ask` logic as a plugin-scoped MCP server so Claude
+agents can query the running RAG index directly without shell commands.
+
+### Required NuGet package
+
+```xml
+<PackageReference Include="ModelContextProtocol.AspNetCore" Version="0.3.*" />
+```
+
+### Endpoint registration (Program.cs — after REST routes)
+
+```csharp
+// Exposes the MCP protocol at /mcp — consumed by plugins/pilot-rag/.mcp.json
+app.MapMcp("/mcp");
+```
+
+### MCP tool registration (`IRagMcpService` in `RagPilot.Api`)
+
+Register one tool named `ask` — same contract as `POST /ask`:
+
+```csharp
+[McpServerToolType]
+public static class RagMcpTools
+{
+    [McpServerTool, Description("Query the indexed codebase. Returns an answer with source citations.")]
+    public static async Task<string> Ask(
+        [FromServices] IRagQueryService rag,
+        [Description("The question to answer from the indexed codebase.")] string question,
+        [Description("Maximum chunks to retrieve (default 8).")] int topK = 8,
+        CancellationToken ct = default)
+    {
+        var result = await rag.QueryAsync(question, topK, ct);
+        return result.Answer + "\n\nSources:\n" + string.Join('\n',
+            result.Sources.Select(s => $"- {s.FilePath} ({s.Score:F2})"));
+    }
+}
+```
+
+### Scoped tool reference in agents
+
+When the pilot-rag plugin is enabled and the scaffold is running, agents call:
+
+```
+mcp__plugin_pilot-rag_pilot-rag-ask__ask
+```
+
+Prefer this over `Bash` curl calls — it is typed, cancellable, and routes through
+the same score floor + not-found guard as the REST endpoint.
+
+The MCP server starts with the app (`dotnet run` in `RagPilot.Api`) on port 5200.
+The binding in `plugins/pilot-rag/.mcp.json` is auto-loaded when the plugin is
+active. It is a no-op until the scaffold is running.
+
 ## Non-negotiables carried through
 
 - **Question-answering only.** No tool calling, no agents, no write actions in
   the RAG loop. If tempted to add a feature not specified here, don't.
 - The retrieval/prompt code stays vendor-free — only the composition root names
   a provider (see `rag-provider-abstraction`).
+- The MCP `ask` tool must go through the same `IRagQueryService` as the REST
+  endpoint — no parallel retrieval path that bypasses the score floor or guard.
 
 ## Read budget
 
