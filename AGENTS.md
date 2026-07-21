@@ -36,6 +36,16 @@
 | `@fullstack-implementor` | Cross-stack fix orchestrator | inherits |
 | `@fullstack-support` | Production incident triage | sonnet |
 
+### Persona Agents (pilot-core)
+
+Optimised for a specific enterprise role. Each has different permissions and output formats.
+
+| Agent | Persona | Model | Write Scope |
+|-------|---------|-------|-------------|
+| `@fsp-feature-builder` | Fullstack Developer | inherits (sonnet/opus per complexity) | All layers — scaffold + implement a full vertical slice |
+| `@fsp-incident-responder` | Production Support Engineer | sonnet | `.claude/pilot/` + one local fix branch only. **Never deploys or pushes.** |
+| `@fsp-tpo-intake` | Technical Product Owner | sonnet | `.claude/specs/` and `.claude/pilot/specs/` only. Never writes code. |
+
 ---
 
 ## Routing Table
@@ -47,7 +57,9 @@ Match user intent to the first agent that fits. When multiple match, the first r
 | User Intent Pattern | Primary Agent | Support Agents |
 |---|---|---|
 | "what should we build", "spec this feature", "requirements" | `@fsp-analyst` | — |
+| "write a spec", "acceptance criteria", "user story", "TPO", "product owner" | `@fsp-tpo-intake` | `@fsp-analyst` (if formal pipeline spec needed) |
 | "plan this", "architecture for", "how should we structure" | `@fsp-architect` | `@fsp-analyst` |
+| "build feature", "scaffold feature", "new feature", "vertical slice" | `@fsp-feature-builder` | stack specialists |
 | "scaffold", "generate the feature end-to-end", "implement the plan" | `@fullstack-implementor` | stack specialists |
 | "build pipeline", "/fsp-build" | pipeline (`/fsp-build`) | all specialists |
 
@@ -75,11 +87,17 @@ Match user intent to the first agent that fits. When multiple match, the first r
 
 | Symptom | Route to |
 |---|---|
+| Engineer has error artifacts (paste, stack trace, alert) and needs root cause + fix branch | `@fsp-incident-responder` (persona-specific, full workflow) |
 | No layer identified yet, or "the app is broken" | `@fullstack-support` (triage first) |
 | Browser console error, NG0xxx, blank UI, wrong render | `@angular-support` |
 | HTTP 4xx/5xx, exception stack trace, API wrong response | `@dotnet-support` |
 | Slow query, deadlock, failed migration, missing rows | `@sql-support` |
 | Deployment failure, unreachable resource, RBAC/Key Vault denial | `@infra-support` |
+
+> **`@fsp-incident-responder` vs `@fullstack-support`:** Use `@fsp-incident-responder` when the
+> engineer is in active incident response mode and needs a root-cause analysis, a proposed fix
+> branch, a rollback plan, and a shift-handoff note in a single workflow. Use `@fullstack-support`
+> for quick layer-classification triage when you already know it will route to a single specialist.
 
 ### Meta Workflows
 
@@ -191,9 +209,38 @@ These apply to every agent without exception:
 
 ---
 
+## Persona Agent Priority
+
+When multiple agents could match an intent, resolve as follows:
+
+| Priority | Rule |
+|----------|------|
+| 1 | `@fsp-incident-responder` wins for any P0/P1 incident or active outage — do not route to specialists first |
+| 2 | `@fsp-tpo-intake` wins for "spec this", "acceptance criteria", "user story" before any feature build starts |
+| 3 | `@fsp-feature-builder` wins for "build feature", "scaffold", "new feature" once a spec exists |
+| 4 | Cross-stack pipeline agents (`@fullstack-reviewer`, `@fullstack-implementor`) handle layer-agnostic work |
+| 5 | Stack-specialist trios handle within-layer work |
+
+### Escalation Paths
+
+| Agent | Boundary hit | Escalation |
+|-------|-------------|------------|
+| `@fsp-feature-builder` | Build fails after 10 tries | Writes SUMMARY.md → engineer decides; route failing test to `@dotnet-support` or `@angular-support` |
+| `@fsp-incident-responder` | Deployment action required | Outputs `BOUNDARY VIOLATION`, writes handoff → human with access executes |
+| `@fsp-tpo-intake` | Clarification loop > 10 turns | Escalates to `@fsp-analyst` for formal pipeline spec |
+
+### Skill Load Order Additions (Persona Agents)
+
+- `@fsp-feature-builder`: stack-detection → api-design-standards → domain skills → **cross-stack-review last**
+- `@fsp-incident-responder`: **incident-correlation first** → incident-response-runbook → session-handoff → domain skills
+- `@fsp-tpo-intake`: no skills at start; spec-validation only when PR/diff is provided
+
+---
+
 ## Conflict Resolution
 
 1. **Architecture questions win over implementation** — "How should we structure the payment module?" → `@fsp-architect`, not `@dotnet-implementor`
 2. **Specific beats general** — "Optimize this EF query" → `@sql-support`, not `@fullstack-support`
 3. **Security concerns are always surfaced** — even when another agent is primary, flag security findings for the appropriate reviewer
 4. **Triage before fix** — for production symptoms, `@fullstack-support` classifies the layer before any implementor is engaged
+5. **Persona beats general** — when the user identifies themselves as a Developer, Support Engineer, or TPO, route to the persona agent, not the pipeline agent

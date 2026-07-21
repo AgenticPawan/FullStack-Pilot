@@ -218,6 +218,28 @@ Added in this session to close the gap with reference repos on automation and in
 
 **Workstream 5 (MCP)**: `plugins/pilot-rag/.mcp.json` registers `pilot-rag-ask` HTTP MCP server at `http://localhost:5200/mcp` (auto-loaded when plugin is enabled; no-op until `/fsp-rag-init` scaffold is running). `rag-retrieval` SKILL.md extended with MCP binding section (`ModelContextProtocol.AspNetCore`, `McpServerTool` registration, scoped tool reference `mcp__plugin_pilot-rag_pilot-rag-ask__ask`). Fixed pre-existing `utimesSync` test flake. Bumped pilot-rag→0.8.0.
 
+**Workstream 6 (persona agents)**: Three persona-specific agents added to pilot-core, each optimised for a distinct enterprise role with different permission levels and output formats:
+
+- **`@fsp-feature-builder`** (Fullstack Developer persona) — receives a feature description or a `.claude/pilot/specs/<feature>.md` from `@fsp-tpo-intake` and scaffolds the complete vertical slice across Angular + .NET + EF Core + SQL + Azure in dependency order. Delegates to stack implementors, runs `cross-stack-review` seam check last, verifies build is clean before reporting done. Write permissions: all layers. `maxTurns: 40`.
+
+- **`@fsp-incident-responder`** (Production Support Engineer persona) — receives error artifacts (stack trace, SQL timeout, Azure alert, Angular HTTP error) and produces: ranked root causes with confidence levels, per-cause remediation plan, proposed fix branch (local only), rollback plan, and shift-handoff stub. Hard boundary enforced in the agent file: never executes deployment commands (`az deployment`, `kubectl apply`, `docker run`), never pushes or merges. Violation triggers "BOUNDARY VIOLATION — human action required" and STOP. Write permissions: `.claude/pilot/` + one local fix branch. `maxTurns: 25`.
+
+- **`@fsp-tpo-intake`** (Technical Product Owner persona) — receives a natural-language feature request and mandatorily asks 4 clarifying questions (who, what, done, existing?) in one batch before writing anything. Produces an 8-section developer-ready spec (title, user story, ACs, affected layers, out-of-scope, open questions, DoR checklist, sizing). Validates an existing spec against a PR/diff when given both. Writes only to `.claude/specs/`. Routes to `@fsp-feature-builder` when spec is marked Ready. `maxTurns: 20`.
+
+Three new supporting skills in `plugins/pilot-core/skills/`:
+- `cross-stack-review/SKILL.md` — flags between-layer contract drift that per-stack reviewers miss (CSR-001..CSR-005). Runs last in `@fsp-feature-builder` vertical-slice builds.
+- `incident-correlation/SKILL.md` — correlates multiple error artifacts into a request-chain timeline with root-layer identification and confidence rating (IC-001..IC-005). Loaded first by `@fsp-incident-responder`.
+- `spec-validation/SKILL.md` — validates a `.claude/pilot/specs/*.md` against a diff or PR, marking each AC-n as Implemented/Partial/Missing/Scope Creep (SV-001..SV-004). Loaded by `@fsp-tpo-intake` in PR-review mode.
+
+Five new hook scripts in `plugins/pilot-core/hooks/scripts/`:
+- `pre-scaffold-validate.js` (PreToolUse/Bash) — denies scaffold commands when the feature slug conflicts with an existing controller, Angular project, or table in stack-profile.json.
+- `post-scaffold-build.js` (PostToolUse/Bash) — after a failed `dotnet build`/`ng build`, emits the list of scaffolded files and suggests the revert path.
+- `pre-action-boundary-check.js` (PreToolUse/Bash) — denies `kubectl apply`, `az service mutations`, `docker run` with prod env; warns on `git push origin main/master`.
+- `post-branch-test.js` (PostToolUse/Bash) — after `git checkout -b`/`git switch -c`, records branch name to `.claude/last-branch.txt` and emits test-suite reminder.
+- `pre-spec-write.js` (PreToolUse/Write) — denies writes to `.claude/specs/` when any of the 8 required template sections are absent.
+
+Bumped pilot-core → 0.37.0. AGENTS.md updated with persona-agent roster, routing table rows, priority order, escalation paths, and skill load order additions.
+
 ---
 
 ## Before any schema change
