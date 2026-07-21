@@ -201,6 +201,13 @@ for (const filePath of walk(ROOT)) {
       fail(`${rel}: stack plugin "${data.name}" must declare a dependency on pilot-core`); pluginOk = false;
     }
   }
+  // pilot-rag is opt-in — it requires /fsp-rag-init before any functionality is usable.
+  // CLAUDE.md: "pilot-rag MUST declare defaultEnabled: false — CI enforces this."
+  if (typeof data.name === 'string' && data.name === 'pilot-rag') {
+    if (data.defaultEnabled !== false) {
+      fail(`${rel}: pilot-rag must declare "defaultEnabled": false (it is opt-in; /fsp-rag-init required first)`); pluginOk = false;
+    }
+  }
   if (pluginOk) pass(`${rel}: name="${data.name}" version="${data.version ?? 'unset'}"`);
 }
 
@@ -324,6 +331,17 @@ for (const filePath of walk(ROOT)) {
   if (!content.includes('Read budget')) {
     fail(`${rel}: agent body must declare a "Read budget" (token discipline)`);
     agentOk = false;
+  }
+
+  // Implementor verification contract (CLAUDE.md): every *-implementor body must describe
+  // the build + test contract with the pre-existing / implementor-caused red distinction.
+  if (base.endsWith('-implementor')) {
+    const lower = content.toLowerCase();
+    const hasContract = lower.includes('pre-existing red') || lower.includes('verification contract');
+    if (!hasContract) {
+      fail(`${rel}: implementor agent must describe the verification contract — look for "pre-existing red" or "verification contract" (CLAUDE.md)`);
+      agentOk = false;
+    }
   }
 
   if (agentOk) pass(`${rel}: frontmatter OK (name="${fm['name']}", model=${model || 'inherit'})`);
