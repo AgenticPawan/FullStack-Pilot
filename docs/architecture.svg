@@ -51,15 +51,15 @@
   <rect x="112" y="142" width="60" height="16" rx="8" fill="#1e3a5f"/>
   <text x="142" y="154" class="f" text-anchor="middle" font-size="9" font-weight="600" fill="#93c5fd">required</text>
   <text x="180" y="154" class="f" font-size="11" fill="#94a3b8">— shared engine, installed as a dependency by every stack plugin</text>
-  <text x="32"  y="170" class="f" font-size="10" fill="#64748b">39 skills · 7 agents · 7 hook scripts (PreToolUse/PostToolUse/SessionStart) · MCP discovery · CI secret scanning · SLO load testing</text>
-  <text x="32"  y="183" class="f" font-size="10" fill="#475569">Delivery team: @fsp-analyst · @fsp-scout · @fsp-architect · @fsp-qa     Cross-stack: @fullstack-reviewer · @fullstack-implementor · @fullstack-support</text>
+  <text x="32"  y="170" class="f" font-size="10" fill="#64748b">44 skills · 13 agents · 16 hook scripts · MCP discovery · CI secret scanning · REST API standards · SLO load testing</text>
+  <text x="32"  y="183" class="f" font-size="10" fill="#475569">Delivery: @fsp-analyst · @fsp-scout · @fsp-architect · @fsp-qa     Persona: @fsp-feature-builder · @fsp-incident-responder · @fsp-tpo-intake</text>
 
   <!-- ── PLUGIN CARDS (x=20,194,368,542,716; w=164; h=95; y=200) ───────────── -->
 
   <!-- pilot-angular -->
   <rect x="20"  y="200" width="164" height="95" rx="8" fill="#dd0031"/>
   <text x="30"  y="217" class="f" font-size="12" font-weight="700" fill="#fff">pilot-angular</text>
-  <text x="30"  y="233" class="f" font-size="10" fill="#fecaca">32 skills · 3 agents</text>
+  <text x="30"  y="233" class="f" font-size="10" fill="#fecaca">33 skills · 3 agents</text>
   <text x="30"  y="248" class="f" font-size="10" fill="#fca5a5">signals, a11y, perf,</text>
   <text x="30"  y="262" class="f" font-size="10" fill="#fca5a5">security, SSR, i18n</text>
   <line x1="30" y1="271" x2="174" y2="271" stroke="rgba(255,255,255,0.2)"/>
@@ -68,7 +68,7 @@
   <!-- pilot-dotnet -->
   <rect x="194" y="200" width="164" height="95" rx="8" fill="#512bd4"/>
   <text x="204" y="217" class="f" font-size="12" font-weight="700" fill="#fff">pilot-dotnet</text>
-  <text x="204" y="233" class="f" font-size="10" fill="#ddd6fe">57 skills · 3 agents</text>
+  <text x="204" y="233" class="f" font-size="10" fill="#ddd6fe">59 skills · 3 agents</text>
   <text x="204" y="248" class="f" font-size="10" fill="#c4b5fd">clean arch, auth,</text>
   <text x="204" y="262" class="f" font-size="10" fill="#c4b5fd">outbox, saga, gRPC</text>
   <line x1="204" y1="271" x2="348" y2="271" stroke="rgba(255,255,255,0.2)"/>
@@ -77,7 +77,7 @@
   <!-- pilot-sql -->
   <rect x="368" y="200" width="164" height="95" rx="8" fill="#c44f27"/>
   <text x="378" y="217" class="f" font-size="12" font-weight="700" fill="#fff">pilot-sql</text>
-  <text x="378" y="233" class="f" font-size="10" fill="#fed7aa">11 skills · 3 agents</text>
+  <text x="378" y="233" class="f" font-size="10" fill="#fed7aa">12 skills · 4 agents</text>
   <text x="378" y="248" class="f" font-size="10" fill="#fdba74">migrations, indexes,</text>
   <text x="378" y="262" class="f" font-size="10" fill="#fdba74">HADR, protection</text>
   <line x1="378" y1="271" x2="522" y2="271" stroke="rgba(255,255,255,0.2)"/>
@@ -154,6 +154,6 @@
 
   <!-- ── FOOTER ─────────────────────────────────────────────────────────────── -->
   <line x1="20" y1="385" x2="880" y2="385" stroke="#e2e8f0"/>
-  <text x="450" y="401" class="f" text-anchor="middle" font-size="10.5" fill="#94a3b8">165+ skills · 21 specialist agents · 8 hook scripts · model-tiered (haiku → sonnet → opus) · MIT License</text>
+  <text x="450" y="401" class="f" text-anchor="middle" font-size="10.5" fill="#94a3b8">174 skills · 28 agents · 18 hook scripts · model-tiered (haiku → sonnet → opus) · MIT License</text>
   <text x="450" y="417" class="f" text-anchor="middle" font-size="10" fill="#cbd5e1">github.com/AgenticPawan/FullStack-Pilot</text>
 </svg>
