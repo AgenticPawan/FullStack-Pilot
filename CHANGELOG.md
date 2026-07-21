@@ -3,6 +3,101 @@
 All notable changes to FullStack Pilot are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## pilot-core 0.36.0, pilot-rag 0.8.0, pilot-angular 0.27.0, pilot-dotnet 0.30.0, pilot-sql 0.21.0, pilot-azure 0.20.0 — 2026-07-21 (gap-closure & developer-loop upgrade — W1–W6)
+
+Six-workstream gap-closure pass targeting hooks depth, developer-loop enforcement, skill
+extension, rules-catalog, MCP binding, and CI instrumentation.
+
+### Added
+
+**Workstream 1 — Hooks**
+- **`session-refresh.js` manifest-mtime check** — SessionStart hook now also emits an advisory
+  when any root `package.json` or `.csproj` is newer than `.claude/pilot/stack-profile.json`,
+  prompting the developer to re-run `/fsp-init`. Previously only age (7 days) triggered the
+  warning. Kill-switch: `CLAUDE_PLUGIN_OPTION_ENABLE_GOVERNANCE_HOOKS=false`.
+- **`migration-verifier.js` HasQueryFilter advisory (Rule 3)** — when a migration creates a new
+  table and the project contains a `DbContext` without `.HasQueryFilter()`, an advisory warns
+  the developer to add a global soft-delete / multitenancy filter. References MT-004 and the
+  `dotnet-soft-delete` skill. Kill-switch: `CLAUDE_PLUGIN_OPTION_ENABLE_QUERY_FILTER_CHECK=false`.
+  `enable_query_filter_check` userConfig entry added to pilot-sql `plugin.json`.
+- **+6 hook test fixtures** (61 total from 55).
+
+**Workstream 2 — Developer-loop**
+- **Implementor verification contract** (all 6 implementors — dotnet, angular, sql, infra,
+  fullstack, rag): every implementor now documents a four-step gate (build → test suite →
+  pre-existing red reported upward → implementor-caused red fixed). Summary template mandated.
+- **`fsp-debugger` agent** (pilot-core, T2/sonnet, effort: high, maxTurns: 30): failing-test-first
+  discipline, root-cause file:line, minimal fix per stack rules, prove-green + regression check,
+  traceability row in QA-REPORT. Hard gates for auth/API-contract/destructive-migration changes.
+- **`db-migration-planner` agent** (pilot-sql, read-only/sonnet): expand→backfill→switch→contract
+  plan with lock-time estimates, batch UPDATE guidance, rollback steps. Hands off to @sql-implementor.
+- **`fsp-upgrade-planner`** extended: per-stack reviewer delegation section
+  (@angular-reviewer, @dotnet-reviewer, @sql-reviewer) added; `model: opus` hardcoding removed.
+- **`fsp-threat-modeler`** extended: findings.json-compatible output (severity mapping P0–P3,
+  JSON schema per finding); `--gate` mode from fsp-architect/fsp-build Step 3 (P0 OPEN blocks
+  with CONFIRM; P1-P3 advisory).
+- **`fsp-build-orchestration` skill** updated: `--tdd` flag (fsp-qa writes failing tests before
+  implementor starts), `--threat-model` flag, new Step 2.5 threat-model gate, `isolation: "worktree"`
+  on implementors, STATE.json checkpoint extended.
+- **`fsp-qa` agent** gains `skills: [fullstack-e2e-testing, test-data-management]` frontmatter.
+
+**Workstream 3 — Skills**
+- **`dotnet-aspire-governance`** + Check D (Aspire vs ACA decision table; ASP-006/ASP-007)
+  and Check E (local/Azure resource parity; ASP-008/ASP-009).
+- **`sql-performance-review`** + Check F: Query Store review — enabling DDL, regression query
+  joining `sys.query_store_*`, `sp_query_store_force_plan`; QS-001..QS-004 standard IDs.
+- **`rag-security`** + Domain 1b: prompt injection beyond RAG content (user question itself,
+  system prompt leakage, multi-turn session state, structured output coercion).
+- **`dotnet-yarp-gateway`** (NEW — pilot-dotnet): YARP-001..YARP-008; 5 checks covering auth
+  model, tenant routing, rate limiting, observability, YARP vs APIM vs BFF decision boundary.
+- **`fsp-security-scanning-dast`** (NEW — pilot-core): DAST-001..DAST-006; ZAP baseline
+  GitHub Actions job setup, staging slot, alert thresholds, authenticated scan, suppression
+  management, findings.json bridge.
+
+**Workstream 4 — Rules-catalog + enforcement**
+- **6 new rule files** in `plugins/pilot-core/rules-catalog/`:
+  `dotnet-no-sync-over-async` (CWE-833), `dotnet-cancellation-token-propagation`,
+  `sql-no-select-star` (CWE-1024), `angular-standalone-only-gte19`,
+  `always-idempotent-consumers`, `azure-no-floating-image-tags` (supply-chain).
+- **4 new `dangerous-patterns.json` entries**:
+  - `DOTNET_SYNC_OVER_ASYNC` (warn): `.Result` / `.GetAwaiter().GetResult()` in `.cs`
+  - `SQL_SELECT_STAR` (warn): `SELECT * FROM` in `.cs` raw SQL strings
+  - `ANGULAR_NGMODULE_IN_STANDALONE_PROJECT` (warn): `@NgModule(` in `.ts`
+  - `AZURE_FLOATING_IMAGE_TAG` (**deny**): `:latest` in `.bicep`/`.yml`/`.yaml`/`.json` —
+    supply-chain gate operationalising the `dependency-supply-chain` skill
+- **+7 hook test fixtures** (68 total from 61).
+- **`utimesSync` test flake fix**: session-refresh timing test imported `utimesSync` via
+  undefined `fs` default; added `utimesSync` to named imports so profile backdating is reliable.
+
+**Workstream 5 — MCP**
+- **`plugins/pilot-rag/.mcp.json`**: registers `pilot-rag-ask` HTTP MCP server at
+  `http://localhost:5200/mcp`. Auto-loaded when pilot-rag plugin is enabled (which requires
+  explicit opt-in since `defaultEnabled: false`); no-op until the RAG scaffold is running.
+- **`rag-retrieval` SKILL.md**: new "MCP binding" section — `ModelContextProtocol.AspNetCore`
+  NuGet, `app.MapMcp("/mcp")` endpoint, `[McpServerTool]` `ask` registration (same
+  `IRagQueryService` path as REST), scoped agent tool reference
+  `mcp__plugin_pilot-rag_pilot-rag-ask__ask`.
+
+**Workstream 6 — Instructions & CI**
+- **CLAUDE.md**: `commands/` marked legacy (prefer SKILL.md with `name: fsp-<verb>`); new
+  "Plugin manifest conventions" section (`userConfig` env-var pattern, `dependencies` CI
+  requirement, `defaultEnabled` for pilot-rag); "Implementor verification contract" and
+  "Worktree isolation" subsections; LSP-aware review guidance; `agent`-type hooks pending-GA note.
+- **`validate.mjs`**: two new CI checks — `pilot-rag defaultEnabled === false` (CI failure);
+  `*-implementor` bodies must contain "pre-existing red" or "verification contract" (CI failure,
+  case-insensitive).
+- `validate.yml` already carries `claude plugin validate --strict` per plugin from prior session.
+
+### Bumped
+- pilot-core: 0.33.0 (W1) → 0.34.0 (W2) → 0.35.0 (W3) → **0.36.0** (W4)
+- pilot-rag: 0.6.0 (W2) → 0.7.0 (W3) → **0.8.0** (W5)
+- pilot-angular: **0.27.0** (W2 — angular-implementor verification contract)
+- pilot-dotnet: **0.30.0** (W2/W3 — dotnet-implementor contract + YARP gateway skill)
+- pilot-sql: **0.21.0** (W2/W3 — sql-implementor contract + Query Store check)
+- pilot-azure: **0.20.0** (W2 — infra-implementor verification contract)
+
+---
+
 ## pilot-core 0.30.0, pilot-rag 0.5.0 — 2026-07-19 (Phase 1 — spec alignment)
 
 ### pilot-core 0.30.0
